@@ -1,0 +1,1267 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AbreUSA — Formulário Inteligente</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --blue:#1B3A6B;--blue2:#2A52A0;--green:#00A651;--green2:#00C462;
+  --white:#fff;--gray50:#F5F7FA;--gray100:#EDF0F5;--gray300:#CBD5E0;
+  --gray500:#718096;--gray700:#2D3748;
+}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--gray50);color:var(--gray700);min-height:100vh;overflow-x:hidden;}
+
+/* TOPBAR */
+#topbar{position:fixed;top:0;left:0;right:0;height:54px;background:var(--white);
+  border-bottom:1px solid var(--gray100);display:flex;align-items:center;
+  justify-content:space-between;padding:0 20px;z-index:9999;box-shadow:0 1px 8px rgba(0,0,0,.06);}
+#topbar-logo{font-size:18px;font-weight:800;color:var(--blue);}
+#topbar-logo span{color:var(--green);}
+#progress-wrap{flex:1;max-width:360px;margin:0 24px;}
+#progress-bar{height:5px;background:var(--gray100);border-radius:99px;}
+#progress-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--blue2));
+  border-radius:99px;width:3%;transition:width .5s ease;}
+#progress-text{font-size:11px;color:var(--gray500);margin-top:3px;text-align:right;}
+#topbar-step{font-size:12px;font-weight:600;color:var(--gray500);}
+
+/* SCREENS */
+.screen{display:none;min-height:100vh;padding:74px 16px 40px;
+  align-items:flex-start;justify-content:center;}
+.screen.on{display:flex;}
+.wrap{width:100%;max-width:620px;animation:up .3s ease;}
+@keyframes up{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:none;}}
+
+/* CARD */
+.card{background:var(--white);border-radius:16px;padding:36px 32px 28px;
+  box-shadow:0 6px 32px rgba(27,58,107,.1);}
+@media(max-width:540px){.card{padding:24px 18px 20px;}}
+.q-tag{font-size:11px;font-weight:700;color:var(--green);letter-spacing:.8px;
+  text-transform:uppercase;margin-bottom:8px;}
+.q-title{font-size:22px;font-weight:800;color:var(--blue);line-height:1.3;margin-bottom:6px;}
+.q-sub{font-size:14px;color:var(--gray500);line-height:1.6;margin-bottom:24px;}
+
+/* CHOICES — click = select + auto-advance */
+.choices{display:flex;flex-direction:column;gap:10px;}
+.ch{border:2px solid var(--gray100);border-radius:12px;padding:15px 18px;
+  cursor:pointer;display:flex;align-items:center;gap:14px;
+  background:var(--white);text-align:left;width:100%;
+  transition:border-color .15s,background .15s;font-family:inherit;}
+.ch:hover{border-color:var(--blue2);background:#F4F7FF;}
+.ch.sel{border-color:var(--blue);background:#EEF3FC;}
+.ch-icon{font-size:22px;flex-shrink:0;line-height:1;}
+.ch-title{font-size:15px;font-weight:700;color:var(--blue);display:block;}
+.ch-sub{font-size:12px;color:var(--gray500);margin-top:2px;display:block;}
+
+/* GRID CHOICES */
+.ch-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+@media(max-width:420px){.ch-grid{grid-template-columns:1fr;}}
+.ch-sm{border:2px solid var(--gray100);border-radius:10px;padding:13px 14px;
+  cursor:pointer;text-align:center;background:var(--white);font-family:inherit;
+  font-size:13px;font-weight:600;color:var(--gray700);transition:all .15s;width:100%;}
+.ch-sm:hover{border-color:var(--blue2);background:#F4F7FF;}
+.ch-sm.sel{border-color:var(--blue);background:#EEF3FC;color:var(--blue);}
+
+/* INPUTS */
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:14px;}
+.field label{font-size:12px;font-weight:700;color:var(--gray700);}
+.field input,.field select,.field textarea{
+  padding:12px 14px;border:2px solid var(--gray300);border-radius:9px;
+  font-size:15px;color:var(--gray700);font-family:inherit;background:var(--white);
+  outline:none;transition:border-color .2s;width:100%;}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--blue);}
+.field input.ok{border-color:var(--green);}
+.field input.bad{border-color:#E53E3E;}
+.hint{font-size:11px;margin-top:3px;}
+.hint.ok{color:var(--green);}
+.hint.bad{color:#E53E3E;}
+.hint.info{color:var(--gray500);}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:420px){.row2{grid-template-columns:1fr;}}
+
+/* STEPPER */
+.stepper{display:flex;align-items:center;gap:20px;margin:20px 0;}
+.st-btn{width:44px;height:44px;border-radius:50%;border:2px solid var(--gray300);
+  background:var(--white);font-size:24px;cursor:pointer;display:flex;
+  align-items:center;justify-content:center;color:var(--blue);font-weight:700;
+  transition:all .15s;font-family:inherit;}
+.st-btn:hover{border-color:var(--blue);background:#EEF3FC;}
+.st-num{font-size:36px;font-weight:800;color:var(--blue);min-width:50px;text-align:center;}
+.st-hint{font-size:13px;color:var(--gray500);margin-top:-10px;text-align:center;}
+
+/* TOGGLE */
+.tog-row{display:flex;align-items:center;justify-content:space-between;
+  padding:12px 0;border-bottom:1px solid var(--gray100);}
+.tog-row:last-child{border-bottom:none;}
+.tog-row label:first-child{font-size:14px;color:var(--gray700);flex:1;padding-right:16px;}
+.tog{position:relative;width:42px;height:22px;flex-shrink:0;}
+.tog input{opacity:0;width:0;height:0;position:absolute;}
+.tog-sl{position:absolute;top:0;left:0;right:0;bottom:0;background:var(--gray300);
+  border-radius:99px;cursor:pointer;transition:.25s;}
+.tog-sl:before{content:'';position:absolute;height:16px;width:16px;left:3px;bottom:3px;
+  background:white;border-radius:50%;transition:.25s;box-shadow:0 1px 4px rgba(0,0,0,.2);}
+.tog input:checked+.tog-sl{background:var(--green);}
+.tog input:checked+.tog-sl:before{transform:translateX(20px);}
+
+/* UPLOAD */
+.uzone{border:2px dashed var(--gray300);border-radius:12px;padding:28px 20px;
+  text-align:center;cursor:pointer;transition:all .25s;position:relative;overflow:hidden;
+  background:var(--white);}
+.uzone:hover,.uzone.drag{border-color:var(--blue);background:#EEF3FC;}
+.uzone.done{border-color:var(--green);background:#ECFDF5;border-style:solid;}
+.uzone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;font-size:0;}
+.uzone-icon{font-size:36px;margin-bottom:8px;}
+.uzone h4{font-size:14px;font-weight:700;color:var(--blue);}
+.uzone p{font-size:12px;color:var(--gray500);margin-top:4px;}
+.ubtn{display:inline-block;margin-top:10px;padding:7px 18px;
+  background:var(--blue);color:white;border-radius:7px;font-size:12px;font-weight:600;pointer-events:none;}
+
+/* AI LOG */
+.ai-box{display:none;text-align:center;padding:20px 16px;}
+.ai-box.on{display:block;}
+.spin{width:48px;height:48px;border:3px solid var(--gray100);border-top-color:var(--blue);
+  border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 12px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.ai-box h4{font-size:14px;font-weight:700;color:var(--blue);margin-bottom:4px;}
+.ai-box p{font-size:12px;color:var(--gray500);}
+.ai-log{text-align:left;background:#1a2a1a;border-radius:8px;padding:12px 14px;
+  margin-top:12px;font-family:monospace;font-size:11px;color:#6EE7A0;max-height:100px;overflow:hidden;}
+
+/* EXTRACTED */
+.exbox{display:none;background:var(--green);border-radius:12px;padding:16px 20px;color:white;}
+.exbox.on{display:block;animation:up .3s ease;}
+.exbox h4{font-size:13px;font-weight:700;margin-bottom:12px;}
+.ex-row{display:flex;justify-content:space-between;padding:7px 0;
+  border-bottom:1px solid rgba(255,255,255,.2);font-size:13px;}
+.ex-row:last-child{border-bottom:none;}
+.ex-row .lbl{color:rgba(255,255,255,.8);}
+.ex-row .val{font-weight:700;}
+
+/* REVIEW */
+.rev-section{margin-bottom:20px;}
+.rev-label{font-size:11px;font-weight:700;color:var(--blue);letter-spacing:.7px;
+  text-transform:uppercase;margin-bottom:10px;}
+.rev-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--gray100);
+  border-radius:10px;overflow:hidden;}
+@media(max-width:420px){.rev-grid{grid-template-columns:1fr;}}
+.rev-cell{background:var(--white);padding:11px 14px;}
+.rev-cell .lbl{font-size:10px;color:var(--gray500);font-weight:600;text-transform:uppercase;letter-spacing:.4px;}
+.rev-cell .val{font-size:14px;font-weight:600;color:var(--gray700);margin-top:2px;}
+
+/* OFFICIAL FORM */
+.form-tabs{display:flex;gap:8px;margin-bottom:18px;}
+.ftab{flex:1;padding:11px;text-align:center;border:2px solid var(--gray100);
+  border-radius:10px;cursor:pointer;font-size:13px;font-weight:600;color:var(--gray500);
+  background:var(--white);transition:all .2s;font-family:inherit;}
+.ftab.on{border-color:var(--blue);color:var(--blue);background:#EEF3FC;}
+.ofform{display:none;background:var(--white);border:2px solid var(--gray300);
+  border-radius:14px;padding:28px;font-family:Georgia,serif;}
+.ofform.on{display:block;}
+.ofform-hdr{text-align:center;border-bottom:3px double #333;padding-bottom:14px;margin-bottom:16px;}
+.ofform-hdr h2{font-size:17px;font-weight:700;}
+.ofform-hdr p{font-size:11px;color:#555;margin-top:3px;}
+.of-section{background:var(--blue);color:white;padding:5px 10px;font-size:11px;
+  font-weight:700;letter-spacing:.5px;text-transform:uppercase;
+  margin:16px -28px 12px;}
+.of-row{display:flex;gap:14px;margin-bottom:12px;flex-wrap:wrap;}
+.of-field{flex:1;min-width:140px;}
+.of-field label{display:block;font-size:9px;font-weight:700;letter-spacing:.4px;
+  text-transform:uppercase;color:#555;margin-bottom:3px;}
+.ff{border-bottom:1px solid #333;padding:3px 0 5px;font-size:13px;min-height:24px;
+  color:var(--blue2);font-weight:600;font-family:'Segoe UI',sans-serif;}
+.ff.empty{color:#bbb;font-style:italic;font-weight:400;}
+.of-chks{display:flex;gap:20px;flex-wrap:wrap;margin-bottom:12px;}
+.of-chk{display:flex;align-items:center;gap:6px;font-size:12px;}
+.of-chk input{width:14px;height:14px;}
+.sig-line{display:flex;justify-content:space-between;border-top:1px solid #333;
+  margin-top:32px;padding-top:8px;font-size:10px;color:#555;}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:13px 26px;
+  border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;border:none;
+  transition:all .18s;font-family:inherit;}
+.btn-g{background:var(--green);color:white;}
+.btn-g:hover{background:var(--green2);transform:translateY(-1px);box-shadow:0 4px 14px rgba(0,166,81,.35);}
+.btn-b{background:var(--blue);color:white;}
+.btn-b:hover{background:var(--blue2);}
+.btn-out{background:white;color:var(--blue);border:2px solid var(--gray300);}
+.btn-out:hover{border-color:var(--blue);}
+.btn-sm{padding:10px 20px;font-size:14px;}
+.nav{display:flex;justify-content:space-between;align-items:center;margin-top:20px;gap:10px;}
+.nav-r{display:flex;gap:8px;align-items:center;}
+
+/* ERROR INLINE */
+.err{font-size:12px;color:#E53E3E;margin-top:8px;display:none;
+  background:#FFF5F5;border:1px solid #FED7D7;border-radius:7px;padding:8px 12px;}
+.err.on{display:block;}
+
+/* MEMBER CARD */
+.mcard{background:var(--gray50);border:1px solid var(--gray100);border-radius:10px;
+  padding:18px;margin-bottom:12px;}
+.mcard-hdr{font-size:13px;font-weight:700;color:var(--blue);margin-bottom:14px;}
+
+/* INFO BOX */
+.info-box{border-radius:10px;padding:13px 16px;font-size:13px;line-height:1.6;}
+.info-blue{background:#EBF4FF;border:1px solid #BEE3F8;color:#2C5282;}
+.info-yellow{background:#FFFBEB;border:1px solid #F6E05E;color:#744210;}
+.info-green{background:#F0FFF4;border:1px solid #9AE6B4;color:#22543D;}
+
+/* SUCCESS */
+.ok-icon{width:72px;height:72px;background:linear-gradient(135deg,var(--green),var(--green2));
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:32px;margin:0 auto 20px;}
+.protocol{display:inline-block;background:var(--gray50);border:2px solid var(--gray300);
+  border-radius:10px;padding:10px 22px;font-size:22px;font-weight:800;color:var(--blue);
+  letter-spacing:3px;margin:16px 0;}
+
+/* DOWNLOAD BAR */
+#dl-bar{position:fixed;bottom:0;left:0;right:0;background:white;
+  border-top:1px solid var(--gray100);padding:12px 20px;display:none;
+  align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
+  box-shadow:0 -4px 16px rgba(0,0,0,.07);z-index:9998;}
+#dl-bar.on{display:flex;}
+
+/* WELCOME HERO */
+.hero-box{background:linear-gradient(135deg,var(--blue) 0%,#0F2447 100%);
+  border-radius:20px;padding:48px 32px;text-align:center;color:white;}
+@media(max-width:540px){.hero-box{padding:32px 20px;}}
+.hero-box .flags{font-size:32px;margin-bottom:14px;}
+.hero-box h1{font-size:28px;font-weight:800;line-height:1.25;margin-bottom:10px;}
+.hero-box h1 span{color:#4DFFA0;}
+.hero-box p{font-size:15px;color:rgba(255,255,255,.8);line-height:1.6;margin-bottom:28px;max-width:460px;margin-left:auto;margin-right:auto;}
+.features{display:grid;grid-template-columns:1fr 1fr;gap:10px;text-align:left;margin-bottom:28px;}
+@media(max-width:400px){.features{grid-template-columns:1fr;}}
+.feat{background:rgba(255,255,255,.1);border-radius:10px;padding:12px 14px;font-size:12px;color:rgba(255,255,255,.9);}
+.feat strong{display:block;margin-bottom:2px;color:white;font-size:13px;}
+
+/* CONFETTI */
+#cts{position:fixed;inset:0;pointer-events:none;z-index:99999;}
+.ct{position:absolute;border-radius:2px;animation:fall 1.4s ease-out forwards;}
+@keyframes fall{0%{opacity:1;transform:translateY(-10px) rotate(0);}100%{opacity:0;transform:translateY(90vh) rotate(540deg);}}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div id="topbar">
+  <div id="topbar-logo">Abre<span>USA</span></div>
+  <div id="progress-wrap">
+    <div id="progress-bar"><div id="progress-fill"></div></div>
+    <div id="progress-text">Início</div>
+  </div>
+  <div id="topbar-step">Etapa 1</div>
+</div>
+
+<!-- ════════════════════════
+     S0 · WELCOME
+════════════════════════ -->
+<div class="screen on" id="s0">
+  <div class="wrap">
+    <div class="hero-box">
+      <div class="flags">🇧🇷 🤝 🇺🇸</div>
+      <h1>Formulário <span>Inteligente</span><br>de Abertura de Empresa</h1>
+      <p>Responda algumas perguntas, faça upload dos seus documentos e nossa IA preenche os formulários oficiais automaticamente.</p>
+      <div class="features">
+        <div class="feat"><strong>🤖 IA lê seus docs</strong>Passaporte preenchido automaticamente</div>
+        <div class="feat"><strong>🔀 Fluxo adaptável</strong>Perguntas mudam com suas respostas</div>
+        <div class="feat"><strong>📋 Formulários oficiais</strong>FL Articles of Org. + IRS SS-4</div>
+        <div class="feat"><strong>⏱ ~10 minutos</strong>Do zero aos docs prontos</div>
+      </div>
+      <button class="btn btn-g" style="font-size:16px;padding:15px 40px;" id="start-btn">Começar Agora →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════
+     S1 · SERVIÇO
+════════════════════════ -->
+<div class="screen" id="s1">
+  <div class="wrap">
+    <div class="card">
+      <div class="q-tag">Passo 1 · Serviço</div>
+      <div class="q-title">O que você precisa? 🏢</div>
+      <div class="q-sub">Clique numa opção para selecionar e avançar.</div>
+      <div class="choices" id="choices-service">
+        <button class="ch" data-val="llc_ein">
+          <span class="ch-icon">⭐</span>
+          <span><span class="ch-title">Pacote Completo — LLC + EIN</span><span class="ch-sub">Abertura na Flórida + número federal IRS · Mais popular · $499</span></span>
+        </button>
+        <button class="ch" data-val="llc">
+          <span class="ch-icon">🏛️</span>
+          <span><span class="ch-title">LLC na Flórida</span><span class="ch-sub">Articles of Organization · $299</span></span>
+        </button>
+        <button class="ch" data-val="ein">
+          <span class="ch-icon">🔢</span>
+          <span><span class="ch-title">EIN Number (Federal)</span><span class="ch-sub">IRS Form SS-4 · Já tenho LLC · $149</span></span>
+        </button>
+        <button class="ch" data-val="ra">
+          <span class="ch-icon">📮</span>
+          <span><span class="ch-title">Registered Agent</span><span class="ch-sub">Agente obrigatório na Flórida · $99/ano</span></span>
+        </button>
+      </div>
+    </div>
+    <div class="nav">
+      <button class="btn btn-out btn-sm" id="back-s1">← Voltar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════
+     S2 · NOME DA LLC
+════════════════════════ -->
+<div class="screen" id="s2">
+  <div class="wrap">
+    <div class="card">
+      <div class="q-tag">Passo 2 · Nome</div>
+      <div class="q-title">Qual será o nome da empresa? ✍️</div>
+      <div class="q-sub">O nome deve terminar em <strong>LLC</strong>. Vamos verificar automaticamente.</div>
+      <div class="field">
+        <label>Nome principal *</label>
+        <input id="name1" type="text" placeholder="Ex: Silva Solutions LLC" autocomplete="off">
+        <span class="hint info" id="h1">Inclua LLC no final — ex: "Silva Solutions LLC"</span>
+      </div>
+      <div class="field">
+        <label>Nome alternativo 1 (se o 1º estiver indisponível)</label>
+        <input id="name2" type="text" placeholder="Ex: Silva Tech LLC">
+      </div>
+      <div class="field">
+        <label>Nome alternativo 2</label>
+        <input id="name3" type="text" placeholder="Ex: Silva Enterprises LLC">
+      </div>
+      <div class="err" id="err-s2">Por favor informe o nome principal da empresa.</div>
+    </div>
+    <div class="nav">
+      <button class="btn btn-out btn-sm" id="back-s2">← Voltar</button>
+      <button class="btn btn-b btn-sm" id="next-s2">Continuar →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════
+     S3 · ATIVIDADE
+════════════════════════ -->
+<div class="screen" id="s3">
+  <div class="wrap">
+    <div class="card">
+      <div class="q-tag">Passo 3 · Atividade</div>
+      <div class="q-title">Qual é o ramo do negócio? 💼</div>
+      <div class="q-sub">Isso define o NAICS code e a descrição nos formulários federais. Clique para selecionar.</div>
+      <div class="ch-grid" id="choices-biz">
+        <button class="ch-sm" data-val="tech" data-label="Tecnologia / Software">💻 Tecnologia / Software</button>
+        <button class="ch-sm" data-val="ecomm" data-label="E-commerce / Vendas online">🛍️ E-commerce / Vendas</button>
+        <button class="ch-sm" data-val="consulting" data-label="Consultoria / Serviços profissionais">🤝 Consultoria / Serviços</button>
+        <button class="ch-sm" data-val="import" data-label="Importação e Exportação">📦 Importação / Exportação</button>
+        <button class="ch-sm" data-val="construction" data-label="Construção Civil">🏗️ Construção Civil</button>
+        <button class="ch-sm" data-val="food" data-label="Alimentação / Food service">🍽️ Alimentação</button>
+        <button class="ch-sm" data-val="health" data-label="Saúde e Beleza">💆 Saúde / Beleza</button>
+        <button class="ch-sm" data-val="realestate" data-label="Imóveis / Real Estate">🏠 Imóveis</button>
+        <button class="ch-sm" data-val="education" data-label="Educação">📚 Educação</button>
+        <button class="ch-sm" data-val="other" data-label="">🔧 Outro</button>
+      </div>
+      <div class="field" id="other-biz-wrap" style="margin-top:14px;display:none;">
+        <label>Descreva a atividade *</label>
+        <input id="other-biz" type="text" placeholder="Ex: Desenvolvimento de aplicativos mobile">
+      </div>
+    </div>
+    <div class="nav">
+      <button class="btn btn-out btn-sm" id="back-s3">← Voltar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════
+     S4 · NÚMERO DE SÓCIOS
+════════════════════════ -->
+<div class="screen" id="s4">
+  <div class="wrap">
+    <div class="card">
+      <div class="q-tag">Passo 4 · Sócios</div>
+      <div class="q-title">Quantos sócios terá a LLC? 👥</div>
+      <div class="q-sub">Define se será Single-Member ou Multi-Member LLC.</div>
+      <div class="stepper">
+        <button class="st-btn" id="mem-minus">−</button>
+        <span class="st-num" id="mem-num">1</span>
+        <button class="st-btn" id="mem-plus">+</button>
+      </div>
+      <p class="st-hint" id="mem-hint">Single-Member LLC · Somente você</p>
+      <div class="info-box info-blue" id="multi-note" style="margin-top:16px;display:none;">
+        ℹ️ <strong>Multi-Member LLC:</strong> cada sócio informará nome completo, endereço e % de participação.
+      </div>
+    </div>
+    <div class="nav">
+      <button class="btn btn-out btn-sm" id="back-s4">← Voltar</button>
+      <button class="btn btn-b btn-sm" id="next-s4">Continuar →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════
+     S5 · DADOS DOS SÓCIOS
+════════════════════════ -->
+<div class="screen" id="s5">
+  <div class="wrap">
+    <div class="card">
+      <div class="q-tag">Passo 5 · Sócios</div>
+      <div class="q-title">Dados de cada sócio 👤</div>
+      <div class="q-sub">Para o Operating Agreement e Articles of Organization.</div>
+      <div id="members-wrap"></div>
+    </div>
+    <div class="nav">
+      <button class="btn btn-out btn-sm" id="back-s5">← Voltar</button>
+      <button class="btn btn-b btn-sm" id="next-s5">Continuar →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════
+     S6 · ENDEREÇO DA EMPRESA
+════════════════════════ -->
+<div class="screen" id="s6">
+  <div class="wrap">
+    <div class="card">
+      <div class="q-tag">Passo 6 · Endereço</div>
+      <div class="q-title">Endereço principal da empresa na Flórida 📍</div>
+      <div class="q-sub">Pode ser seu endereço residencial ou comercial.</div>
+      <div class="field">
+        <label>Street Address *</label>
+        <input id="c-street" type="text" placeholder="Ex: 1234 Brickell Ave, Apt 2">
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>Cidade *</label>
+          <input id="c-city" type="text" placeholder="Miami">
+        </div>
+        <div class="field">
+          <label>Estado</label>
+          <select id="c-state"><option value="FL">Florida (FL)</option></select>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>ZIP Code *</label>
+          <input id="c-zip" type="text" placeholder="33131" maxlength="10">
+        </div>
+        <div class="field">
+          <label>County *</label>
+          <input id="c-county" type="text" placeholder="Miami-Dade">
+        </div>
+      </div>
+      <div class="err" id="err-s6">Preencha pelo menos o endereço e cidade.</div>
+    </div>
+    <div class="nav">
+      <button class="btn btn-out btn-sm" id="back-s6">← Voltar</button>
+      <button class="btn btn-b btn-sm" id="next-s6">Continuar →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════
+     S7 · REGISTERED AGENT
+════════════════════════ -->
+<div class="screen" id="s7">
+  <div class="wrap">
+    <div class="card">
+      <div class="q-tag">Passo 7 · Registered Agent</div>
+      <div class="q-title">Quem será o Registered Agent? 📮</div>
+      <div class="q-sub">Obrigatório pela lei da Flórida. Clique para selecionar e avançar.</div>
+      <div class="choices" id="choices-ra">
+        <button class="ch" data-val="abreusa">
+          <span class="ch-icon">✅</span>
+          <span><span class="ch-title">Usar AbreUSA como Registered Agent</span><span class="ch-sub">Recomendado · $99/ano · Endereço em Miami, FL</span></span>
+        </button>
+        <button class="ch" data-val="self">
+          <span class="ch-icon">🧑‍💼</span>
+          <span><span class="ch-title">Serei eu mesmo o Registered Agent</span><span class="ch-sub">Você deve ter endereço físico na Flórida</span></span>
+        </button>
+        <button class="ch" data-val="other">
+          <span class="ch-icon">🏢</span>
+          <span><span class="ch-title">Já tenho outro Registered Agent</span><span class="ch-sub">Informe o nome e endereço</span></span>
+        </button>
+      </div>
+      <div id="ra-other" style="margin-top:14px;display:none;">
+        <div class="row2">
+          <div class="field"><label>Nome do agente</label><input id="ra-name" type="text"></div>
+          <div class="field"><label>Endereço na Flórida</label><input id="ra-addr" type="text"></div>
+        </div>
+      </div>
+    </div>
+    <div class="nav">
+      <button class="btn btn-out btn-sm" id="back-s7">← Voltar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════
+     S8 · EIN / IRS
+════════════════════════ -->
+<div class="screen" id="s8">
+  <div class="wrap">
+    <div class="card">
+      <div class="q-tag">Passo EIN · Dados Federais</div>
+      <div class="q-title">Perguntas para o IRS Form SS-4 🏛️</div>
+      <div class="q-sub">O EIN é o CNPJ americano, obrigatório para abrir conta bancária.</div>
+      <div class="field">
+        <label>Motivo principal para solicitar o EIN *</label>
+        <select id="ein-reason">
+          <option value="new">Início de novo negócio</option>
+          <option value="banking">Abertura de conta bancária</option>
+          <option value="compliance">Obrigação legal / compliance</option>
+          <option value="employees">Contratação de funcionários</option>
+          <option value="other">Outro</option>
+        </select>
+      </div>
+      <div style="background:var(--gray50);border-radius:10px;padding:14px 16px;margin-bottom:14px;">
+        <div class="tog-row">
+          <label>A empresa terá funcionários nos próximos 12 meses?</label>
+          <label class="tog"><input type="checkbox" id="has-emp"><span class="tog-sl"></span></label>
+        </div>
+        <div class="tog-row">
+          <label>A empresa já iniciou atividades?</label>
+          <label class="tog"><input type="checkbox" id="already-started"><span class="tog-sl"></span></label>
+        </div>
+      </div>
+      <div class="field" id="start-wrap">
+        <label>Data de início (ou data prevista) *</label>
+        <input id="start-date" type="date">
+      </div>
+      <div class="field">
+        <label>Mês de fechamento do ano fiscal</label>
+        <select id="fiscal-month">
+          <option value="12">Dezembro (recomendado)</option>
+          <option value="3">Março</option>
+          <option value="6">Junho</option>
+          <option value="9">Setembro</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Tipo de entidade (para o IRS)</label>
+        <select id="entity-type">
+          <option value="llc-single">LLC — Single Member (disregarded entity)</option>
+          <option value="llc-multi">LLC — Multi Member (partnership)</option>
+          <option value="llc-corp">LLC — Eleição C-Corporation</option>
+          <option value="corp">Corporation (C-Corp)</option>
+        </select>
+      </div>
+      <div id="emp-detail" style="display:none;">
+        <div class="row2">
+          <div class="field"><label>Número esperado de funcionários</label><input id="emp-count" type="number" min="1" placeholder="Ex: 3"></div>
+          <div class="field"><label>Primeiro salário previsto</label><input id="first-payroll" type="date"></div>
+        </div>
+      </div>
+    </div>
+    <div class="nav">
+      <button class="btn btn-out btn-sm" id="back-s8">← Voltar</button>
+      <button class="btn btn-b btn-sm" id="next-s8">Continuar →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════
+     S9 · UPLOAD DOCUMENTOS
+════════════════════════ -->
+<div class="screen" id="s9">
+  <div class="wrap">
+    <div class="card">
+      <div class="q-tag">Passo · Documentos</div>
+      <div class="q-title">Upload dos documentos 📎</div>
+      <div class="q-sub">Nossa IA lê e preenche tudo automaticamente. Formatos: JPG, PNG ou PDF.</div>
+
+      <div style="margin-bottom:20px;">
+        <div class="field" style="margin-bottom:8px;"><label>📄 Passaporte — Obrigatório</label></div>
+        <div class="uzone" id="z-passport">
+          <input type="file" id="f-passport" accept="image/*,.pdf">
+          <div class="uzone-icon">🛂</div>
+          <h4>Passaporte (página com foto)</h4>
+          <p>Clique para selecionar ou arraste aqui</p>
+          <span class="ubtn">Selecionar arquivo</span>
+        </div>
+        <div class="ai-box" id="ai-passport">
+          <div class="spin"></div>
+          <h4>🤖 IA analisando passaporte...</h4>
+          <p>Lendo MRZ, extraindo dados biográficos</p>
+          <div class="ai-log" id="log-passport"></div>
+        </div>
+        <div class="exbox" id="ex-passport">
+          <h4>✅ Dados extraídos do passaporte</h4>
+          <div class="ex-row"><span class="lbl">Nome completo</span><span class="val" id="ex-name">—</span></div>
+          <div class="ex-row"><span class="lbl">Data de nascimento</span><span class="val" id="ex-dob">—</span></div>
+          <div class="ex-row"><span class="lbl">Nº passaporte</span><span class="val" id="ex-pp">—</span></div>
+          <div class="ex-row"><span class="lbl">Validade</span><span class="val" id="ex-exp">—</span></div>
+          <div class="ex-row"><span class="lbl">Nacionalidade</span><span class="val">Brasileira</span></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="field" style="margin-bottom:8px;"><label>🏠 Comprovante de endereço nos EUA — Obrigatório</label></div>
+        <div class="uzone" id="z-addr">
+          <input type="file" id="f-addr" accept="image/*,.pdf">
+          <div class="uzone-icon">📬</div>
+          <h4>Comprovante de endereço</h4>
+          <p>Conta de luz, banco, lease ou utility bill</p>
+          <span class="ubtn">Selecionar arquivo</span>
+        </div>
+        <div class="ai-box" id="ai-addr">
+          <div class="spin"></div>
+          <h4>🤖 IA analisando comprovante...</h4>
+          <p>Extraindo street, city, state e ZIP</p>
+          <div class="ai-log" id="log-addr"></div>
+        </div>
+        <div class="exbox" id="ex-addr">
+          <h4>✅ Dados extraídos do comprovante</h4>
+          <div class="ex-row"><span class="lbl">Endereço</span><span class="val" id="ex-astreet">—</span></div>
+          <div class="ex-row"><span class="lbl">Cidade</span><span class="val" id="ex-acity">—</span></div>
+          <div class="ex-row"><span class="lbl">Estado</span><span class="val" id="ex-astate">—</span></div>
+          <div class="ex-row"><span class="lbl">ZIP Code</span><span class="val" id="ex-azip">—</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="nav">
+      <button class="btn btn-out btn-sm" id="back-s9">← Voltar</button>
+      <button class="btn btn-g btn-sm" id="next-s9" style="opacity:.45;pointer-events:none">Revisar e Gerar Formulários →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════
+     S10 · REVISÃO
+════════════════════════ -->
+<div class="screen" id="s10">
+  <div class="wrap">
+    <div class="card">
+      <div class="q-tag">Revisão · Confirme os dados</div>
+      <div class="q-title">Tudo certo? ✅</div>
+      <div class="rev-section">
+        <div class="rev-label">🏛️ Dados da LLC</div>
+        <div class="rev-grid">
+          <div class="rev-cell"><div class="lbl">Nome</div><div class="val" id="rv-name">—</div></div>
+          <div class="rev-cell"><div class="lbl">Tipo</div><div class="val" id="rv-type">—</div></div>
+          <div class="rev-cell"><div class="lbl">Atividade</div><div class="val" id="rv-biz">—</div></div>
+          <div class="rev-cell"><div class="lbl">Endereço</div><div class="val" id="rv-addr">—</div></div>
+          <div class="rev-cell"><div class="lbl">Registered Agent</div><div class="val" id="rv-ra">—</div></div>
+          <div class="rev-cell"><div class="lbl">Estado</div><div class="val">Florida (FL)</div></div>
+        </div>
+      </div>
+      <div class="rev-section" id="rv-ein-sec">
+        <div class="rev-label">🔢 EIN — IRS</div>
+        <div class="rev-grid">
+          <div class="rev-cell"><div class="lbl">Motivo EIN</div><div class="val" id="rv-einreason">—</div></div>
+          <div class="rev-cell"><div class="lbl">Tipo de entidade</div><div class="val" id="rv-eintype">—</div></div>
+          <div class="rev-cell"><div class="lbl">Funcionários</div><div class="val" id="rv-emp">Não</div></div>
+          <div class="rev-cell"><div class="lbl">Ano fiscal</div><div class="val" id="rv-fiscal">Dezembro</div></div>
+        </div>
+      </div>
+      <div class="rev-section">
+        <div class="rev-label">👤 Solicitante</div>
+        <div class="rev-grid">
+          <div class="rev-cell"><div class="lbl">Nome</div><div class="val" id="rv-fullname">—</div></div>
+          <div class="rev-cell"><div class="lbl">Passaporte</div><div class="val" id="rv-pp">—</div></div>
+          <div class="rev-cell"><div class="lbl">Data nasc.</div><div class="val" id="rv-dob">—</div></div>
+          <div class="rev-cell"><div class="lbl">Endereço pessoal</div><div class="val" id="rv-personal">—</div></div>
+        </div>
+      </div>
+      <div class="info-box info-yellow" style="margin-top:4px;">
+        ⚠️ Se precisar corrigir algo, use "← Voltar". Após gerar, você pode revisar antes de aprovar o envio.
+      </div>
+    </div>
+    <div class="nav">
+      <button class="btn btn-out btn-sm" id="back-s10">← Corrigir</button>
+      <button class="btn btn-g" id="gen-btn">🤖 Gerar Formulários Oficiais</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════
+     S11 · FORMULÁRIOS
+════════════════════════ -->
+<div class="screen" id="s11">
+  <div class="wrap" style="max-width:760px;">
+    <div style="text-align:center;margin-bottom:20px;">
+      <div style="font-size:36px;margin-bottom:6px;">🎉</div>
+      <h2 style="font-size:22px;font-weight:800;color:var(--blue);">Formulários gerados com sucesso!</h2>
+      <p style="font-size:14px;color:var(--gray500);margin-top:4px;">Revise abaixo. Nossa equipe submete após sua aprovação.</p>
+    </div>
+    <div class="form-tabs">
+      <button class="ftab on" id="tab-fl">📋 Florida — Articles of Organization</button>
+      <button class="ftab" id="tab-irs">🏛️ IRS Form SS-4 (EIN)</button>
+    </div>
+
+    <!-- FLORIDA FORM -->
+    <div class="ofform on" id="form-fl">
+      <div class="ofform-hdr">
+        <h2>ARTICLES OF ORGANIZATION</h2>
+        <p>Limited Liability Company · State of Florida · Division of Corporations</p>
+        <p style="margin-top:4px;">Florida Statutes § 605 · Submit at dos.myflorida.com · Filing fee: $125</p>
+      </div>
+      <div class="of-section">Article I — Name</div>
+      <div class="of-row"><div class="of-field" style="flex:3"><label>The name of the LLC is:</label><div class="ff" id="ff-name">—</div></div></div>
+      <div class="of-section">Article II — Principal Office</div>
+      <div class="of-row">
+        <div class="of-field" style="flex:3"><label>Street Address:</label><div class="ff" id="ff-street">—</div></div>
+      </div>
+      <div class="of-row">
+        <div class="of-field"><label>City:</label><div class="ff" id="ff-city">—</div></div>
+        <div class="of-field" style="flex:.4"><label>State:</label><div class="ff">FL</div></div>
+        <div class="of-field" style="flex:.6"><label>ZIP:</label><div class="ff" id="ff-zip">—</div></div>
+      </div>
+      <div class="of-section">Article III — Registered Agent</div>
+      <div class="of-row">
+        <div class="of-field" style="flex:2"><label>Registered Agent Name:</label><div class="ff" id="ff-ra">AbreUSA Registered Agent Services LLC</div></div>
+        <div class="of-field"><label>Florida Address:</label><div class="ff" id="ff-raaddr">1000 Brickell Ave, Miami, FL 33131</div></div>
+      </div>
+      <div class="of-section">Article IV — Members / Managers</div>
+      <div class="of-row"><div class="of-field" style="flex:.4"><label>Management:</label><div class="ff">MEMBER-MANAGED</div></div></div>
+      <div id="ff-members"></div>
+      <div class="of-section">Article V — Purpose</div>
+      <div class="of-row"><div class="of-field"><label>General purpose:</label><div class="ff" id="ff-purpose">—</div></div></div>
+      <div class="of-section">Article VI — Effective Date</div>
+      <div class="of-row"><div class="of-field" style="flex:.5"><label>Effective date:</label><div class="ff">Upon filing with the State of Florida</div></div></div>
+      <div class="sig-line"><span>Signature of Organizer: _________________________</span><span>Date: __________</span></div>
+      <div class="of-row" style="margin-top:12px;">
+        <div class="of-field"><label>Printed Name:</label><div class="ff">AbreUSA Inc. (as authorized organizer)</div></div>
+      </div>
+      <div class="info-box info-green" style="margin-top:18px;font-size:12px;">
+        ✅ Submetido eletronicamente via <strong>Sunbiz.org</strong> pela AbreUSA · Taxa de registro: <strong>$125</strong> incluída no seu pacote
+      </div>
+    </div>
+
+    <!-- IRS SS-4 FORM -->
+    <div class="ofform" id="form-irs">
+      <div class="ofform-hdr">
+        <h2>Form SS-4 — Application for Employer Identification Number</h2>
+        <p>Department of the Treasury · Internal Revenue Service · OMB No. 1545-0003</p>
+      </div>
+      <div class="of-section">Part I — Identification</div>
+      <div class="of-row"><div class="of-field" style="flex:3"><label>1. Legal name of entity:</label><div class="ff" id="ss-name">—</div></div></div>
+      <div class="of-row">
+        <div class="of-field" style="flex:2"><label>2. Trade name (if different):</label><div class="ff empty">N/A</div></div>
+        <div class="of-field"><label>3. Care of name:</label><div class="ff empty">N/A</div></div>
+      </div>
+      <div class="of-row"><div class="of-field" style="flex:3"><label>4a. Mailing address:</label><div class="ff" id="ss-mailaddr">—</div></div></div>
+      <div class="of-row">
+        <div class="of-field" style="flex:2"><label>4b. City, state, ZIP:</label><div class="ff" id="ss-citystate">—</div></div>
+        <div class="of-field"><label>5b. State/local EIN:</label><div class="ff empty">N/A</div></div>
+      </div>
+      <div class="of-row">
+        <div class="of-field"><label>6. County and state (principal business):</label><div class="ff" id="ss-county">—</div></div>
+        <div class="of-field"><label>7a. Responsible party:</label><div class="ff" id="ss-resp">—</div></div>
+      </div>
+      <div class="of-row">
+        <div class="of-field"><label>7b. SSN/ITIN/EIN of responsible party:</label><div class="ff">Foreign national — Passport: <span id="ss-pp">—</span></div></div>
+      </div>
+      <div class="of-section">Part II — Type of Entity</div>
+      <div class="of-chks">
+        <label class="of-chk"><input type="checkbox" checked disabled> LLC</label>
+        <label class="of-chk"><input type="checkbox" disabled> Partnership</label>
+        <label class="of-chk"><input type="checkbox" disabled> Corporation</label>
+        <label class="of-chk"><input type="checkbox" disabled> Estate</label>
+      </div>
+      <div class="of-row">
+        <div class="of-field"><label>9a. Type of entity:</label><div class="ff" id="ss-etype">—</div></div>
+        <div class="of-field" style="flex:.5"><label>9b. State of incorporation:</label><div class="ff">Florida</div></div>
+      </div>
+      <div class="of-section">Part III — Reason for Applying</div>
+      <div class="of-row"><div class="of-field"><label>10. Reason for applying:</label><div class="ff" id="ss-reason">—</div></div></div>
+      <div class="of-row">
+        <div class="of-field"><label>11. Date business started (mm/dd/yyyy):</label><div class="ff" id="ss-start">—</div></div>
+        <div class="of-field"><label>12. Closing month of accounting year:</label><div class="ff" id="ss-fiscal">December</div></div>
+      </div>
+      <div class="of-section">Part IV — Employees &amp; Activity</div>
+      <div class="of-row">
+        <div class="of-field"><label>13. Highest # employees expected (12 mo):</label><div class="ff" id="ss-emps">0</div></div>
+        <div class="of-field"><label>14. First date wages paid:</label><div class="ff" id="ss-wages">N/A</div></div>
+      </div>
+      <div class="of-row"><div class="of-field"><label>16. Principal activity / products / services:</label><div class="ff" id="ss-activity">—</div></div></div>
+      <div class="of-row"><div class="of-field"><label>18. Has applicant ever applied for EIN?</label><div class="ff">No</div></div></div>
+      <div class="sig-line"><span>Signature: ______________________</span><span>Title: Sole Member / Organizer</span><span>Date: __________</span></div>
+      <div class="info-box info-blue" style="margin-top:18px;font-size:12px;">
+        🏛️ Submetido ao <strong>IRS via fax</strong> (procedimento para estrangeiros sem SSN) · Resposta em <strong>3–5 dias úteis</strong>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:20px;padding-bottom:80px;">
+      <button class="btn btn-g" id="approve-btn">✅ Aprovar e Enviar para Submissão</button>
+      <button class="btn btn-out" id="back-s11">← Revisar dados</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════
+     S12 · SUCESSO
+════════════════════════ -->
+<div class="screen" id="s12">
+  <div class="wrap">
+    <div class="card" style="text-align:center;padding:40px 28px;">
+      <div class="ok-icon">🎊</div>
+      <h2 style="font-size:26px;font-weight:800;color:var(--blue);margin-bottom:10px;">Pedido enviado!</h2>
+      <p style="font-size:15px;color:var(--gray500);line-height:1.7;">Nossa equipe vai revisar e submeter os formulários em <strong>1–2 dias úteis</strong>.</p>
+      <div class="protocol" id="protocol-num">AUS-2026-XXXX</div>
+      <p style="font-size:13px;color:var(--gray500);">Guarde o protocolo. Você receberá updates por email.</p>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:24px;">
+        <button class="btn btn-b" onclick="goto(0)">← Novo pedido</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DOWNLOAD BAR -->
+<div id="dl-bar">
+  <p style="font-size:13px;color:var(--gray700);">📋 Formulários prontos · <strong>AbreUSA</strong> vai protocolar em seu nome</p>
+  <div style="display:flex;gap:8px;">
+    <button class="btn btn-out btn-sm" onclick="window.print()">🖨️ Imprimir</button>
+    <button class="btn btn-g btn-sm" id="dl-approve">✅ Aprovar Envio</button>
+  </div>
+</div>
+
+<!-- CONFETTI -->
+<div id="cts"></div>
+
+<script>
+// ═══════════════════════
+// STATE
+// ═══════════════════════
+var S = {
+  service: 'llc_ein',
+  bizVal: '', bizLabel: '',
+  members: 1,
+  memberData: [],
+  compStreet:'', compCity:'', compZip:'', compCounty:'',
+  raChoice: 'abreusa',
+  // from docs
+  fullName:'', dob:'', ppNum:'', ppExp:'',
+  addrStreet:'', addrCity:'', addrState:'', addrZip:'',
+  docsCount: 0
+};
+
+var BIZ_LABELS = {
+  tech:'Tecnologia / Software', ecomm:'E-commerce / Vendas online',
+  consulting:'Consultoria / Serviços profissionais', import:'Importação e Exportação',
+  construction:'Construção Civil', food:'Alimentação / Food service',
+  health:'Saúde e Beleza', realestate:'Imóveis / Real Estate',
+  education:'Educação'
+};
+var EIN_LABELS = {
+  new:'Started new business', banking:'Banking purposes',
+  compliance:'Compliance requirement', employees:'Hired employees', other:'Other'
+};
+var ENTITY_LABELS = {
+  'llc-single':'LLC — Single Member (Disregarded Entity)',
+  'llc-multi':'LLC — Multi-Member (Partnership)',
+  'llc-corp':'LLC — Elected C-Corporation',
+  'corp':'Corporation (C-Corp)'
+};
+var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+// ═══════════════════════
+// SCREEN NAV
+// ═══════════════════════
+var PROG = {0:3,1:12,2:22,3:32,4:42,5:52,6:60,7:68,8:76,9:84,10:91,11:97,12:100};
+var LABELS = {0:'Início',1:'Serviço',2:'Nome da LLC',3:'Atividade',4:'Sócios',5:'Dados dos sócios',6:'Endereço',7:'Registered Agent',8:'EIN / IRS',9:'Documentos',10:'Revisão',11:'Formulários',12:'Concluído'};
+
+function goto(n) {
+  document.querySelectorAll('.screen').forEach(function(el){ el.classList.remove('on'); });
+  var sc = document.getElementById('s'+n);
+  if (sc) { sc.classList.add('on'); }
+  var pf = document.getElementById('progress-fill');
+  if (pf) pf.style.width = (PROG[n]||3)+'%';
+  var pt = document.getElementById('progress-text');
+  if (pt) pt.textContent = LABELS[n]||'';
+  var ts = document.getElementById('topbar-step');
+  if (ts) ts.textContent = 'Etapa '+(n+1);
+  var db = document.getElementById('dl-bar');
+  if (db) db.classList.toggle('on', n===11);
+  window.scrollTo(0,0);
+  if (n===10) populateReview();
+  if (n===11) generateForms();
+}
+
+// ═══════════════════════
+// INIT BUTTONS
+// ═══════════════════════
+document.addEventListener('DOMContentLoaded', function() {
+
+  // Welcome
+  document.getElementById('start-btn').addEventListener('click', function(){ goto(1); });
+
+  // Back buttons
+  document.getElementById('back-s1').addEventListener('click', function(){ goto(0); });
+  document.getElementById('back-s2').addEventListener('click', function(){ goto(S.service==='ein'?1:1); });
+  document.getElementById('back-s3').addEventListener('click', function(){ goto(2); });
+  document.getElementById('back-s4').addEventListener('click', function(){ goto(3); });
+  document.getElementById('back-s5').addEventListener('click', function(){ goto(4); });
+  document.getElementById('back-s6').addEventListener('click', function(){ goto(5); });
+  document.getElementById('back-s7').addEventListener('click', function(){ goto(6); });
+  document.getElementById('back-s8').addEventListener('click', function(){
+    goto(S.service==='ein' ? 1 : 7);
+  });
+  document.getElementById('back-s9').addEventListener('click', function(){
+    goto(S.service==='llc_ein' || S.service==='ein' ? 8 : 7);
+  });
+  document.getElementById('back-s10').addEventListener('click', function(){ goto(9); });
+  document.getElementById('back-s11').addEventListener('click', function(){ goto(10); });
+
+  // SERVICE choices — click = select + auto-advance
+  document.querySelectorAll('#choices-service .ch').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('#choices-service .ch').forEach(function(b){ b.classList.remove('sel'); });
+      btn.classList.add('sel');
+      S.service = btn.dataset.val;
+      setTimeout(function(){
+        if (S.service === 'ein') goto(8);
+        else goto(2);
+      }, 250);
+    });
+  });
+
+  // Name continue
+  document.getElementById('next-s2').addEventListener('click', function(){
+    var v = document.getElementById('name1').value.trim();
+    if (!v) { document.getElementById('err-s2').classList.add('on'); return; }
+    document.getElementById('err-s2').classList.remove('on');
+    S.companyName = v;
+    goto(3);
+  });
+
+  // LLC name validation
+  document.getElementById('name1').addEventListener('input', function(){
+    var v = this.value.trim().toUpperCase();
+    var hint = document.getElementById('h1');
+    var ok = ['LLC','L.L.C.','LIMITED LIABILITY COMPANY','LIMITED LIABILITY CO.'].some(function(s){ return v.endsWith(s); });
+    if (!v) { this.className=''; hint.textContent='Inclua LLC no final — ex: "Silva Solutions LLC"'; hint.className='hint info'; return; }
+    if (ok) { this.classList.add('ok'); this.classList.remove('bad'); hint.textContent='✓ Nome válido para registro na Flórida'; hint.className='hint ok'; }
+    else { this.classList.add('bad'); this.classList.remove('ok'); hint.textContent='⚠ Adicione "LLC" no final — ex: "'+this.value.trim()+' LLC"'; hint.className='hint bad'; }
+  });
+
+  // BIZ choices — click = select + auto-advance
+  document.querySelectorAll('#choices-biz .ch-sm').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('#choices-biz .ch-sm').forEach(function(b){ b.classList.remove('sel'); });
+      btn.classList.add('sel');
+      S.bizVal = btn.dataset.val;
+      S.bizLabel = btn.dataset.label || '';
+      if (S.bizVal === 'other') {
+        document.getElementById('other-biz-wrap').style.display = 'block';
+        document.getElementById('other-biz').focus();
+      } else {
+        document.getElementById('other-biz-wrap').style.display = 'none';
+        setTimeout(function(){ goto(4); }, 250);
+      }
+    });
+  });
+  document.getElementById('other-biz').addEventListener('change', function(){
+    S.bizLabel = this.value;
+    setTimeout(function(){ goto(4); }, 200);
+  });
+
+  // Members stepper
+  var mCount = 1;
+  document.getElementById('mem-minus').addEventListener('click', function(){
+    mCount = Math.max(1, mCount-1);
+    updateMemberUI(mCount);
+  });
+  document.getElementById('mem-plus').addEventListener('click', function(){
+    mCount = Math.min(10, mCount+1);
+    updateMemberUI(mCount);
+  });
+  function updateMemberUI(n) {
+    document.getElementById('mem-num').textContent = n;
+    S.members = n;
+    var hint = document.getElementById('mem-hint');
+    var note = document.getElementById('multi-note');
+    if (n===1) { hint.textContent='Single-Member LLC · Somente você'; note.style.display='none'; }
+    else { hint.textContent='Multi-Member LLC · '+n+' sócios'; note.style.display='block'; }
+  }
+  document.getElementById('next-s4').addEventListener('click', function(){
+    S.members = mCount;
+    buildMembersForm();
+    goto(5);
+  });
+
+  function buildMembersForm() {
+    var wrap = document.getElementById('members-wrap');
+    wrap.innerHTML = '';
+    while (S.memberData.length < S.members) S.memberData.push({name:'',addr:'',pct:''});
+    for (var i=0; i<S.members; i++) {
+      var label = i===0 ? 'Sócio Principal (você)' : 'Sócio '+(i+1);
+      var pct = Math.round(100/S.members);
+      var div = document.createElement('div');
+      div.className = 'mcard';
+      div.innerHTML = '<div class="mcard-hdr">👤 '+label+'</div>'
+        +'<div class="field"><label>Nome completo *</label><input class="q-input" type="text" placeholder="Como no passaporte" id="mn'+i+'" value="'+(S.memberData[i].name||'')+'"></div>'
+        +'<div class="row2">'
+        +'<div class="field"><label>Endereço *</label><input type="text" placeholder="Street, City, State, ZIP" id="ma'+i+'" value="'+(S.memberData[i].addr||'')+'"></div>'
+        +'<div class="field" style="flex:.4"><label>Participação (%)</label><input type="number" min="1" max="100" value="'+pct+'" id="mp'+i+'"></div>'
+        +'</div>';
+      wrap.appendChild(div);
+    }
+    // autofill member 0 if passport read
+    if (S.fullName) {
+      var m0 = document.getElementById('mn0');
+      if (m0 && !m0.value) m0.value = S.fullName;
+    }
+  }
+
+  document.getElementById('next-s5').addEventListener('click', function(){
+    for (var i=0; i<S.members; i++) {
+      var n = document.getElementById('mn'+i); var a = document.getElementById('ma'+i); var p = document.getElementById('mp'+i);
+      S.memberData[i] = { name: n?n.value:'', addr: a?a.value:'', pct: p?p.value:String(Math.round(100/S.members)) };
+    }
+    goto(6);
+  });
+
+  // Address continue
+  document.getElementById('next-s6').addEventListener('click', function(){
+    var st = document.getElementById('c-street').value.trim();
+    var ci = document.getElementById('c-city').value.trim();
+    if (!st || !ci) { document.getElementById('err-s6').classList.add('on'); return; }
+    document.getElementById('err-s6').classList.remove('on');
+    S.compStreet = st; S.compCity = ci;
+    S.compZip = document.getElementById('c-zip').value;
+    S.compCounty = document.getElementById('c-county').value;
+    goto(7);
+  });
+
+  // RA choices — click = select + auto-advance
+  document.querySelectorAll('#choices-ra .ch').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('#choices-ra .ch').forEach(function(b){ b.classList.remove('sel'); });
+      btn.classList.add('sel');
+      S.raChoice = btn.dataset.val;
+      document.getElementById('ra-other').style.display = (S.raChoice==='other') ? 'block' : 'none';
+      if (S.raChoice !== 'other') {
+        setTimeout(function(){
+          goto(S.service==='llc_ein' ? 8 : 9);
+        }, 250);
+      }
+    });
+  });
+
+  // EIN continue
+  document.getElementById('has-emp').addEventListener('change', function(){
+    document.getElementById('emp-detail').style.display = this.checked ? 'block' : 'none';
+  });
+  document.getElementById('next-s8').addEventListener('click', function(){ goto(9); });
+
+  // Upload
+  document.getElementById('f-passport').addEventListener('change', function(){
+    if (this.files && this.files[0]) runAI('passport', this.files[0]);
+  });
+  document.getElementById('f-addr').addEventListener('change', function(){
+    if (this.files && this.files[0]) runAI('addr', this.files[0]);
+  });
+
+  // Review / Generate
+  document.getElementById('next-s9').addEventListener('click', function(){ goto(10); });
+  document.getElementById('gen-btn').addEventListener('click', function(){ goto(11); });
+
+  // Approve
+  document.getElementById('approve-btn').addEventListener('click', submitOrder);
+  document.getElementById('dl-approve').addEventListener('click', submitOrder);
+
+  // Form tabs
+  document.getElementById('tab-fl').addEventListener('click', function(){
+    document.getElementById('tab-fl').classList.add('on');
+    document.getElementById('tab-irs').classList.remove('on');
+    document.getElementById('form-fl').classList.add('on');
+    document.getElementById('form-irs').classList.remove('on');
+  });
+  document.getElementById('tab-irs').addEventListener('click', function(){
+    document.getElementById('tab-irs').classList.add('on');
+    document.getElementById('tab-fl').classList.remove('on');
+    document.getElementById('form-irs').classList.add('on');
+    document.getElementById('form-fl').classList.remove('on');
+  });
+
+}); // end DOMContentLoaded
+
+// ═══════════════════════
+// AI DOC READING
+// ═══════════════════════
+var PP_DATA = { name:'FERNANDA OLIVEIRA SANTOS', dob:'15/08/1989', pp:'FZ4829103', exp:'22/04/2029' };
+var ADDR_DATA = { street:'2891 SW 137th Ave, Apt 304', city:'Miami', state:'FL', zip:'33175' };
+
+function runAI(type, file) {
+  var zone = document.getElementById('z-'+type);
+  var aiBox = document.getElementById('ai-'+type);
+  var exBox = document.getElementById('ex-'+type);
+  var logEl = document.getElementById('log-'+type);
+  zone.style.display = 'none';
+  aiBox.classList.add('on');
+  logEl.innerHTML = '';
+
+  var lines = type==='passport'
+    ? ['> Iniciando análise OCR...','> Detectando zona MRZ...','> Extraindo campos P< e I<...','> Lendo: nome, DOB, nº, validade...','> Validando checksum...','> ✓ Extração concluída com sucesso!']
+    : ['> Iniciando análise do documento...','> Detectando tipo: comprovante de endereço...','> Lendo street address...','> Extraindo city, state, ZIP...','> ✓ Dados extraídos com sucesso!'];
+
+  var i = 0;
+  function next() {
+    if (i >= lines.length) {
+      setTimeout(function(){
+        aiBox.classList.remove('on');
+        exBox.classList.add('on');
+        if (type==='passport') {
+          setText('ex-name', PP_DATA.name);
+          setText('ex-dob', PP_DATA.dob);
+          setText('ex-pp', PP_DATA.pp);
+          setText('ex-exp', PP_DATA.exp);
+          S.fullName = PP_DATA.name; S.dob = PP_DATA.dob; S.ppNum = PP_DATA.pp;
+          document.getElementById('z-passport').classList.add('done');
+          // autofill member 0
+          var m0 = document.getElementById('mn0');
+          if (m0) m0.value = PP_DATA.name;
+        } else {
+          setText('ex-astreet', ADDR_DATA.street);
+          setText('ex-acity', ADDR_DATA.city);
+          setText('ex-astate', ADDR_DATA.state);
+          setText('ex-azip', ADDR_DATA.zip);
+          S.addrStreet=ADDR_DATA.street; S.addrCity=ADDR_DATA.city; S.addrState=ADDR_DATA.state; S.addrZip=ADDR_DATA.zip;
+          // autofill address fields if empty
+          if (!document.getElementById('c-street').value) document.getElementById('c-street').value = ADDR_DATA.street;
+          if (!document.getElementById('c-city').value) document.getElementById('c-city').value = ADDR_DATA.city;
+          if (!document.getElementById('c-zip').value) document.getElementById('c-zip').value = ADDR_DATA.zip;
+          if (!document.getElementById('c-county').value) document.getElementById('c-county').value = 'Miami-Dade';
+          document.getElementById('z-addr').classList.add('done');
+        }
+        S.docsCount++;
+        if (S.docsCount >= 2) {
+          var btn = document.getElementById('next-s9');
+          btn.style.opacity='1'; btn.style.pointerEvents='auto';
+          btn.textContent='✅ Revisar e Gerar Formulários →';
+        }
+      }, 400);
+      return;
+    }
+    var span = document.createElement('div');
+    span.textContent = lines[i++];
+    span.style.cssText = 'opacity:0;margin-bottom:2px;transition:opacity .25s;';
+    logEl.appendChild(span);
+    requestAnimationFrame(function(){ span.style.opacity='1'; });
+    setTimeout(next, 480);
+  }
+  setTimeout(next, 300);
+}
+
+// ═══════════════════════
+// REVIEW
+// ═══════════════════════
+function populateReview() {
+  var n1 = document.getElementById('name1').value || S.companyName || '';
+  S.compStreet = document.getElementById('c-street').value || S.compStreet;
+  S.compCity = document.getElementById('c-city').value || S.compCity;
+  S.compZip = document.getElementById('c-zip').value || S.compZip;
+  S.compCounty = document.getElementById('c-county').value || S.compCounty;
+  setText('rv-name', n1||'—');
+  setText('rv-type', S.members===1?'Single-Member LLC':'Multi-Member LLC ('+S.members+' sócios)');
+  setText('rv-biz', S.bizLabel||'—');
+  var addrParts = [S.compStreet,S.compCity,'FL',S.compZip].filter(Boolean);
+  setText('rv-addr', addrParts.join(', ')||'—');
+  setText('rv-ra', S.raChoice==='abreusa'?'AbreUSA · Miami, FL':S.raChoice==='self'?'Próprio agente':'Agente externo');
+  var einEl = document.getElementById('ein-reason');
+  var etEl = document.getElementById('entity-type');
+  var empEl = document.getElementById('has-emp');
+  var fiscalEl = document.getElementById('fiscal-month');
+  setText('rv-einreason', EIN_LABELS[einEl?einEl.value:'new']||'—');
+  setText('rv-eintype', ENTITY_LABELS[etEl?etEl.value:'llc-single']||'—');
+  setText('rv-emp', (empEl&&empEl.checked)?'Sim':'Não');
+  setText('rv-fiscal', MONTHS[parseInt(fiscalEl?fiscalEl.value:12)-1]||'Dezembro');
+  setText('rv-fullname', S.fullName||'—');
+  setText('rv-pp', S.ppNum||'—');
+  setText('rv-dob', S.dob||'—');
+  setText('rv-personal', [S.addrStreet,S.addrCity,S.addrState].filter(Boolean).join(', ')||'—');
+  var einSec = document.getElementById('rv-ein-sec');
+  if (einSec) einSec.style.display = S.service==='llc'?'none':'block';
+}
+
+// ═══════════════════════
+// GENERATE FORMS
+// ═══════════════════════
+function generateForms() {
+  var name1 = document.getElementById('name1').value || S.companyName || '—';
+  setText('ff-name', name1);
+  setText('ff-street', S.compStreet||S.addrStreet||'—');
+  setText('ff-city', S.compCity||S.addrCity||'—');
+  setText('ff-zip', S.compZip||S.addrZip||'—');
+  setText('ff-purpose', 'To engage in any lawful act or activity for which a limited liability company may be organized in Florida. Principal activity: '+(S.bizLabel||'Professional Services'));
+  if (S.raChoice==='abreusa') { setText('ff-ra','AbreUSA Registered Agent Services LLC'); setText('ff-raaddr','1000 Brickell Ave, Miami, FL 33131'); }
+  else if (S.raChoice==='self') { setText('ff-ra', S.fullName||'Applicant'); setText('ff-raaddr', S.compStreet||'—'); }
+  else { setText('ff-ra', document.getElementById('ra-name').value||'—'); setText('ff-raaddr', document.getElementById('ra-addr').value||'—'); }
+
+  // Members
+  var mWrap = document.getElementById('ff-members');
+  mWrap.innerHTML = '';
+  for (var i=0; i<S.members; i++) {
+    var md = S.memberData[i]||{};
+    var mName = md.name || (i===0?S.fullName:'Member '+(i+1));
+    var mAddr = md.addr || S.compStreet || '—';
+    var mPct = md.pct || String(Math.round(100/S.members));
+    var row = document.createElement('div');
+    row.className = 'of-row';
+    row.innerHTML = '<div class="of-field" style="flex:2"><label>Member '+(i+1)+' Name &amp; Address:</label><div class="ff">'+mName+' · '+mAddr+'</div></div><div class="of-field" style="flex:.35"><label>Ownership:</label><div class="ff">'+mPct+'%</div></div>';
+    mWrap.appendChild(row);
+  }
+
+  // SS-4
+  setText('ss-name', name1);
+  var mailAddr = S.compStreet||S.addrStreet||'—';
+  var cityState = [S.compCity||S.addrCity,'FL',S.compZip||S.addrZip].filter(Boolean).join(', ')||'—';
+  setText('ss-mailaddr', mailAddr);
+  setText('ss-citystate', cityState);
+  setText('ss-county', (S.compCounty||'Miami-Dade')+', Florida');
+  setText('ss-resp', S.fullName||'—');
+  setText('ss-pp', S.ppNum||'—');
+  var etEl = document.getElementById('entity-type');
+  setText('ss-etype', ENTITY_LABELS[etEl?etEl.value:'llc-single']);
+  var einEl = document.getElementById('ein-reason');
+  setText('ss-reason', EIN_LABELS[einEl?einEl.value:'new']);
+  var sdEl = document.getElementById('start-date');
+  var sd = (sdEl&&sdEl.value) ? new Date(sdEl.value).toLocaleDateString('en-US') : new Date().toLocaleDateString('en-US');
+  setText('ss-start', sd);
+  var fmEl = document.getElementById('fiscal-month');
+  setText('ss-fiscal', MONTHS[parseInt(fmEl?fmEl.value:12)-1]||'December');
+  var empEl = document.getElementById('has-emp');
+  var empCEl = document.getElementById('emp-count');
+  var fwEl = document.getElementById('first-payroll');
+  var hasEmp = empEl&&empEl.checked;
+  setText('ss-emps', hasEmp?(empCEl&&empCEl.value?empCEl.value:'1'):'0');
+  setText('ss-wages', (hasEmp&&fwEl&&fwEl.value)?new Date(fwEl.value).toLocaleDateString('en-US'):'N/A');
+  setText('ss-activity', S.bizLabel||'Professional Services');
+
+  confetti();
+}
+
+// ═══════════════════════
+// SUBMIT
+// ═══════════════════════
+function submitOrder() {
+  var p = 'AUS-2026-'+Math.floor(4000+Math.random()*900);
+  setText('protocol-num', p);
+  goto(12);
+  confetti();
+}
+
+// ═══════════════════════
+// HELPERS
+// ═══════════════════════
+function setText(id, val) {
+  var el = document.getElementById(id);
+  if (el) el.textContent = val;
+}
+
+function confetti() {
+  var wrap = document.getElementById('cts');
+  wrap.innerHTML = '';
+  var colors = ['#00A651','#1B3A6B','#4DFFA0','#FFD700','#FF6B6B','#2A52A0','#fff'];
+  for (var i=0; i<60; i++) {
+    var d = document.createElement('div');
+    d.className = 'ct';
+    d.style.cssText = 'left:'+Math.random()*100+'%;top:'+Math.random()*20+'%;'
+      +'width:'+(6+Math.random()*8)+'px;height:'+(6+Math.random()*8)+'px;'
+      +'background:'+colors[Math.floor(Math.random()*colors.length)]+';'
+      +'animation-delay:'+Math.random()*.4+'s;animation-duration:'+(1+Math.random()*.8)+'s;';
+    wrap.appendChild(d);
+  }
+  setTimeout(function(){ wrap.innerHTML=''; }, 2200);
+}
+</script>
+</body>
+</html>
