@@ -1,4 +1,4 @@
-# User Flows
+# 04 User Flows
 
 ## Primary Flow: Complete Package
 
@@ -38,6 +38,8 @@ EIN-specific review and SS-4 generation are hidden unless EIN is included.
 
 ## Flow: EIN Only
 
+Status: Deferred. Post-MVP or Decision Needed.
+
 1. Customer selects EIN Number.
 2. Customer skips LLC formation steps that are not needed.
 3. Customer answers EIN/IRS SS-4 questions.
@@ -51,6 +53,8 @@ The exact EIN-only input requirements must be confirmed during architecture plan
 
 ## Flow: Registered Agent Only
 
+Status: Deferred. Post-MVP or Decision Needed.
+
 1. Customer selects Registered Agent.
 2. Customer provides required business/contact information.
 3. Customer reviews service request.
@@ -59,31 +63,20 @@ The exact EIN-only input requirements must be confirmed during architecture plan
 
 The current prototype branches this service through LLC-style steps. Production implementation should clarify the minimal RA-only intake before execution.
 
-## Review And Approval Flow
+## Core Flow
 
-1. Review screen summarizes all captured data.
-2. Customer can go back to correct.
-3. Customer generates form previews.
-4. Customer reviews generated forms.
-5. Customer approves submission.
-6. AbreUSA receives order for human review and filing.
-
-## Error And Correction Flow
-
-Required correction points:
-
-- Missing LLC name.
-- LLC name missing valid suffix.
-- Missing business address and city.
-- Missing required document.
-- Failed document extraction.
-- Missing member data.
-- Invalid ownership percentages.
-- Missing Registered Agent detail when "other" is selected.
-
-MVP behavior:
-
-- Show inline errors.
-- Preserve entered data when navigating back.
-- Allow manual override of extracted data.
-
+1. Welcome and value statement.
+2. Service selection.
+3. LLC name entry and validation.
+4. Business activity selection.
+5. Member count selection.
+6. Member data collection.
+7. Principal Florida business address collection.
+8. Registered Agent selection.
+9. EIN and IRS SS-4 questions when service includes EIN.
+10. Document upload.
+11. AI-assisted document extraction.
+12. Customer review.
+13. Generated Florida Articles of Organization and IRS SS-4 previews.
+14. Customer approval.
+15. Submission confirmation with protocol number.

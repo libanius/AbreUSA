@@ -1,4 +1,4 @@
-# Roadmap
+# 07 Roadmap
 
 ## Current Phase
 
@@ -12,14 +12,15 @@ Goal: establish the product source of truth.
 
 Deliverables:
 
-- Product Definition.
-- Product Memory System.
-- Roadmap.
-- Build Status.
-- Phase System.
+- Product Vision.
+- MVP Scope.
+- Requirements.
 - User Flows.
+- Platform Strategy.
 - Data Model.
-- Decision Log.
+- Roadmap.
+- Decisions Log.
+- Build Status.
 
 Exit criteria:
 
@@ -40,11 +41,29 @@ Deliverables:
 - Confirm storage strategy for orders and documents.
 - Confirm AI extraction provider or placeholder strategy.
 - Confirm security and privacy requirements for sensitive documents.
+- Document route strategy and unresolved routing decisions.
+- Document state and data flow strategy.
+- Document Supabase schema areas and storage responsibilities.
+- Mark unresolved flow gaps as `Decision Needed`.
 
 Exit criteria:
 
 - Architecture plan is documented.
 - No unresolved blocking assumptions remain.
+- Build Status is updated after Phase 1 planning is accepted.
+- Decisions Log records confirmed architecture decisions and open decisions.
+
+Current Phase 1 status:
+
+- Architecture plan drafted in `05-platform-strategy.md`.
+- Phase 1 Architecture Plan approved.
+- EIN-only flow deferred as Post-MVP or Decision Needed.
+- Registered Agent-only flow deferred as Post-MVP or Decision Needed.
+- AI extraction set to placeholder/manual strategy for MVP.
+- Payment kept out of MVP.
+- PDF/export deferred; HTML preview first.
+- Draft persistence/resume deferred unless required later for MVP.
+- Document retention and reviewer access remain Decision Needed before production.
 
 ## Phase 2: UI Shell And Design System
 
@@ -65,7 +84,17 @@ Exit criteria:
 
 - Product shell renders.
 - No business flow logic beyond routing/navigation scaffolding.
-- Visual direction matches Product Definition.
+- Visual direction matches Product Vision.
+
+Recommended first task:
+
+- Build the static app shell and progress header structure, without implementing business flow logic.
+
+Task status:
+
+- Static app shell and progress header implemented.
+- Main container for future guided steps implemented.
+- Business flow logic, forms, data handling, and Supabase integration not started.
 
 ## Phase 3: Guided Intake Flow
 
@@ -171,4 +200,3 @@ Potential additions:
 - Operating Agreement generation.
 - Bank account preparation checklist.
 - Bilingual Portuguese/English UI.
-

@@ -1,4 +1,4 @@
-# Data Model
+# 06 Data Model
 
 This document defines product-level data, not final database schema.
 
