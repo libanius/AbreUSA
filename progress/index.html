@@ -40,9 +40,42 @@
       }
 
       header {
-        display: grid;
+        align-items: start;
+        display: flex;
         gap: 24px;
+        justify-content: space-between;
         margin-bottom: 28px;
+      }
+
+      .hero-copy {
+        max-width: 820px;
+      }
+
+      .language-toggle {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        display: inline-flex;
+        gap: 4px;
+        padding: 4px;
+        white-space: nowrap;
+      }
+
+      .language-toggle button {
+        background: transparent;
+        border: 0;
+        border-radius: 999px;
+        color: var(--muted);
+        cursor: pointer;
+        font: inherit;
+        font-size: 12px;
+        font-weight: 800;
+        padding: 7px 10px;
+      }
+
+      .language-toggle button.active {
+        background: var(--blue);
+        color: #ffffff;
       }
 
       .eyebrow {
@@ -193,6 +226,10 @@
       }
 
       @media (max-width: 820px) {
+        header {
+          display: grid;
+        }
+
         .overview,
         .cards {
           grid-template-columns: 1fr;
@@ -207,29 +244,40 @@
   <body>
     <main>
       <header>
-        <div>
-          <p class="eyebrow">Project progress</p>
+        <div class="hero-copy">
+          <p class="eyebrow" data-en="Project progress" data-pt="Progresso do projeto">Project progress</p>
           <h1>AbreUSA</h1>
-          <p class="lead">
+          <p
+            class="lead"
+            data-en="Portuguese-first guided web application for Brazilian customers opening a U.S. company, starting with Florida LLC formation and EIN support."
+            data-pt="Aplicação web guiada, em português primeiro, para clientes brasileiros abrirem uma empresa nos EUA, começando por formação de LLC na Flórida e suporte para EIN."
+          >
             Portuguese-first guided web application for Brazilian customers
             opening a U.S. company, starting with Florida LLC formation and EIN
             support.
           </p>
         </div>
+        <div class="language-toggle" aria-label="Language selector">
+          <button class="active" type="button" data-set-lang="en">EN</button>
+          <button type="button" data-set-lang="pt">PT</button>
+        </div>
       </header>
 
       <section class="grid overview">
         <article class="card">
-          <span class="pill done">Current phase</span>
-          <p class="phase">Phase 2: UI Shell And Design System</p>
-          <p>
+          <span class="pill done" data-en="Current phase" data-pt="Fase atual">Current phase</span>
+          <p class="phase" data-en="Phase 2: UI Shell And Design System" data-pt="Fase 2: Shell da interface e sistema de design">Phase 2: UI Shell And Design System</p>
+          <p
+            data-en="The first Phase 2 task is complete: static app shell and progress header. The implementation is structural only."
+            data-pt="A primeira tarefa da Fase 2 foi concluída: shell estático do app e cabeçalho de progresso. A implementação é apenas estrutural."
+          >
             The first Phase 2 task is complete: static app shell and progress
             header. The implementation is structural only.
           </p>
           <div class="progress-wrap" aria-label="Project progress">
             <div class="progress-label">
-              <span>Roadmap progress</span>
-              <span>2 of 8 phases active</span>
+              <span data-en="Roadmap progress" data-pt="Progresso do roadmap">Roadmap progress</span>
+              <span data-en="2 of 8 phases active" data-pt="2 de 8 fases em andamento">2 of 8 phases active</span>
             </div>
             <div class="progress-track">
               <div class="progress-fill"></div>
@@ -238,9 +286,13 @@
         </article>
 
         <aside class="card metric">
-          <span class="pill">Last updated</span>
-          <p class="phase">May 4, 2026</p>
-          <p class="updated">
+          <span class="pill" data-en="Last updated" data-pt="Última atualização">Last updated</span>
+          <p class="phase" data-en="May 4, 2026" data-pt="4 de maio de 2026">May 4, 2026</p>
+          <p
+            class="updated"
+            data-en="Source of truth: /docs App Spine and current build status."
+            data-pt="Fonte da verdade: App Spine em /docs e status atual de build."
+          >
             Source of truth: /docs App Spine and current build status.
           </p>
         </aside>
@@ -248,41 +300,47 @@
 
       <section class="grid cards" style="margin-top: 18px">
         <article class="card">
-          <h2>Completed Milestones</h2>
+          <h2 data-en="Completed Milestones" data-pt="Marcos concluídos">Completed Milestones</h2>
           <ul>
-            <li>App Spine approved as official source of truth.</li>
-            <li>Phase 1 Architecture Plan approved.</li>
-            <li>MVP deferrals and architecture decisions recorded.</li>
-            <li>Static Next.js App Router shell implemented.</li>
-            <li>Progress header placeholder implemented.</li>
-            <li>Main guided-flow container implemented.</li>
-            <li>Lint and production build pass.</li>
+            <li data-en="App Spine approved as official source of truth." data-pt="App Spine aprovado como fonte oficial da verdade.">App Spine approved as official source of truth.</li>
+            <li data-en="Phase 1 Architecture Plan approved." data-pt="Plano de arquitetura da Fase 1 aprovado.">Phase 1 Architecture Plan approved.</li>
+            <li data-en="MVP deferrals and architecture decisions recorded." data-pt="Adiamentos do MVP e decisões de arquitetura registrados.">MVP deferrals and architecture decisions recorded.</li>
+            <li data-en="Static Next.js App Router shell implemented." data-pt="Shell estático em Next.js App Router implementado.">Static Next.js App Router shell implemented.</li>
+            <li data-en="Progress header placeholder implemented." data-pt="Cabeçalho com indicador de progresso implementado.">Progress header placeholder implemented.</li>
+            <li data-en="Main guided-flow container implemented." data-pt="Container principal do fluxo guiado implementado.">Main guided-flow container implemented.</li>
+            <li data-en="Lint and production build pass." data-pt="Lint e build de produção passam.">Lint and production build pass.</li>
           </ul>
         </article>
 
         <article class="card">
-          <h2>Current Implementation State</h2>
+          <h2 data-en="Current Implementation State" data-pt="Estado atual da implementação">Current Implementation State</h2>
           <ul>
-            <li>Home route renders a static AbreUSA shell.</li>
-            <li>Header includes brand and progress placeholder.</li>
-            <li>Main content supports future multi-step guided flow.</li>
-            <li>No business logic, forms, Supabase, uploads, or persistence.</li>
+            <li data-en="Home route renders a static AbreUSA shell." data-pt="A rota inicial renderiza um shell estático da AbreUSA.">Home route renders a static AbreUSA shell.</li>
+            <li data-en="Header includes brand and progress placeholder." data-pt="O cabeçalho inclui marca e indicador de progresso.">Header includes brand and progress placeholder.</li>
+            <li data-en="Main content supports future multi-step guided flow." data-pt="O conteúdo principal suporta o futuro fluxo guiado em múltiplas etapas.">Main content supports future multi-step guided flow.</li>
+            <li data-en="No business logic, forms, Supabase, uploads, or persistence." data-pt="Ainda não há lógica de negócio, formulários, Supabase, uploads ou persistência.">No business logic, forms, Supabase, uploads, or persistence.</li>
           </ul>
         </article>
 
         <article class="card task">
-          <span class="pill done">Current task</span>
-          <h2>Static App Shell</h2>
-          <p>
+          <span class="pill done" data-en="Current task" data-pt="Tarefa atual">Current task</span>
+          <h2 data-en="Static App Shell" data-pt="Shell estático do app">Static App Shell</h2>
+          <p
+            data-en="Completed. The app has a structural shell for the future guided intake experience without any data or flow behavior."
+            data-pt="Concluído. O app tem uma estrutura base para a futura experiência de intake guiado, sem dados ou comportamento de fluxo."
+          >
             Completed. The app has a structural shell for the future guided
             intake experience without any data or flow behavior.
           </p>
         </article>
 
         <article class="card next">
-          <span class="pill">Next task</span>
-          <h2>Reusable Phase 2 UI Primitives</h2>
-          <p>
+          <span class="pill" data-en="Next task" data-pt="Próxima tarefa">Next task</span>
+          <h2 data-en="Reusable Phase 2 UI Primitives" data-pt="Primitivos reutilizáveis de UI da Fase 2">Reusable Phase 2 UI Primitives</h2>
+          <p
+            data-en="Build layout-level primitives only: step wrapper, static navigation controls, and status/validation message shell."
+            data-pt="Criar apenas primitivos de layout: wrapper de etapa, controles estáticos de navegação e componente de status/validação."
+          >
             Build layout-level primitives only: step wrapper, static navigation
             controls, and status/validation message shell.
           </p>
@@ -290,20 +348,43 @@
       </section>
 
       <section class="card" style="margin-top: 18px">
-        <span class="pill needed">Open decisions</span>
-        <h2>Decision Needed Before Later Phases</h2>
+        <span class="pill needed" data-en="Open decisions" data-pt="Decisões em aberto">Open decisions</span>
+        <h2 data-en="Decision Needed Before Later Phases" data-pt="Decisões necessárias antes das próximas fases">Decision Needed Before Later Phases</h2>
         <ul>
-          <li>EIN-only dedicated flow requirements.</li>
-          <li>Registered Agent-only dedicated flow requirements.</li>
-          <li>Real AI extraction provider.</li>
-          <li>Payment timing if payment is added later.</li>
-          <li>PDF/export strategy beyond HTML preview.</li>
-          <li>Draft persistence and resume behavior.</li>
-          <li>Document retention and reviewer access model before production.</li>
-          <li>Registered Agent legal entity and production address.</li>
-          <li>Final production pricing.</li>
+          <li data-en="EIN-only dedicated flow requirements." data-pt="Requisitos do fluxo dedicado de EIN-only.">EIN-only dedicated flow requirements.</li>
+          <li data-en="Registered Agent-only dedicated flow requirements." data-pt="Requisitos do fluxo dedicado de Registered Agent-only.">Registered Agent-only dedicated flow requirements.</li>
+          <li data-en="Real AI extraction provider." data-pt="Fornecedor real para extração com IA.">Real AI extraction provider.</li>
+          <li data-en="Payment timing if payment is added later." data-pt="Momento do pagamento caso pagamento seja adicionado depois.">Payment timing if payment is added later.</li>
+          <li data-en="PDF/export strategy beyond HTML preview." data-pt="Estratégia de PDF/exportação além do preview em HTML.">PDF/export strategy beyond HTML preview.</li>
+          <li data-en="Draft persistence and resume behavior." data-pt="Persistência de rascunho e retomada do fluxo.">Draft persistence and resume behavior.</li>
+          <li data-en="Document retention and reviewer access model before production." data-pt="Retenção de documentos e modelo de acesso dos revisores antes da produção.">Document retention and reviewer access model before production.</li>
+          <li data-en="Registered Agent legal entity and production address." data-pt="Entidade legal e endereço de produção do Registered Agent.">Registered Agent legal entity and production address.</li>
+          <li data-en="Final production pricing." data-pt="Preços finais de produção.">Final production pricing.</li>
         </ul>
       </section>
     </main>
+    <script>
+      const languageButtons = document.querySelectorAll("[data-set-lang]");
+      const translatedNodes = document.querySelectorAll("[data-en][data-pt]");
+
+      function setLanguage(language) {
+        document.documentElement.lang = language === "pt" ? "pt-BR" : "en";
+        translatedNodes.forEach((node) => {
+          node.textContent = node.dataset[language];
+        });
+        languageButtons.forEach((button) => {
+          button.classList.toggle("active", button.dataset.setLang === language);
+        });
+        localStorage.setItem("progress-language", language);
+      }
+
+      languageButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          setLanguage(button.dataset.setLang);
+        });
+      });
+
+      setLanguage(localStorage.getItem("progress-language") || "en");
+    </script>
   </body>
 </html>

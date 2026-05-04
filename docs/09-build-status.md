@@ -35,6 +35,9 @@ Required user confirmation:
 - Geist/Tailwind font token issue corrected in `app/globals.css`.
 - Verification completed: `npm run lint` passes.
 - Verification completed: `npm run build` passes.
+- Static stakeholder progress dashboard created at `/progress/index.html`.
+- GitHub Pages root publishing support prepared with `.nojekyll`.
+- GitHub Pages setup instructions documented in `05-platform-strategy.md`.
 
 ## Current Implementation State
 
@@ -51,6 +54,8 @@ Required user confirmation:
 - No form handling is implemented.
 - No Supabase connection is implemented.
 - No document upload or data persistence is implemented.
+- `/progress/index.html` is available as a standalone static dashboard for stakeholders.
+- GitHub Pages can publish `/progress/` from the repository root after GitHub Pages is enabled in repository settings.
 
 ## What Is Missing
 
@@ -69,10 +74,19 @@ Required user confirmation:
 - Supabase schema/storage implementation.
 - Real or placeholder document extraction UI states.
 - Production document retention and reviewer access decisions.
+- GitHub Pages must still be enabled in GitHub settings after the repo is pushed.
 
 ## Exact Next Step To Resume
 
-Resume with the next Phase 2 task:
+For progress publishing:
+
+1. Push the current repository changes to GitHub.
+2. In GitHub, configure Pages:
+   - Settings -> Pages -> Source: Deploy from a branch -> Branch: main -> Folder: / root
+3. Use this URL format:
+   - `https://<github-username>.github.io/<repo-name>/progress/`
+
+For product work, resume with the next Phase 2 task:
 
 1. Confirm the next task: build reusable Phase 2 UI primitives for the guided flow.
 2. Implement only layout-level primitives:

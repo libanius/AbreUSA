@@ -222,3 +222,31 @@ Before product execution:
 ## Current Platform Boundary
 
 No backend, storage, AI provider, deployment workflow, or domain configuration is considered implemented until explicitly completed in the roadmap and reflected in `09-build-status.md`.
+
+## GitHub Pages Progress Dashboard
+
+The stakeholder progress dashboard lives at:
+
+- `/progress/index.html`
+
+It is a static page and is separate from the Next.js product app.
+
+Publishing setup:
+
+1. Push the repository to GitHub.
+2. In GitHub, open the repository settings.
+3. Go to Settings -> Pages.
+4. Set Source to `Deploy from a branch`.
+5. Set Branch to `main`.
+6. Set Folder to `/ root`.
+7. Save.
+
+Expected URL format:
+
+- `https://<github-username>.github.io/<repo-name>/progress/`
+
+For this repository, the expected format is:
+
+- `https://libanius.github.io/AbreUSA/progress/`
+
+Root Pages publishing is intentional so `/progress/` is served directly from the repository root. The root `.nojekyll` file is present to prevent GitHub Pages from applying Jekyll processing to static project files.
