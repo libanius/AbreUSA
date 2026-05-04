@@ -2,22 +2,38 @@
 
 ## Current Phase
 
-Phase 2: UI Shell And Design System.
+Phase 3: Guided Intake Flow Planning.
 
-The core Phase 2 UI structure is complete: static app shell/progress header, reusable guided-flow primitives, static form/review/preview shells, and static confirmation/status shells.
+Phase 2 is complete. The project is not yet implementing intake logic; it is ready to define the first Phase 3 implementation slice.
 
-## Current Build Label
+## Last Completed Task
 
-`Phase 2: Core UI Shell Complete`
+Task ID: `P2-T04`
 
-## Current Gate
+Title: Static confirmation/status shell and Phase 2 closure.
 
-Awaiting user confirmation before the next Phase 2 task.
+Result:
 
-Required user confirmation:
+- Static confirmation shell implemented.
+- Static protocol/status display shell implemented.
+- Phase 2 shell composition reviewed and closed.
+- Roadmap, build status, and progress dashboard updated.
+- Verification completed: `npm run lint` passes.
+- Verification completed: `npm run build` passes.
 
-- Confirm the implemented static shell.
-- Confirm the next Phase 2 task before additional product code changes.
+## Current Task
+
+Task ID: `P3-T01`
+
+Title: Plan the first Guided Intake Flow implementation slice.
+
+Status: Not started.
+
+Scope:
+
+- Define the first Phase 3 implementation slice before coding.
+- Recommended first slice: service selection and step-state shell for the Complete Package / Florida LLC path.
+- Keep EIN-only and Registered Agent-only deferred.
 
 ## Completed Tasks
 
@@ -38,6 +54,7 @@ Required user confirmation:
 - Static generated form preview shell implemented.
 - Static confirmation shell implemented.
 - Static protocol/status display shell implemented.
+- Phase 2 shell composition reviewed and closed.
 - Root metadata updated for AbreUSA.
 - Root HTML language set to `pt-BR`.
 - Geist/Tailwind font token issue corrected in `app/globals.css`.
@@ -47,7 +64,7 @@ Required user confirmation:
 - GitHub Pages root publishing support prepared with `.nojekyll`.
 - GitHub Pages setup instructions documented in `05-platform-strategy.md`.
 
-## Current Implementation State
+## What Is Implemented
 
 - The app renders a static AbreUSA shell from `components/app-shell.tsx`.
 - The home route uses the App Router page at `app/page.tsx`.
@@ -75,10 +92,13 @@ Required user confirmation:
 - `/progress/index.html` is available as a standalone static dashboard for stakeholders.
 - GitHub Pages can publish `/progress/` from the repository root after GitHub Pages is enabled in repository settings.
 
-## What Is Missing
+## What Is NOT Implemented
 
-- Phase 2 may need final visual polish after review.
 - Phase 3 guided intake flow.
+- Service selection behavior.
+- Step state.
+- Customer questionnaire steps.
+- Client-side validation.
 - Phase 4 document collection.
 - Phase 5 review and generated form previews.
 - Phase 6 order submission workflow.
@@ -89,16 +109,26 @@ Required user confirmation:
 
 ## Exact Next Step To Resume
 
-For progress publishing:
+Execute one task only:
 
-1. Push the current repository changes to GitHub.
-2. In GitHub, configure Pages:
-   - Settings -> Pages -> Source: Deploy from a branch -> Branch: main -> Folder: / root
-3. Use this URL format:
-   - `https://<github-username>.github.io/<repo-name>/progress/`
+`P3-T01: Plan the first Guided Intake Flow implementation slice`
 
-For product work, resume with the next Phase 2 task:
+Deliverable:
 
-1. Review the completed Phase 2 shell and decide whether to close Phase 2.
-2. If approved, update the roadmap/build status to move toward Phase 3 planning.
-3. Do not start Phase 3 guided intake logic until explicitly confirmed.
+- Update `/docs/07-roadmap.md` with the exact first Phase 3 implementation task and acceptance criteria.
+- Do not write product code until that slice is confirmed.
+
+Recommended first implementation slice after planning:
+
+- Service selection.
+- Static-to-interactive step state shell.
+- Complete Package / Florida LLC path only.
+
+## Blockers And Risks
+
+- EIN-only flow remains deferred and must not be implemented yet.
+- Registered Agent-only flow remains deferred and must not be implemented yet.
+- Supabase is planned but not connected; do not add backend work in the first Phase 3 slice.
+- Document upload, extraction, generated forms, and submission workflow are later phases.
+- GitHub Pages still needs to be enabled in GitHub settings after pushing.
+- The dev server previously started on `localhost:3001` because port `3000` was already in use.

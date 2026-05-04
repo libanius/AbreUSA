@@ -2,11 +2,13 @@
 
 ## Current Phase
 
-Pre-Execution.
+Phase 3: Guided Intake Flow Planning.
 
-The project is paused before implementation. The App Spine must be confirmed before any code generation, refactor, or feature build.
+Phase 2 is complete. The next step is to plan the Phase 3 guided intake flow before implementing business logic.
 
 ## Phase 0: App Spine Confirmation
+
+Status: Complete.
 
 Goal: establish the product source of truth.
 
@@ -29,6 +31,8 @@ Exit criteria:
 - Build Status moves from `Pre-Execution` to the next confirmed phase.
 
 ## Phase 1: Foundation Planning
+
+Status: Complete.
 
 Goal: define implementation architecture without building product behavior yet.
 
@@ -67,6 +71,8 @@ Current Phase 1 status:
 
 ## Phase 2: UI Shell And Design System
 
+Status: Complete.
+
 Goal: build the product shell and reusable UI primitives.
 
 Deliverables:
@@ -104,11 +110,18 @@ Task status:
 - Static protocol/status display shell implemented.
 - Business flow logic, forms, data handling, and Supabase integration not started.
 
-Next recommended Phase 2 task:
+Phase 2 status:
 
-- Review Phase 2 shell composition and confirm whether to close Phase 2 or add any final visual polish before Phase 3.
+- Complete.
+- Exit criteria met: product shell renders, structural primitives exist, and no business flow logic has been added.
+
+Next task:
+
+- Plan Phase 3 guided intake flow implementation before writing intake logic.
 
 ## Phase 3: Guided Intake Flow
+
+Status: Current phase. Planning, not implementation.
 
 Goal: implement the customer questionnaire.
 
@@ -128,6 +141,15 @@ Exit criteria:
 
 - Full intake can be completed with test data.
 - Branching rules match the User Flows document.
+
+Current Phase 3 planning task:
+
+- Task ID: `P3-T01`.
+- Define the first implementation slice for the guided intake flow.
+- Keep EIN-only and Registered Agent-only deferred.
+- Start with the Complete Package / Florida LLC path only unless the App Spine is updated.
+- Decide which static Phase 2 primitives become the first connected step components.
+- Add acceptance criteria before writing product code.
 
 ## Phase 4: Document Collection
 
