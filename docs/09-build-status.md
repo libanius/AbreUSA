@@ -4,11 +4,11 @@
 
 Phase 2: UI Shell And Design System.
 
-The first Phase 2 task is complete: static app shell and progress header.
+The first two Phase 2 UI structure tasks are complete: static app shell/progress header and reusable guided-flow primitives.
 
 ## Current Build Label
 
-`Phase 2: Static App Shell Implemented`
+`Phase 2: Guided Flow Primitives Implemented`
 
 ## Current Gate
 
@@ -30,6 +30,9 @@ Required user confirmation:
 - Static app shell implemented in the Next.js App Router.
 - Progress header placeholder implemented.
 - Main guided-flow container implemented.
+- Reusable `StepCard` primitive implemented.
+- Static step navigation primitive implemented.
+- Static status/validation message primitive implemented.
 - Root metadata updated for AbreUSA.
 - Root HTML language set to `pt-BR`.
 - Geist/Tailwind font token issue corrected in `app/globals.css`.
@@ -49,6 +52,10 @@ Required user confirmation:
   - Static progress indicator placeholder.
   - Main container for future guided steps.
   - Side progress area for future step groups.
+- The guided-flow primitive layer includes:
+  - `StepCard`.
+  - `StepNavigation`.
+  - `StatusMessage`.
 - The shell is structural only.
 - No business logic is implemented.
 - No form handling is implemented.
@@ -60,9 +67,6 @@ Required user confirmation:
 ## What Is Missing
 
 - Phase 2 remaining UI primitives:
-  - Step wrapper.
-  - Step navigation controls.
-  - Validation/error display shell.
   - Reusable form field layout.
   - Review display shell.
   - Generated form preview shell.
@@ -88,10 +92,10 @@ For progress publishing:
 
 For product work, resume with the next Phase 2 task:
 
-1. Confirm the next task: build reusable Phase 2 UI primitives for the guided flow.
-2. Implement only layout-level primitives:
-   - `StepCard` or equivalent step wrapper.
-   - Static navigation bar/buttons for future steps.
-   - Static status/validation message component.
+1. Confirm the next task: build static form field layout primitives and review/form preview shell components.
+2. Implement only presentational components:
+   - Reusable field group/layout wrapper.
+   - Static review summary shell.
+   - Static generated form preview shell.
 3. Do not add business logic, form state, Supabase, uploads, or real step branching.
 4. After implementation, update `07-roadmap.md` and this file again.

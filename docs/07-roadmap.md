@@ -94,7 +94,14 @@ Task status:
 
 - Static app shell and progress header implemented.
 - Main container for future guided steps implemented.
+- Reusable `StepCard` primitive implemented.
+- Static step navigation primitive implemented.
+- Static status/validation message primitive implemented.
 - Business flow logic, forms, data handling, and Supabase integration not started.
+
+Next recommended Phase 2 task:
+
+- Build static form field layout primitives and review/form preview shell components, without adding form state or business logic.
 
 ## Phase 3: Guided Intake Flow
 

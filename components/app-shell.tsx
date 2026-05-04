@@ -1,3 +1,9 @@
+import {
+  StatusMessage,
+  StepCard,
+  StepNavigation,
+} from "@/components/guided-flow-primitives";
+
 type ProgressHeaderProps = {
   currentStep: number;
   totalSteps: number;
@@ -49,22 +55,15 @@ function ProgressHeader({ currentStep, totalSteps, label }: ProgressHeaderProps)
 
 function StepFrame() {
   return (
-    <section className="w-full max-w-2xl rounded-lg border bg-card p-6 shadow-sm sm:p-8">
-      <div className="mb-6 flex items-center justify-between gap-4">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-emerald-600">
-            Etapa inicial
-          </p>
-          <h1 className="mt-2 text-2xl font-semibold tracking-normal text-card-foreground sm:text-3xl">
-            Abertura de empresa nos EUA
-          </h1>
-        </div>
-        <div className="hidden rounded-md border bg-muted px-3 py-2 text-sm font-medium text-muted-foreground sm:block">
-          Fluxo guiado
-        </div>
-      </div>
-
+    <StepCard
+      badge="Fluxo guiado"
+      eyebrow="Etapa inicial"
+      title="Abertura de empresa nos EUA"
+    >
       <div className="grid gap-3">
+        <StatusMessage title="Preparação" tone="info">
+          <p>Estrutura base pronta para receber as etapas do fluxo guiado.</p>
+        </StatusMessage>
         <div className="rounded-md border bg-background p-4">
           <div className="h-3 w-28 rounded-full bg-muted" />
           <div className="mt-4 h-10 rounded-md border bg-card" />
@@ -76,7 +75,8 @@ function StepFrame() {
           <div className="min-h-24 rounded-md border bg-background p-4" />
         </div>
       </div>
-    </section>
+      <StepNavigation backLabel="Voltar" nextLabel="Continuar" />
+    </StepCard>
   );
 }
 
