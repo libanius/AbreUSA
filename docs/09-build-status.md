@@ -4,11 +4,11 @@
 
 Phase 2: UI Shell And Design System.
 
-The first two Phase 2 UI structure tasks are complete: static app shell/progress header and reusable guided-flow primitives.
+The core Phase 2 UI structure is complete: static app shell/progress header, reusable guided-flow primitives, static form/review/preview shells, and static confirmation/status shells.
 
 ## Current Build Label
 
-`Phase 2: Guided Flow Primitives Implemented`
+`Phase 2: Core UI Shell Complete`
 
 ## Current Gate
 
@@ -33,6 +33,11 @@ Required user confirmation:
 - Reusable `StepCard` primitive implemented.
 - Static step navigation primitive implemented.
 - Static status/validation message primitive implemented.
+- Static form field layout primitives implemented.
+- Static review summary shell implemented.
+- Static generated form preview shell implemented.
+- Static confirmation shell implemented.
+- Static protocol/status display shell implemented.
 - Root metadata updated for AbreUSA.
 - Root HTML language set to `pt-BR`.
 - Geist/Tailwind font token issue corrected in `app/globals.css`.
@@ -56,6 +61,12 @@ Required user confirmation:
   - `StepCard`.
   - `StepNavigation`.
   - `StatusMessage`.
+  - `FieldGroup`.
+  - `FieldShell`.
+  - `ReviewSummary`.
+  - `FormPreviewShell`.
+  - `ConfirmationShell`.
+  - `ProtocolStatusShell`.
 - The shell is structural only.
 - No business logic is implemented.
 - No form handling is implemented.
@@ -66,11 +77,7 @@ Required user confirmation:
 
 ## What Is Missing
 
-- Phase 2 remaining UI primitives:
-  - Reusable form field layout.
-  - Review display shell.
-  - Generated form preview shell.
-  - Confirmation/status shell.
+- Phase 2 may need final visual polish after review.
 - Phase 3 guided intake flow.
 - Phase 4 document collection.
 - Phase 5 review and generated form previews.
@@ -92,10 +99,6 @@ For progress publishing:
 
 For product work, resume with the next Phase 2 task:
 
-1. Confirm the next task: build static form field layout primitives and review/form preview shell components.
-2. Implement only presentational components:
-   - Reusable field group/layout wrapper.
-   - Static review summary shell.
-   - Static generated form preview shell.
-3. Do not add business logic, form state, Supabase, uploads, or real step branching.
-4. After implementation, update `07-roadmap.md` and this file again.
+1. Review the completed Phase 2 shell and decide whether to close Phase 2.
+2. If approved, update the roadmap/build status to move toward Phase 3 planning.
+3. Do not start Phase 3 guided intake logic until explicitly confirmed.

@@ -97,11 +97,16 @@ Task status:
 - Reusable `StepCard` primitive implemented.
 - Static step navigation primitive implemented.
 - Static status/validation message primitive implemented.
+- Static form field layout primitives implemented.
+- Static review summary shell implemented.
+- Static generated form preview shell implemented.
+- Static confirmation shell implemented.
+- Static protocol/status display shell implemented.
 - Business flow logic, forms, data handling, and Supabase integration not started.
 
 Next recommended Phase 2 task:
 
-- Build static form field layout primitives and review/form preview shell components, without adding form state or business logic.
+- Review Phase 2 shell composition and confirm whether to close Phase 2 or add any final visual polish before Phase 3.
 
 ## Phase 3: Guided Intake Flow
 

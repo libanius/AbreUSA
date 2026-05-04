@@ -1,4 +1,10 @@
 import {
+  ConfirmationShell,
+  FieldGroup,
+  FieldShell,
+  FormPreviewShell,
+  ProtocolStatusShell,
+  ReviewSummary,
   StatusMessage,
   StepCard,
   StepNavigation,
@@ -61,19 +67,41 @@ function StepFrame() {
       title="Abertura de empresa nos EUA"
     >
       <div className="grid gap-3">
-        <StatusMessage title="Preparação" tone="info">
-          <p>Estrutura base pronta para receber as etapas do fluxo guiado.</p>
+        <StatusMessage title="Dados pendentes" tone="info">
+          <p>Revise as informações antes de continuar.</p>
         </StatusMessage>
-        <div className="rounded-md border bg-background p-4">
-          <div className="h-3 w-28 rounded-full bg-muted" />
-          <div className="mt-4 h-10 rounded-md border bg-card" />
-          <div className="mt-3 h-10 rounded-md border bg-card" />
-        </div>
-        <div className="grid gap-3 sm:grid-cols-3">
-          <div className="min-h-24 rounded-md border bg-background p-4" />
-          <div className="min-h-24 rounded-md border bg-background p-4" />
-          <div className="min-h-24 rounded-md border bg-background p-4" />
-        </div>
+        <FieldGroup title="Dados principais">
+          <FieldShell hint="Obrigatório" label="Nome da empresa">
+            <div className="h-10 rounded-md border bg-card" />
+          </FieldShell>
+          <FieldShell hint="Obrigatório" label="Atividade">
+            <div className="h-10 rounded-md border bg-card" />
+          </FieldShell>
+        </FieldGroup>
+        <ReviewSummary
+          items={[
+            { label: "Serviço", value: "Pacote completo" },
+            { label: "Estado", value: "Florida" },
+            { label: "Tipo", value: "LLC" },
+            { label: "Status", value: "Rascunho" },
+          ]}
+          title="Resumo"
+        />
+        <FormPreviewShell
+          sections={["Article I", "Article II", "Article III"]}
+          subtitle="State of Florida · Division of Corporations"
+          title="Articles of Organization"
+        />
+        <ConfirmationShell
+          description="A etapa de aprovação futura usará este espaço para comunicar o status final ao cliente."
+          title="Confirmação"
+        >
+          <ProtocolStatusShell
+            protocol="AUS-2026-0000"
+            status="Aguardando revisão"
+            timeline="Nossa equipe revisará o pedido antes de qualquer submissão oficial."
+          />
+        </ConfirmationShell>
       </div>
       <StepNavigation backLabel="Voltar" nextLabel="Continuar" />
     </StepCard>
