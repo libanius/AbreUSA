@@ -2,9 +2,9 @@
 
 ## Current Phase
 
-Phase 3: Guided Intake Flow Planning.
+Phase 3: Guided Intake Flow.
 
-Phase 2 is complete. The project is not yet implementing intake logic; it is ready to define the first Phase 3 implementation slice.
+Phase 2 is complete. `P3-T02` is complete. The first interactive guided-flow slice is implemented without backend or persistence.
 
 ## Last Completed Task
 
@@ -23,17 +23,34 @@ Result:
 
 ## Current Task
 
-Task ID: `P3-T01`
+Task ID: `P3-T02`
 
-Title: Plan the first Guided Intake Flow implementation slice.
+Title: Implement service selection and step-state shell.
 
-Status: Not started.
+Status: Complete.
 
 Scope:
 
-- Define the first Phase 3 implementation slice before coding.
-- Recommended first slice: service selection and step-state shell for the Complete Package / Florida LLC path.
+- Convert the static shell into a minimal client-side guided-flow shell.
+- Add service selection as the first interactive step.
+- Support only Complete Package / Florida LLC path in this slice.
 - Keep EIN-only and Registered Agent-only deferred.
+
+## Next Task
+
+Task ID: `P3-T03`
+
+Title: Implement LLC name step shell and validation plan.
+
+Status: Awaiting confirmation.
+
+Scope:
+
+- Add the next interactive step after service selection.
+- Capture only local client state.
+- Add LLC suffix validation in the UI.
+- Keep data unpersisted.
+- Keep Supabase, uploads, generated forms, and submission out of scope.
 
 ## Completed Tasks
 
@@ -63,11 +80,14 @@ Scope:
 - Static stakeholder progress dashboard created at `/progress/index.html`.
 - GitHub Pages root publishing support prepared with `.nojekyll`.
 - GitHub Pages setup instructions documented in `05-platform-strategy.md`.
+- `P3-T01` first intake implementation slice planned.
+- `P3-T02` service selection and step-state shell implemented.
 
 ## What Is Implemented
 
 - The app renders a static AbreUSA shell from `components/app-shell.tsx`.
 - The home route uses the App Router page at `app/page.tsx`.
+- The app now uses a small client component at `components/guided-intake-shell.tsx` for service selection and progress state.
 - The shell includes:
   - Sticky header.
   - Brand mark.
@@ -85,8 +105,9 @@ Scope:
   - `ConfirmationShell`.
   - `ProtocolStatusShell`.
 - The shell is structural only.
-- No business logic is implemented.
-- No form handling is implemented.
+- Service selection behavior is implemented for the first Phase 3 slice.
+- Progress updates when a supported service path is selected.
+- No form handling is implemented beyond service selection.
 - No Supabase connection is implemented.
 - No document upload or data persistence is implemented.
 - `/progress/index.html` is available as a standalone static dashboard for stakeholders.
@@ -94,9 +115,8 @@ Scope:
 
 ## What Is NOT Implemented
 
-- Phase 3 guided intake flow.
-- Service selection behavior.
-- Step state.
+- Full Phase 3 guided intake flow.
+- LLC name step.
 - Customer questionnaire steps.
 - Client-side validation.
 - Phase 4 document collection.
@@ -111,18 +131,25 @@ Scope:
 
 Execute one task only:
 
-`P3-T01: Plan the first Guided Intake Flow implementation slice`
+`P3-T03: Implement LLC name step shell and validation plan`
 
 Deliverable:
 
-- Update `/docs/07-roadmap.md` with the exact first Phase 3 implementation task and acceptance criteria.
-- Do not write product code until that slice is confirmed.
+- Add the next interactive step after service selection.
+- Capture LLC name in local client state only.
+- Validate that the name includes an LLC-compatible suffix.
+- Update `/docs/07-roadmap.md`, `/docs/09-build-status.md`, and `/progress/index.html` after implementation.
 
-Recommended first implementation slice after planning:
+Acceptance criteria:
 
-- Service selection.
-- Static-to-interactive step state shell.
-- Complete Package / Florida LLC path only.
+- User can move from service selection to the LLC name step.
+- User can enter a company name locally.
+- UI communicates whether the name has an LLC-compatible suffix.
+- Existing static shell remains visually intact.
+- No backend calls are introduced.
+- No document upload or persistence is introduced.
+- `npm run lint` passes.
+- `npm run build` passes.
 
 ## Blockers And Risks
 

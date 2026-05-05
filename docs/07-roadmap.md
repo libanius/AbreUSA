@@ -2,9 +2,9 @@
 
 ## Current Phase
 
-Phase 3: Guided Intake Flow Planning.
+Phase 3: Guided Intake Flow.
 
-Phase 2 is complete. The next step is to plan the Phase 3 guided intake flow before implementing business logic.
+Phase 2 is complete. `P3-T01` has defined the first implementation slice for Phase 3. Product code for Phase 3 has not started yet.
 
 ## Phase 0: App Spine Confirmation
 
@@ -121,7 +121,7 @@ Next task:
 
 ## Phase 3: Guided Intake Flow
 
-Status: Current phase. Planning, not implementation.
+Status: Current phase. First slice implemented.
 
 Goal: implement the customer questionnaire.
 
@@ -150,6 +150,59 @@ Current Phase 3 planning task:
 - Start with the Complete Package / Florida LLC path only unless the App Spine is updated.
 - Decide which static Phase 2 primitives become the first connected step components.
 - Add acceptance criteria before writing product code.
+
+P3-T01 status:
+
+- Complete.
+- First implementation slice defined below.
+
+First Phase 3 implementation slice:
+
+- Task ID: `P3-T02`.
+- Title: Implement service selection and step-state shell.
+- Scope:
+  - Convert the static shell into a minimal client-side guided-flow shell.
+  - Add service selection as the first interactive step.
+  - Support only Complete Package / Florida LLC path for now.
+  - Keep EIN-only and Registered Agent-only visible only if explicitly needed later; do not implement those branches in this slice.
+  - Use existing Phase 2 primitives where possible.
+- Out of scope:
+  - Supabase.
+  - Document upload.
+  - AI extraction.
+  - Generated forms.
+  - Submission workflow.
+  - Payment.
+  - EIN-only flow.
+  - Registered Agent-only flow.
+- Acceptance criteria:
+  - User can see the service selection step.
+  - User can select Complete Package / Florida LLC path.
+  - Step progress updates for the selected path.
+  - Existing static shell remains visually intact.
+  - No backend calls are introduced.
+  - No document upload or persistence is introduced.
+  - `npm run lint` passes.
+  - `npm run build` passes.
+
+P3-T02 status:
+
+- Complete.
+- Service selection step implemented.
+- Minimal client-side step-state shell implemented.
+- Complete Package / Florida LLC path supported for this slice.
+- No backend, upload, persistence, generated form, submission, or payment behavior added.
+
+Next Phase 3 task:
+
+- Task ID: `P3-T03`.
+- Title: Implement LLC name step shell and validation plan.
+- Scope:
+  - Add the next interactive step after service selection.
+  - Capture only local client state.
+  - Add LLC suffix validation in the UI.
+  - Keep data unpersisted.
+  - Keep Supabase, uploads, generated forms, and submission out of scope.
 
 ## Phase 4: Document Collection
 
