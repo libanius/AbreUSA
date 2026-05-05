@@ -23,7 +23,8 @@ type FlowStep =
   | "member_count"
   | "member_data"
   | "business_address"
-  | "registered_agent";
+  | "registered_agent"
+  | "ein_questions";
 type BusinessActivityId =
   | "tech"
   | "ecomm"
@@ -72,6 +73,28 @@ type RegisteredAgentDraft = {
   zip: string;
 };
 
+type EinReason =
+  | "new_business"
+  | "banking"
+  | "compliance"
+  | "employees"
+  | "other";
+
+type EinEntityType =
+  | "llc_single_disregarded"
+  | "llc_multi_partnership"
+  | "llc_c_corp_election"
+  | "corporation";
+
+type EinQuestionsDraft = {
+  reasonForApplying: EinReason | null;
+  entityType: EinEntityType | null;
+  responsiblePartyName: string;
+  responsiblePartyPassportNumber: string;
+  startDate: string;
+  fiscalClosingMonth: string;
+};
+
 const serviceOptions: ServiceOption[] = [
   {
     id: "complete",
@@ -108,10 +131,47 @@ const progressItems = [
   "Dados",
   "Endereço",
   "Agente",
+  "EIN",
   "Documentos",
   "Revisão",
   "Envio",
 ];
+const einReasonOptions: { id: EinReason; label: string; description: string }[] = [
+  { id: "new_business", label: "Novo negócio", description: "Abertura de uma nova empresa nos EUA." },
+  { id: "banking", label: "Conta bancária", description: "Necessário para abertura de conta nos EUA." },
+  { id: "compliance", label: "Conformidade fiscal", description: "Exigência de órgão regulatório ou contrato." },
+  { id: "employees", label: "Contratação de funcionários", description: "A empresa terá funcionários nos EUA." },
+  { id: "other", label: "Outro motivo", description: "Finalidade diferente das listadas acima." },
+];
+
+const einEntityTypeOptions: { id: EinEntityType; label: string; description: string }[] = [
+  {
+    id: "llc_single_disregarded",
+    label: "LLC — Membro único (Disregarded Entity)",
+    description: "LLC com um único sócio tratada como entidade desconsiderada pelo IRS.",
+  },
+  {
+    id: "llc_multi_partnership",
+    label: "LLC — Múltiplos sócios (Partnership)",
+    description: "LLC com dois ou mais sócios tratada como parceria pelo IRS.",
+  },
+  {
+    id: "llc_c_corp_election",
+    label: "LLC — Eleição de C-Corporation",
+    description: "LLC que optou por ser tributada como C-Corp.",
+  },
+  {
+    id: "corporation",
+    label: "Corporation (C-Corp)",
+    description: "Empresa constituída como corporação nos EUA.",
+  },
+];
+
+const fiscalMonthOptions = [
+  "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+  "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro",
+];
+
 const registeredAgentOptions: {
   id: RegisteredAgentChoice;
   title: string;
@@ -201,21 +261,25 @@ function StepFrame({
   llcName,
   memberCount,
   memberData,
+  einQuestions,
   registeredAgent,
   onBackToBusinessActivity,
   onBackToBusinessAddress,
   onBackToMemberCount,
   onBackToLlcName,
   onBackToMemberData,
+  onBackToRegisteredAgent,
   onChangeBusinessActivity,
   onChangeBusinessAddress,
   onChangeCustomBusinessActivity,
+  onChangeEinQuestions,
   onChangeLlcName,
   onChangeMemberData,
   onChangeMemberCount,
   onChangeRegisteredAgent,
   onContinueToBusinessActivity,
   onContinueToBusinessAddress,
+  onContinueToEinQuestions,
   onContinueToMemberData,
   onContinueToMemberCount,
   onContinueToRegisteredAgent,
@@ -227,6 +291,7 @@ function StepFrame({
   businessActivity: BusinessActivityId | null;
   businessAddress: BusinessAddressDraft;
   customBusinessActivity: string;
+  einQuestions: EinQuestionsDraft;
   llcName: string;
   memberCount: number;
   memberData: MemberDraft[];
@@ -236,9 +301,11 @@ function StepFrame({
   onBackToMemberCount: () => void;
   onBackToLlcName: () => void;
   onBackToMemberData: () => void;
+  onBackToRegisteredAgent: () => void;
   onChangeBusinessActivity: (activity: BusinessActivityId) => void;
   onChangeBusinessAddress: (field: keyof BusinessAddressDraft, value: string) => void;
   onChangeCustomBusinessActivity: (activity: string) => void;
+  onChangeEinQuestions: (field: keyof EinQuestionsDraft, value: string) => void;
   onChangeLlcName: (name: string) => void;
   onChangeMemberData: (
     index: number,
@@ -249,6 +316,7 @@ function StepFrame({
   onChangeRegisteredAgent: (field: keyof RegisteredAgentDraft, value: string) => void;
   onContinueToBusinessActivity: () => void;
   onContinueToBusinessAddress: () => void;
+  onContinueToEinQuestions: () => void;
   onContinueToMemberData: () => void;
   onContinueToMemberCount: () => void;
   onContinueToRegisteredAgent: () => void;
@@ -382,6 +450,215 @@ function StepFrame({
           nextLabel={ownershipMatches ? "Continuar" : "Ajustar participações"}
           onBack={onBackToMemberCount}
           onNext={onContinueToBusinessAddress}
+        />
+      </StepCard>
+    );
+  }
+
+  if (activeStep === "ein_questions") {
+    const selectedReasonLabel =
+      einReasonOptions.find((o) => o.id === einQuestions.reasonForApplying)?.label ?? null;
+    const selectedEntityLabel =
+      einEntityTypeOptions.find((o) => o.id === einQuestions.entityType)?.label ?? null;
+    const hasResponsibleName = einQuestions.responsiblePartyName.trim().length > 0;
+    const hasPassportNumber = einQuestions.responsiblePartyPassportNumber.trim().length > 0;
+    const isEinComplete =
+      einQuestions.reasonForApplying !== null &&
+      einQuestions.entityType !== null &&
+      hasResponsibleName &&
+      hasPassportNumber;
+
+    return (
+      <StepCard
+        badge="Rascunho local"
+        eyebrow="Passo 8 · EIN / IRS SS-4"
+        title="Informações para o EIN"
+      >
+        <div className="grid gap-3">
+          <StatusMessage
+            title={isEinComplete ? "Dados do EIN completos" : "Dados pendentes"}
+            tone={isEinComplete ? "success" : "info"}
+          >
+            <p>
+              {isEinComplete
+                ? "As informações para o EIN foram registradas localmente."
+                : "Preencha os campos obrigatórios para continuar para a próxima etapa."}
+            </p>
+          </StatusMessage>
+
+          <FieldGroup title="Motivo da solicitação">
+            <div className="grid gap-2">
+              {einReasonOptions.map((option) => {
+                const selected = option.id === einQuestions.reasonForApplying;
+
+                return (
+                  <button
+                    aria-pressed={selected}
+                    className={cn(
+                      "rounded-md border bg-card p-3 text-left transition-colors",
+                      "focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/40",
+                      selected
+                        ? "border-emerald-600 bg-emerald-50"
+                        : "hover:border-emerald-300 hover:bg-emerald-50/40",
+                    )}
+                    key={option.id}
+                    onClick={() => onChangeEinQuestions("reasonForApplying", option.id)}
+                    type="button"
+                  >
+                    <div className="flex gap-3">
+                      <span
+                        className={cn(
+                          "mt-0.5 size-3 shrink-0 rounded-full border",
+                          selected
+                            ? "border-emerald-600 bg-emerald-600"
+                            : "border-muted-foreground/40",
+                        )}
+                      />
+                      <span className="min-w-0">
+                        <span className="block text-sm font-semibold text-foreground">
+                          {option.label}
+                        </span>
+                        <span className="block text-xs text-muted-foreground">
+                          {option.description}
+                        </span>
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </FieldGroup>
+
+          <FieldGroup title="Tipo de entidade (Form SS-4)">
+            <div className="grid gap-2">
+              {einEntityTypeOptions.map((option) => {
+                const selected = option.id === einQuestions.entityType;
+
+                return (
+                  <button
+                    aria-pressed={selected}
+                    className={cn(
+                      "rounded-md border bg-card p-3 text-left transition-colors",
+                      "focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/40",
+                      selected
+                        ? "border-emerald-600 bg-emerald-50"
+                        : "hover:border-emerald-300 hover:bg-emerald-50/40",
+                    )}
+                    key={option.id}
+                    onClick={() => onChangeEinQuestions("entityType", option.id)}
+                    type="button"
+                  >
+                    <div className="flex gap-3">
+                      <span
+                        className={cn(
+                          "mt-0.5 size-3 shrink-0 rounded-full border",
+                          selected
+                            ? "border-emerald-600 bg-emerald-600"
+                            : "border-muted-foreground/40",
+                        )}
+                      />
+                      <span className="min-w-0">
+                        <span className="block text-sm font-semibold text-foreground">
+                          {option.label}
+                        </span>
+                        <span className="block text-xs text-muted-foreground">
+                          {option.description}
+                        </span>
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </FieldGroup>
+
+          <FieldGroup title="Responsável pelo EIN (Responsible Party)">
+            <FieldShell
+              hint="Nome exatamente como consta no passaporte."
+              label="Nome completo"
+            >
+              <Input
+                onChange={(event) =>
+                  onChangeEinQuestions("responsiblePartyName", event.target.value)
+                }
+                placeholder="Como no passaporte"
+                value={einQuestions.responsiblePartyName}
+              />
+            </FieldShell>
+            <FieldShell label="Número do passaporte">
+              <Input
+                onChange={(event) =>
+                  onChangeEinQuestions("responsiblePartyPassportNumber", event.target.value)
+                }
+                placeholder="Ex.: AB123456"
+                value={einQuestions.responsiblePartyPassportNumber}
+              />
+            </FieldShell>
+          </FieldGroup>
+
+          <FieldGroup title="Dados adicionais (SS-4)">
+            <FieldShell
+              hint="Data de início das atividades ou constituição da LLC."
+              label="Data de início"
+            >
+              <Input
+                onChange={(event) =>
+                  onChangeEinQuestions("startDate", event.target.value)
+                }
+                placeholder="MM/DD/AAAA"
+                type="date"
+                value={einQuestions.startDate}
+              />
+            </FieldShell>
+            <FieldShell
+              hint="Mês de encerramento do exercício fiscal. Geralmente dezembro para novos negócios."
+              label="Mês de encerramento fiscal"
+            >
+              <select
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                onChange={(event) =>
+                  onChangeEinQuestions("fiscalClosingMonth", event.target.value)
+                }
+                value={einQuestions.fiscalClosingMonth}
+              >
+                <option value="">Selecionar mês</option>
+                {fiscalMonthOptions.map((month) => (
+                  <option key={month} value={month}>
+                    {month}
+                  </option>
+                ))}
+              </select>
+            </FieldShell>
+          </FieldGroup>
+
+          <ReviewSummary
+            items={[
+              { label: "Serviço", value: selectedLabel ?? "Pendente" },
+              { label: "Nome LLC", value: trimmedLlcName },
+              { label: "Motivo EIN", value: selectedReasonLabel ?? "Pendente" },
+              { label: "Entidade", value: selectedEntityLabel ?? "Pendente" },
+              {
+                label: "Responsável",
+                value: hasResponsibleName
+                  ? einQuestions.responsiblePartyName.trim()
+                  : "Pendente",
+              },
+            ]}
+            title="Resumo"
+          />
+
+          <FormPreviewShell
+            sections={["Line 1 — Legal name", "Line 7b — SSN/ITIN/EIN", "Line 10 — Reason"]}
+            subtitle="Department of the Treasury · Internal Revenue Service"
+            title="Form SS-4"
+          />
+        </div>
+        <StepNavigation
+          backDisabled={false}
+          backLabel="Voltar"
+          nextDisabled
+          nextLabel="Continuar"
+          onBack={onBackToRegisteredAgent}
         />
       </StepCard>
     );
@@ -546,9 +823,16 @@ function StepFrame({
         <StepNavigation
           backDisabled={false}
           backLabel="Voltar"
-          nextDisabled
-          nextLabel="Continuar"
+          nextDisabled={!isAgentComplete || selectedService !== "complete"}
+          nextLabel={
+            !isAgentComplete
+              ? "Selecionar agente"
+              : selectedService === "complete"
+              ? "Continuar"
+              : "Continuar (próxima fase)"
+          }
           onBack={onBackToBusinessAddress}
+          onNext={isAgentComplete && selectedService === "complete" ? onContinueToEinQuestions : undefined}
         />
       </StepCard>
     );
@@ -982,8 +1266,18 @@ export function GuidedIntakeShell() {
     state: "FL",
     zip: "",
   });
+  const [einQuestions, setEinQuestions] = useState<EinQuestionsDraft>({
+    reasonForApplying: null,
+    entityType: null,
+    responsiblePartyName: "",
+    responsiblePartyPassportNumber: "",
+    startDate: "",
+    fiscalClosingMonth: "",
+  });
   const currentStep =
-    activeStep === "registered_agent"
+    activeStep === "ein_questions"
+      ? 8
+      : activeStep === "registered_agent"
       ? 7
       : activeStep === "business_address"
       ? 6
@@ -997,7 +1291,9 @@ export function GuidedIntakeShell() {
           ? 2
           : 1;
   const currentLabel =
-    activeStep === "registered_agent"
+    activeStep === "ein_questions"
+      ? "EIN / SS-4"
+      : activeStep === "registered_agent"
       ? "Registered Agent"
       : activeStep === "business_address"
       ? "Endereço"
@@ -1076,12 +1372,19 @@ export function GuidedIntakeShell() {
     setRegisteredAgent((current) => ({ ...current, [field]: value }));
   }
 
+  function handleChangeEinQuestions(
+    field: keyof EinQuestionsDraft,
+    value: string,
+  ) {
+    setEinQuestions((current) => ({ ...current, [field]: value }));
+  }
+
   return (
     <div className="min-h-screen bg-muted/30">
       <ProgressHeader
         currentStep={currentStep}
         label={currentLabel}
-        totalSteps={10}
+        totalSteps={11}
       />
       <main className="mx-auto flex w-full max-w-6xl flex-1 px-4 py-8 sm:px-6 lg:px-8">
         <div className="grid w-full gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
@@ -1090,6 +1393,7 @@ export function GuidedIntakeShell() {
             businessActivity={businessActivity}
             businessAddress={businessAddress}
             customBusinessActivity={customBusinessActivity}
+            einQuestions={einQuestions}
             llcName={llcName}
             memberCount={memberCount}
             memberData={memberData}
@@ -1099,15 +1403,18 @@ export function GuidedIntakeShell() {
             onBackToMemberCount={() => setActiveStep("member_count")}
             onBackToLlcName={() => setActiveStep("llc_name")}
             onBackToMemberData={() => setActiveStep("member_data")}
+            onBackToRegisteredAgent={() => setActiveStep("registered_agent")}
             onChangeBusinessActivity={setBusinessActivity}
             onChangeBusinessAddress={handleChangeBusinessAddress}
             onChangeCustomBusinessActivity={setCustomBusinessActivity}
+            onChangeEinQuestions={handleChangeEinQuestions}
             onChangeLlcName={setLlcName}
             onChangeMemberData={handleChangeMemberData}
             onChangeMemberCount={handleChangeMemberCount}
             onChangeRegisteredAgent={handleChangeRegisteredAgent}
             onContinueToBusinessActivity={() => setActiveStep("business_activity")}
             onContinueToBusinessAddress={() => setActiveStep("business_address")}
+            onContinueToEinQuestions={() => setActiveStep("ein_questions")}
             onContinueToMemberData={() => setActiveStep("member_data")}
             onContinueToMemberCount={() => setActiveStep("member_count")}
             onContinueToRegisteredAgent={() => setActiveStep("registered_agent")}

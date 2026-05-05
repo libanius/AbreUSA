@@ -4,53 +4,53 @@
 
 Phase 3: Guided Intake Flow.
 
-Phase 2 is complete. `P3-T08` is complete. The guided-flow shell now includes service selection, local LLC name validation, local business activity selection, local member count selection, local member data capture, local business address capture, and local Registered Agent selection without backend or persistence.
+Phase 2 is complete. `P3-T09` is complete. All intake steps for the Complete Package path are now implemented through EIN questions in local state.
 
 ## Last Completed Task
-
-Task ID: `P3-T08`
-
-Title: Implement Registered Agent step shell.
-
-Result:
-
-- Registered Agent step shell implemented after business address entry.
-- Three options: AbreUSA, self, or other.
-- If "other" is selected, name, address, city, state (locked to FL), and ZIP fields appear locally.
-- Continue is enabled when a valid selection is made and required "other" fields are filled.
-- Progress sidebar updated to include Agente as step 7 of 10.
-- No backend, upload, persistence, generated form, submission, or payment behavior added.
-
-## Current Task
-
-None. P3-T08 is complete.
-
-## Next Task
 
 Task ID: `P3-T09`
 
 Title: Implement EIN questions step shell.
 
+Result:
+
+- EIN questions step shell implemented after Registered Agent selection.
+- Reachable only when service is Complete Package (branching implemented at Registered Agent Continue).
+- Captures in local state: reason for applying, entity type, responsible party name, responsible party passport number, start date, and fiscal closing month.
+- Reason for applying and entity type use radio-style buttons.
+- Responsible party name and passport number required to enable Continue.
+- Start date and fiscal closing month captured but optional.
+- FormPreviewShell updated to show IRS Form SS-4 context.
+- Progress sidebar updated to include EIN as step 8 of 11.
+- No backend, upload, persistence, generated form, submission, or payment behavior added.
+
+## Current Task
+
+None. P3-T09 is complete.
+
+## Next Task
+
+Task ID: `P3-T10`
+
+Title: Phase 3 exit criteria — full intake walkthrough and validation review.
+
 Status: Awaiting execution.
 
 Scope:
 
-- Add the next interactive step after Registered Agent selection.
-- Show EIN questions only when service includes EIN (Complete Package).
-- Capture EIN/IRS SS-4 fields in local client state only: reason for applying, entity type, responsible party name and passport number, start date, and fiscal closing month.
-- Keep data unpersisted.
-- Keep Supabase, uploads, generated forms, and submission out of scope.
+- Complete a full intake walkthrough using test data for the Complete Package path.
+- Verify all branching rules match the User Flows document.
+- Identify and fix any validation gaps or UX gaps found during the walkthrough.
+- Confirm Florida LLC path gating at the Registered Agent step is correct.
+- Confirm `npm run lint` and `npm run build` pass.
 
 Acceptance criteria:
 
-- User can move from Registered Agent to the EIN step when service is Complete Package.
-- User can select reason for applying and entity type.
-- User can enter responsible party name and passport number.
-- User can enter start date and fiscal closing month.
-- Existing steps remain intact.
-- Existing static shell remains visually intact.
-- No backend calls are introduced.
-- No document upload or persistence is introduced.
+- A complete intake from service selection through EIN questions can be completed with test data.
+- All Continue buttons are correctly gated.
+- All Back buttons return to the correct prior step.
+- Branching for Complete Package vs Florida LLC is correctly implemented.
+- No regressions in existing steps.
 - `npm run lint` passes.
 - `npm run build` passes.
 
@@ -67,6 +67,7 @@ Acceptance criteria:
 - `P3-T06` member data step shell implemented.
 - `P3-T07` business address step shell implemented.
 - `P3-T08` Registered Agent step shell implemented.
+- `P3-T09` EIN questions step shell implemented.
 
 ## What Is Implemented
 
@@ -76,18 +77,20 @@ Acceptance criteria:
 - Member count selection (step 4): 1 to 10 members with Single/Multi-Member context.
 - Member data entry (step 5): name, address, ownership percentage per member; Continue when ownership totals 100%.
 - Business address entry (step 6): street, city, state (FL locked), ZIP; Continue when required fields filled.
-- Registered Agent selection (step 7): AbreUSA, self, or other; "other" reveals name/address fields; Continue when selection complete.
-- Progress header and sidebar reflect step 7 of 10.
-- No Supabase, document upload, or data persistence is implemented.
+- Registered Agent selection (step 7): AbreUSA, self, or other; "other" reveals name/address fields; Continue routes to EIN questions for Complete Package only.
+- EIN questions (step 8): reason for applying, entity type, responsible party name and passport number, start date, fiscal closing month; Continue gated on required fields.
+- Progress header and sidebar reflect step 8 of 11.
+- No Supabase, document upload, or data persistence implemented.
 - `/progress/index.html` available as stakeholder dashboard.
 
 ## What Is NOT Implemented
 
-- EIN questions step.
-- Document upload and extraction.
-- Review and generated form previews.
-- Order submission workflow.
-- Branching for EIN-only and Registered Agent-only flows.
+- Phase 3 exit criteria walkthrough (P3-T10).
+- Florida LLC path continuation after Registered Agent (gated pending next phase).
+- Document upload and extraction (Phase 4).
+- Review and generated form previews (Phase 5).
+- Order submission workflow (Phase 6).
+- Branching for EIN-only and Registered Agent-only flows (deferred, Post-MVP).
 - Supabase schema/storage implementation.
 - Production document retention and reviewer access decisions.
 - GitHub Pages must still be enabled in GitHub settings after the repo is pushed.
@@ -96,18 +99,19 @@ Acceptance criteria:
 
 Execute one task only:
 
-`P3-T09: Implement EIN questions step shell`
+`P3-T10: Phase 3 exit criteria — full intake walkthrough and validation review`
 
 Deliverable:
 
-- Add step after Registered Agent selection (Complete Package path only).
-- Capture reason for applying, entity type, responsible party name, passport number, start date, and fiscal closing month in local state.
-- Update `/docs/07-roadmap.md`, `/docs/09-build-status.md`, and `/progress/index.html` after implementation.
+- Walk through the full Complete Package intake with test data.
+- Fix any validation or navigation gaps found.
+- Confirm branching correctness and all acceptance criteria.
+- Update `/docs/07-roadmap.md`, `/docs/09-build-status.md`, and `/progress/index.html` after completion.
 
 ## Blockers And Risks
 
 - EIN-only flow remains deferred and must not be implemented yet.
 - Registered Agent-only flow remains deferred and must not be implemented yet.
-- Supabase is planned but not connected; do not add backend work in the current Phase 3 slice.
-- Document upload, extraction, generated forms, and submission workflow are later phases.
+- Florida LLC path after Registered Agent is intentionally gated; do not wire it until Phase 4 is planned.
+- Supabase is planned but not connected; do not add backend work in Phase 3.
 - GitHub Pages still needs to be enabled in GitHub settings after pushing.

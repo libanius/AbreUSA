@@ -181,7 +181,7 @@
         background: linear-gradient(90deg, var(--green), var(--blue));
         border-radius: inherit;
         height: 100%;
-        width: 55%;
+        width: 62%;
       }
 
       ul {
@@ -268,12 +268,11 @@
           <span class="pill done" data-en="Current phase" data-pt="Fase atual">Current phase</span>
           <p class="phase" data-en="Phase 3: Guided Intake Flow" data-pt="Fase 3: Fluxo guiado de intake">Phase 3: Guided Intake Flow</p>
           <p
-            data-en="P3-T08 is complete. Service selection, LLC name validation, business activity, member count, member data, business address, and Registered Agent selection are implemented in local state without backend, uploads, or persistence."
-            data-pt="P3-T08 está concluída. Seleção de serviço, validação do nome da LLC, atividade, número de sócios, dados dos sócios, endereço comercial e seleção de Registered Agent foram implementados em estado local sem backend, uploads ou persistência."
+            data-en="P3-T09 is complete. All intake steps for the Complete Package path — through EIN questions — are now implemented in local state without backend, uploads, or persistence."
+            data-pt="P3-T09 está concluída. Todas as etapas do Pacote Completo — até as perguntas do EIN — estão implementadas em estado local sem backend, uploads ou persistência."
           >
-            P3-T08 is complete. Service selection, LLC name validation,
-            business activity, member count, member data, business address,
-            and Registered Agent selection are implemented in local state
+            P3-T09 is complete. All intake steps for the Complete Package
+            path — through EIN questions — are now implemented in local state
             without backend, uploads, or persistence.
           </p>
           <div class="progress-wrap" aria-label="Project progress">
@@ -322,6 +321,7 @@
             <li data-en="P3-T06 member data step implemented." data-pt="P3-T06 etapa de dados dos sócios implementada.">P3-T06 member data step implemented.</li>
             <li data-en="P3-T07 business address step implemented." data-pt="P3-T07 etapa de endereço comercial implementada.">P3-T07 business address step implemented.</li>
             <li data-en="P3-T08 Registered Agent step implemented." data-pt="P3-T08 etapa de Registered Agent implementada.">P3-T08 Registered Agent step implemented.</li>
+            <li data-en="P3-T09 EIN questions step implemented (Complete Package path)." data-pt="P3-T09 etapa de perguntas EIN implementada (caminho Pacote Completo).">P3-T09 EIN questions step implemented (Complete Package path).</li>
             <li data-en="Lint and production build pass." data-pt="Lint e build de produção passam.">Lint and production build pass.</li>
           </ul>
         </article>
@@ -340,33 +340,34 @@
             <li data-en="Member data entry captures name, address, and ownership percentage per member in local state." data-pt="A entrada de dados dos sócios captura nome, endereço e participação de cada sócio em estado local.">Member data entry captures name, address, and ownership percentage per member in local state.</li>
             <li data-en="Business address entry captures street, city, state (FL), and ZIP in local state. Continue enabled when required fields are filled." data-pt="A entrada do endereço comercial captura rua, cidade, estado (FL) e CEP em estado local. Continuar habilitado quando os campos obrigatórios estão preenchidos.">Business address entry captures street, city, state (FL), and ZIP in local state. Continue enabled when required fields are filled.</li>
             <li data-en="Registered Agent selection offers AbreUSA, self, or other; other reveals name and address fields in local state." data-pt="A seleção de Registered Agent oferece AbreUSA, próprio sócio ou outro; a opção outro exibe campos de nome e endereço em estado local.">Registered Agent selection offers AbreUSA, self, or other; other reveals name and address fields in local state.</li>
+            <li data-en="EIN questions step captures reason, entity type, responsible party name and passport number, start date, and fiscal closing month in local state." data-pt="A etapa de perguntas do EIN captura motivo, tipo de entidade, nome e número de passaporte do responsável, data de início e mês fiscal em estado local.">EIN questions step captures reason, entity type, responsible party name and passport number, start date, and fiscal closing month in local state.</li>
+            <li data-en="Registered Agent Continue routes to EIN questions for Complete Package; Florida LLC path gated pending Phase 4." data-pt="O botão Continuar do Registered Agent direciona para perguntas do EIN no Pacote Completo; caminho LLC Flórida aguarda Fase 4.">Registered Agent Continue routes to EIN questions for Complete Package; Florida LLC path gated pending Phase 4.</li>
             <li data-en="No Supabase, uploads, persistence, generated forms, submission, or payment." data-pt="Ainda não há Supabase, uploads, persistência, formulários gerados, envio ou pagamento.">No Supabase, uploads, persistence, generated forms, submission, or payment.</li>
           </ul>
         </article>
 
         <article class="card task">
           <span class="pill done" data-en="Last completed" data-pt="Última concluída">Last completed</span>
-          <h2 data-en="P3-T08 Complete" data-pt="P3-T08 concluído">P3-T08 Complete</h2>
+          <h2 data-en="P3-T09 Complete" data-pt="P3-T09 concluído">P3-T09 Complete</h2>
           <p
-            data-en="Completed. Registered Agent selection is available after business address. Options are AbreUSA, self, or other — with conditional name and address fields for other."
-            data-pt="Concluído. A seleção de Registered Agent está disponível após o endereço. As opções são AbreUSA, próprio sócio ou outro — com campos condicionais de nome e endereço para outro."
+            data-en="Completed. EIN questions step is available for the Complete Package path. Captures reason, entity type, responsible party, start date, and fiscal closing month in local state."
+            data-pt="Concluído. A etapa de perguntas do EIN está disponível para o Pacote Completo. Captura motivo, tipo de entidade, responsável, data de início e mês fiscal em estado local."
           >
-            Completed. Registered Agent selection is available after business
-            address. Options are AbreUSA, self, or other — with conditional
-            name and address fields for other.
+            Completed. EIN questions step available for Complete Package path.
+            Captures reason, entity type, responsible party, start date, and
+            fiscal closing month in local state.
           </p>
         </article>
 
         <article class="card next">
           <span class="pill" data-en="Next task" data-pt="Próxima tarefa">Next task</span>
-          <h2 data-en="P3-T09 EIN Questions Step" data-pt="P3-T09 Etapa de perguntas EIN">P3-T09 EIN Questions Step</h2>
+          <h2 data-en="P3-T10 Phase 3 Exit Criteria" data-pt="P3-T10 Critérios de saída da Fase 3">P3-T10 Phase 3 Exit Criteria</h2>
           <p
-            data-en="Implement the next step: capture EIN / IRS SS-4 fields (reason, entity type, responsible party, start date) in local state for the Complete Package path."
-            data-pt="Implementar a próxima etapa: capturar campos EIN / IRS SS-4 (motivo, tipo de entidade, responsável, data de início) em estado local para o Pacote Completo."
+            data-en="Walk through the full Complete Package intake with test data, verify branching rules, and fix any validation or navigation gaps found."
+            data-pt="Percorrer o intake completo do Pacote Completo com dados de teste, verificar regras de ramificação e corrigir lacunas de validação ou navegação encontradas."
           >
-            Implement the next step: capture EIN / IRS SS-4 fields (reason,
-            entity type, responsible party, start date) in local state for the
-            Complete Package path.
+            Walk through the full Complete Package intake with test data, verify
+            branching rules, and fix any validation or navigation gaps found.
           </p>
         </article>
       </section>

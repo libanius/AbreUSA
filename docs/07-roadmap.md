@@ -121,7 +121,7 @@ Next task:
 
 ## Phase 3: Guided Intake Flow
 
-Status: Current phase. Registered Agent step (P3-T08) implemented.
+Status: Current phase. EIN questions step (P3-T09) implemented.
 
 Goal: implement the customer questionnaire.
 
@@ -281,16 +281,31 @@ P3-T08 status:
 - Progress sidebar updated to include Agente as step 7 of 10.
 - No backend, upload, persistence, generated form, submission, or payment behavior added.
 
+P3-T09 status:
+
+- Complete.
+- EIN questions step shell implemented after Registered Agent selection.
+- Step is only reachable when service is Complete Package.
+- Captures in local state: reason for applying, entity type, responsible party name, responsible party passport number, start date, and fiscal closing month.
+- Continue on the Registered Agent step now routes to EIN questions for Complete Package; Florida LLC path remains gated pending Phase 4.
+- Progress sidebar updated to include EIN as step 8 of 11.
+- No backend, upload, persistence, generated form, submission, or payment behavior added.
+
+Phase 3 status:
+
+- All intake steps for the Complete Package path are now implemented through EIN questions.
+- Remaining Phase 3 deliverables: client-side validation pass, branching review for Florida LLC path, and exit-criteria test run with full test data.
+
 Next Phase 3 task:
 
-- Task ID: `P3-T09`.
-- Title: Implement EIN questions step shell.
+- Task ID: `P3-T10`.
+- Title: Phase 3 exit criteria — full intake walkthrough and validation review.
 - Scope:
-  - Add the next interactive step after Registered Agent selection.
-  - Show EIN questions only when service includes EIN (Complete Package).
-  - Capture EIN/IRS SS-4 fields in local client state only: reason for applying, entity type, responsible party name and passport number, start date, and fiscal closing month.
-  - Keep data unpersisted.
-  - Keep Supabase, uploads, generated forms, and submission out of scope.
+  - Complete a full intake walkthrough using test data for Complete Package path.
+  - Verify all branching rules match the User Flows document.
+  - Identify and fix any validation gaps.
+  - Confirm Florida LLC path gating is correct.
+  - Confirm `npm run lint` and `npm run build` pass.
 
 ## Phase 4: Document Collection
 
