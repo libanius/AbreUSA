@@ -957,7 +957,7 @@ function StepFrame({
             <p>
               {isSingleMember
                 ? "A LLC terá apenas um sócio neste rascunho local."
-                : "Cada sócio deverá informar nome completo, endereço e percentual de participação em uma etapa futura."}
+                : "Informe os dados e percentuais de participação de cada sócio na próxima etapa."}
             </p>
           </StatusMessage>
 
@@ -1315,23 +1315,32 @@ export function GuidedIntakeShell() {
   function handleResetService() {
     setSelectedService(null);
     setActiveStep("service");
+    setLlcName("");
     setBusinessActivity(null);
     setCustomBusinessActivity("");
     setMemberCount(1);
     setMemberData([{ fullName: "", address: "", ownershipPercentage: "100" }]);
+    setBusinessAddress({ street: "", city: "", state: "FL", zip: "" });
+    setRegisteredAgent({ choice: null, name: "", address: "", city: "", state: "FL", zip: "" });
+    setEinQuestions({
+      reasonForApplying: null,
+      entityType: null,
+      responsiblePartyName: "",
+      responsiblePartyPassportNumber: "",
+      startDate: "",
+      fiscalClosingMonth: "",
+    });
   }
 
   function handleChangeMemberCount(count: number) {
+    const equalShare = String(Math.round(100 / count));
     setMemberCount(count);
     setMemberData((currentMembers) =>
       Array.from({ length: count }, (_, index) => {
-        return (
-          currentMembers[index] ?? {
-            fullName: "",
-            address: "",
-            ownershipPercentage: String(Math.round(100 / count)),
-          }
-        );
+        const existing = currentMembers[index];
+        return existing
+          ? { ...existing, ownershipPercentage: equalShare }
+          : { fullName: "", address: "", ownershipPercentage: equalShare };
       }),
     );
   }

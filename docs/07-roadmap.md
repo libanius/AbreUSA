@@ -2,9 +2,9 @@
 
 ## Current Phase
 
-Phase 3: Guided Intake Flow.
+Phase 4: Document Collection.
 
-Phase 2 is complete. Phase 3 guided intake implementation is in progress.
+Phase 3 is complete. Phase 3 exit criteria passed (P3-T10). Phase 4 planning is the next step.
 
 ## Phase 0: App Spine Confirmation
 
@@ -121,7 +121,7 @@ Next task:
 
 ## Phase 3: Guided Intake Flow
 
-Status: Current phase. EIN questions step (P3-T09) implemented.
+Status: Complete. Phase 3 exit criteria passed (P3-T10).
 
 Goal: implement the customer questionnaire.
 
@@ -296,16 +296,22 @@ Phase 3 status:
 - All intake steps for the Complete Package path are now implemented through EIN questions.
 - Remaining Phase 3 deliverables: client-side validation pass, branching review for Florida LLC path, and exit-criteria test run with full test data.
 
-Next Phase 3 task:
+P3-T10 status:
 
-- Task ID: `P3-T10`.
-- Title: Phase 3 exit criteria — full intake walkthrough and validation review.
-- Scope:
-  - Complete a full intake walkthrough using test data for Complete Package path.
-  - Verify all branching rules match the User Flows document.
-  - Identify and fix any validation gaps.
-  - Confirm Florida LLC path gating is correct.
-  - Confirm `npm run lint` and `npm run build` pass.
+- Complete.
+- Full walkthrough audit completed against the User Flows document.
+- Three bugs found and fixed:
+  - `handleResetService` now resets all state fields including llcName, businessAddress, registeredAgent, and einQuestions.
+  - `handleChangeMemberCount` now resets all ownership percentages to an equal split when member count changes.
+  - Multi-member status message updated to remove stale reference to member data as a future step.
+- All back and continue navigation verified correct for Complete Package and Florida LLC paths.
+- Florida LLC path correctly gated at Registered Agent step pending Phase 4.
+- `npm run lint` passes. `npm run build` passes.
+- Phase 3 exit criteria met.
+
+## Phase 3 Exit Status
+
+Phase 3 is complete. The Complete Package path can be fully walked through with test data from service selection through EIN questions. Branching rules match the User Flows document. All validation gates are correctly wired.
 
 ## Phase 4: Document Collection
 
