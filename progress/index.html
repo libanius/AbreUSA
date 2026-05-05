@@ -181,7 +181,7 @@
         background: linear-gradient(90deg, var(--green), var(--blue));
         border-radius: inherit;
         height: 100%;
-        width: 32%;
+        width: 36%;
       }
 
       ul {
@@ -268,11 +268,12 @@
           <span class="pill done" data-en="Current phase" data-pt="Fase atual">Current phase</span>
           <p class="phase" data-en="Phase 3: Guided Intake Flow" data-pt="Fase 3: Fluxo guiado de intake">Phase 3: Guided Intake Flow</p>
           <p
-            data-en="P3-T03 is complete. Service selection and local LLC name validation are implemented without backend, uploads, or persistence."
-            data-pt="P3-T03 está concluída. Seleção de serviço e validação local do nome da LLC foram implementadas sem backend, uploads ou persistência."
+            data-en="P3-T04 is complete. Service selection, local LLC name validation, and local business activity selection are implemented without backend, uploads, or persistence."
+            data-pt="P3-T04 está concluída. Seleção de serviço, validação local do nome da LLC e seleção local da atividade da empresa foram implementadas sem backend, uploads ou persistência."
           >
-            P3-T03 is complete. Service selection and local LLC name validation
-            are implemented without backend, uploads, or persistence.
+            P3-T04 is complete. Service selection, local LLC name validation,
+            and local business activity selection are implemented without
+            backend, uploads, or persistence.
           </p>
           <div class="progress-wrap" aria-label="Project progress">
             <div class="progress-label">
@@ -315,6 +316,7 @@
             <li data-en="P3-T01 first intake implementation slice planned." data-pt="P3-T01 primeiro recorte de implementação do intake planejado.">P3-T01 first intake implementation slice planned.</li>
             <li data-en="P3-T02 service selection and step-state shell implemented." data-pt="P3-T02 seleção de serviço e shell de estado de etapas implementados.">P3-T02 service selection and step-state shell implemented.</li>
             <li data-en="P3-T03 LLC name step and suffix validation implemented." data-pt="P3-T03 etapa de nome da LLC e validação de sufixo implementadas.">P3-T03 LLC name step and suffix validation implemented.</li>
+            <li data-en="P3-T04 business activity step implemented." data-pt="P3-T04 etapa de atividade da empresa implementada.">P3-T04 business activity step implemented.</li>
             <li data-en="Lint and production build pass." data-pt="Lint e build de produção passam.">Lint and production build pass.</li>
           </ul>
         </article>
@@ -328,31 +330,32 @@
             <li data-en="Reusable guided-flow and preview primitives support the current local flow shell." data-pt="Os primitivos reutilizáveis do fluxo guiado e preview dão suporte ao shell local atual.">Reusable guided-flow and preview primitives support the current local flow shell.</li>
             <li data-en="Service selection is available for Complete Package and Florida LLC paths." data-pt="A seleção de serviço está disponível para os caminhos Pacote Completo e LLC na Flórida.">Service selection is available for Complete Package and Florida LLC paths.</li>
             <li data-en="LLC name entry validates compatible suffixes locally." data-pt="A entrada do nome da LLC valida sufixos compatíveis localmente.">LLC name entry validates compatible suffixes locally.</li>
+            <li data-en="Business activity selection uses existing prototype categories and local state only." data-pt="A seleção de atividade usa categorias existentes do protótipo e apenas estado local.">Business activity selection uses existing prototype categories and local state only.</li>
             <li data-en="No Supabase, uploads, persistence, generated forms, submission, or payment." data-pt="Ainda não há Supabase, uploads, persistência, formulários gerados, envio ou pagamento.">No Supabase, uploads, persistence, generated forms, submission, or payment.</li>
           </ul>
         </article>
 
         <article class="card task">
           <span class="pill done" data-en="Current task" data-pt="Tarefa atual">Current task</span>
-          <h2 data-en="P3-T03 Complete" data-pt="P3-T03 concluído">P3-T03 Complete</h2>
+          <h2 data-en="P3-T04 Complete" data-pt="P3-T04 concluído">P3-T04 Complete</h2>
           <p
-            data-en="Completed. LLC name entry and LLC-compatible suffix validation are available after service selection."
-            data-pt="Concluído. Entrada do nome da LLC e validação de sufixo compatível estão disponíveis após a seleção de serviço."
+            data-en="Completed. Business activity selection is available after a valid LLC name, including an Other option with local text entry."
+            data-pt="Concluído. A seleção de atividade da empresa está disponível após um nome válido de LLC, incluindo a opção Outro com entrada local de texto."
           >
-            Completed. LLC name entry and LLC-compatible suffix validation are
-            available after service selection.
+            Completed. Business activity selection is available after a valid
+            LLC name, including an Other option with local text entry.
           </p>
         </article>
 
         <article class="card next">
           <span class="pill" data-en="Next task" data-pt="Próxima tarefa">Next task</span>
-          <h2 data-en="P3-T04 Business Activity Step" data-pt="P3-T04 Etapa de atividade da empresa">P3-T04 Business Activity Step</h2>
+          <h2 data-en="P3-T05 Member Count Step" data-pt="P3-T05 Etapa de número de sócios">P3-T05 Member Count Step</h2>
           <p
-            data-en="Implement the next step: local business activity selection after a valid LLC name."
-            data-pt="Implementar a próxima etapa: seleção local da atividade da empresa após um nome de LLC válido."
+            data-en="Implement the next step: local member count selection from 1 to 10 with single-member and multi-member context."
+            data-pt="Implementar a próxima etapa: seleção local do número de sócios de 1 a 10 com contexto de single-member e multi-member."
           >
-            Implement the next step: local business activity selection after a
-            valid LLC name.
+            Implement the next step: local member count selection from 1 to 10
+            with single-member and multi-member context.
           </p>
         </article>
       </section>

@@ -16,12 +16,29 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
 type ServiceId = "complete" | "florida_llc";
+type FlowStep = "service" | "llc_name" | "business_activity";
+type BusinessActivityId =
+  | "tech"
+  | "ecomm"
+  | "consulting"
+  | "import"
+  | "construction"
+  | "food"
+  | "health"
+  | "realestate"
+  | "education"
+  | "other";
 
 type ServiceOption = {
   id: ServiceId;
   title: string;
   description: string;
   price: string;
+};
+
+type BusinessActivityOption = {
+  id: BusinessActivityId;
+  label: string;
 };
 
 const serviceOptions: ServiceOption[] = [
@@ -39,7 +56,20 @@ const serviceOptions: ServiceOption[] = [
   },
 ];
 
-const progressItems = ["Serviço", "Empresa", "Documentos", "Revisão"];
+const businessActivityOptions: BusinessActivityOption[] = [
+  { id: "tech", label: "Tecnologia / Software" },
+  { id: "ecomm", label: "E-commerce / Vendas online" },
+  { id: "consulting", label: "Consultoria / Serviços profissionais" },
+  { id: "import", label: "Importação e Exportação" },
+  { id: "construction", label: "Construção Civil" },
+  { id: "food", label: "Alimentação / Food service" },
+  { id: "health", label: "Saúde e Beleza" },
+  { id: "realestate", label: "Imóveis / Real Estate" },
+  { id: "education", label: "Educação" },
+  { id: "other", label: "Outro" },
+];
+
+const progressItems = ["Serviço", "Empresa", "Atividade", "Documentos", "Revisão"];
 const llcSuffixPattern =
   /\b(l\.?\s?l\.?\s?c\.?|limited liability company)\.?$/i;
 
@@ -100,14 +130,28 @@ function ServiceSelection({
 }
 
 function StepFrame({
+  activeStep,
+  businessActivity,
+  customBusinessActivity,
   llcName,
+  onBackToLlcName,
+  onChangeBusinessActivity,
+  onChangeCustomBusinessActivity,
   onChangeLlcName,
+  onContinueToBusinessActivity,
   onResetService,
   selectedService,
   onSelectService,
 }: {
+  activeStep: FlowStep;
+  businessActivity: BusinessActivityId | null;
+  customBusinessActivity: string;
   llcName: string;
+  onBackToLlcName: () => void;
+  onChangeBusinessActivity: (activity: BusinessActivityId) => void;
+  onChangeCustomBusinessActivity: (activity: string) => void;
   onChangeLlcName: (name: string) => void;
+  onContinueToBusinessActivity: () => void;
   onResetService: () => void;
   selectedService: ServiceId | null;
   onSelectService: (service: ServiceId) => void;
@@ -119,6 +163,100 @@ function StepFrame({
   const trimmedLlcName = llcName.trim();
   const hasLlcName = trimmedLlcName.length > 0;
   const hasValidSuffix = llcSuffixPattern.test(trimmedLlcName);
+  const selectedActivityLabel =
+    businessActivity === "other"
+      ? customBusinessActivity.trim()
+      : businessActivityOptions.find((activity) => activity.id === businessActivity)
+          ?.label;
+
+  if (activeStep === "business_activity") {
+    return (
+      <StepCard
+        badge="Rascunho local"
+        eyebrow="Passo 3 · Atividade"
+        title="Qual é o ramo do negócio?"
+      >
+        <div className="grid gap-3">
+          <StatusMessage
+            title={selectedActivityLabel ? "Atividade selecionada" : "Seleção pendente"}
+            tone={selectedActivityLabel ? "success" : "info"}
+          >
+            <p>
+              {selectedActivityLabel
+                ? "A atividade foi capturada localmente para uso nas próximas etapas."
+                : "Selecione uma categoria ou informe outra atividade para continuar depois."}
+            </p>
+          </StatusMessage>
+
+          <FieldGroup title="Atividade principal">
+            <div className="grid gap-3 sm:grid-cols-2">
+              {businessActivityOptions.map((activity) => {
+                const selected = activity.id === businessActivity;
+
+                return (
+                  <button
+                    aria-pressed={selected}
+                    className={cn(
+                      "rounded-md border bg-card p-3 text-left text-sm font-medium transition-colors",
+                      "focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/40",
+                      selected
+                        ? "border-emerald-600 bg-emerald-50 text-emerald-950"
+                        : "text-foreground hover:border-emerald-300 hover:bg-emerald-50/40",
+                    )}
+                    key={activity.id}
+                    onClick={() => onChangeBusinessActivity(activity.id)}
+                    type="button"
+                  >
+                    {activity.label}
+                  </button>
+                );
+              })}
+            </div>
+
+            {businessActivity === "other" ? (
+              <FieldShell
+                hint="Use uma descrição curta da atividade principal."
+                label="Descreva a atividade"
+              >
+                <Input
+                  onChange={(event) =>
+                    onChangeCustomBusinessActivity(event.target.value)
+                  }
+                  placeholder="Ex.: Desenvolvimento de aplicativos mobile"
+                  value={customBusinessActivity}
+                />
+              </FieldShell>
+            ) : null}
+          </FieldGroup>
+
+          <ReviewSummary
+            items={[
+              { label: "Serviço", value: selectedLabel ?? "Pendente" },
+              { label: "Nome", value: trimmedLlcName },
+              { label: "Estado", value: "Florida" },
+              {
+                label: "Atividade",
+                value: selectedActivityLabel || "Pendente",
+              },
+            ]}
+            title="Resumo"
+          />
+
+          <FormPreviewShell
+            sections={["Article I", "Article II", "Article III"]}
+            subtitle="State of Florida · Division of Corporations"
+            title="Articles of Organization"
+          />
+        </div>
+        <StepNavigation
+          backDisabled={false}
+          backLabel="Voltar"
+          nextLabel={selectedActivityLabel ? "Continuar" : "Selecionar atividade"}
+          onBack={onBackToLlcName}
+        />
+      </StepCard>
+    );
+  }
 
   if (selectedService) {
     return (
@@ -187,7 +325,9 @@ function StepFrame({
         <StepNavigation
           backDisabled={false}
           backLabel="Voltar"
+          nextDisabled={!hasValidSuffix}
           nextLabel={hasValidSuffix ? "Continuar" : "Validar nome"}
+          onNext={onContinueToBusinessActivity}
           onBack={onResetService}
         />
       </StepCard>
@@ -245,8 +385,30 @@ function StepFrame({
 export function GuidedIntakeShell() {
   const [selectedService, setSelectedService] = useState<ServiceId | null>(null);
   const [llcName, setLlcName] = useState("");
-  const currentStep = selectedService ? 2 : 1;
-  const currentLabel = selectedService ? "Empresa" : "Serviço";
+  const [activeStep, setActiveStep] = useState<FlowStep>("service");
+  const [businessActivity, setBusinessActivity] =
+    useState<BusinessActivityId | null>(null);
+  const [customBusinessActivity, setCustomBusinessActivity] = useState("");
+  const currentStep =
+    activeStep === "business_activity" ? 3 : selectedService ? 2 : 1;
+  const currentLabel =
+    activeStep === "business_activity"
+      ? "Atividade"
+      : selectedService
+        ? "Empresa"
+        : "Serviço";
+
+  function handleSelectService(service: ServiceId) {
+    setSelectedService(service);
+    setActiveStep("llc_name");
+  }
+
+  function handleResetService() {
+    setSelectedService(null);
+    setActiveStep("service");
+    setBusinessActivity(null);
+    setCustomBusinessActivity("");
+  }
 
   return (
     <div className="min-h-screen bg-muted/30">
@@ -258,10 +420,17 @@ export function GuidedIntakeShell() {
       <main className="mx-auto flex w-full max-w-6xl flex-1 px-4 py-8 sm:px-6 lg:px-8">
         <div className="grid w-full gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
           <StepFrame
+            activeStep={activeStep}
+            businessActivity={businessActivity}
+            customBusinessActivity={customBusinessActivity}
             llcName={llcName}
+            onBackToLlcName={() => setActiveStep("llc_name")}
+            onChangeBusinessActivity={setBusinessActivity}
+            onChangeCustomBusinessActivity={setCustomBusinessActivity}
             onChangeLlcName={setLlcName}
-            onResetService={() => setSelectedService(null)}
-            onSelectService={setSelectedService}
+            onContinueToBusinessActivity={() => setActiveStep("business_activity")}
+            onResetService={handleResetService}
+            onSelectService={handleSelectService}
             selectedService={selectedService}
           />
 

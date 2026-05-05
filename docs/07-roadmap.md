@@ -121,7 +121,7 @@ Next task:
 
 ## Phase 3: Guided Intake Flow
 
-Status: Current phase. LLC name step implemented.
+Status: Current phase. Business activity step implemented.
 
 Goal: implement the customer questionnaire.
 
@@ -221,6 +221,27 @@ Next Phase 3 task:
   - Add the next interactive step after valid LLC name entry.
   - Capture business activity in local client state only.
   - Use existing business activity categories only if already documented or present in product evidence.
+  - Keep data unpersisted.
+  - Keep Supabase, uploads, generated forms, and submission out of scope.
+
+P3-T04 status:
+
+- Complete.
+- Business activity step shell implemented after valid LLC name entry.
+- Business activity is captured in local client state only.
+- Activity options use the existing product-evidence categories from the prototype.
+- `Other` activity supports a local custom text entry.
+- No backend, upload, persistence, generated form, submission, or payment behavior added.
+
+Next Phase 3 task:
+
+- Task ID: `P3-T05`.
+- Title: Implement member count step shell.
+- Scope:
+  - Add the next interactive step after business activity selection.
+  - Capture member count in local client state only.
+  - Support the documented prototype range of 1 to 10 members.
+  - Show single-member vs multi-member context in the UI.
   - Keep data unpersisted.
   - Keep Supabase, uploads, generated forms, and submission out of scope.
 
