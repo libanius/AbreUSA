@@ -21,7 +21,8 @@ type FlowStep =
   | "llc_name"
   | "business_activity"
   | "member_count"
-  | "member_data";
+  | "member_data"
+  | "business_address";
 type BusinessActivityId =
   | "tech"
   | "ecomm"
@@ -50,6 +51,13 @@ type MemberDraft = {
   fullName: string;
   address: string;
   ownershipPercentage: string;
+};
+
+type BusinessAddressDraft = {
+  street: string;
+  city: string;
+  state: string;
+  zip: string;
 };
 
 const serviceOptions: ServiceOption[] = [
@@ -86,6 +94,7 @@ const progressItems = [
   "Atividade",
   "Sócios",
   "Dados",
+  "Endereço",
   "Documentos",
   "Revisão",
   "Envio",
@@ -152,6 +161,7 @@ function ServiceSelection({
 function StepFrame({
   activeStep,
   businessActivity,
+  businessAddress,
   customBusinessActivity,
   llcName,
   memberCount,
@@ -159,12 +169,15 @@ function StepFrame({
   onBackToBusinessActivity,
   onBackToMemberCount,
   onBackToLlcName,
+  onBackToMemberData,
   onChangeBusinessActivity,
+  onChangeBusinessAddress,
   onChangeCustomBusinessActivity,
   onChangeLlcName,
   onChangeMemberData,
   onChangeMemberCount,
   onContinueToBusinessActivity,
+  onContinueToBusinessAddress,
   onContinueToMemberData,
   onContinueToMemberCount,
   onResetService,
@@ -173,6 +186,7 @@ function StepFrame({
 }: {
   activeStep: FlowStep;
   businessActivity: BusinessActivityId | null;
+  businessAddress: BusinessAddressDraft;
   customBusinessActivity: string;
   llcName: string;
   memberCount: number;
@@ -180,7 +194,9 @@ function StepFrame({
   onBackToBusinessActivity: () => void;
   onBackToMemberCount: () => void;
   onBackToLlcName: () => void;
+  onBackToMemberData: () => void;
   onChangeBusinessActivity: (activity: BusinessActivityId) => void;
+  onChangeBusinessAddress: (field: keyof BusinessAddressDraft, value: string) => void;
   onChangeCustomBusinessActivity: (activity: string) => void;
   onChangeLlcName: (name: string) => void;
   onChangeMemberData: (
@@ -190,6 +206,7 @@ function StepFrame({
   ) => void;
   onChangeMemberCount: (count: number) => void;
   onContinueToBusinessActivity: () => void;
+  onContinueToBusinessAddress: () => void;
   onContinueToMemberData: () => void;
   onContinueToMemberCount: () => void;
   onResetService: () => void;
@@ -318,9 +335,111 @@ function StepFrame({
         <StepNavigation
           backDisabled={false}
           backLabel="Voltar"
+          nextDisabled={!ownershipMatches}
+          nextLabel={ownershipMatches ? "Continuar" : "Ajustar participações"}
+          onBack={onBackToMemberCount}
+          onNext={onContinueToBusinessAddress}
+        />
+      </StepCard>
+    );
+  }
+
+  if (activeStep === "business_address") {
+    const hasStreet = businessAddress.street.trim().length > 0;
+    const hasCity = businessAddress.city.trim().length > 0;
+    const hasZip = businessAddress.zip.trim().length > 0;
+    const isAddressComplete = hasStreet && hasCity && hasZip;
+
+    return (
+      <StepCard
+        badge="Rascunho local"
+        eyebrow="Passo 6 · Endereço"
+        title="Endereço principal da empresa"
+      >
+        <div className="grid gap-3">
+          <StatusMessage
+            title={isAddressComplete ? "Endereço completo" : "Endereço pendente"}
+            tone={isAddressComplete ? "success" : "info"}
+          >
+            <p>
+              {isAddressComplete
+                ? "O endereço principal da LLC foi capturado localmente."
+                : "Informe o endereço da sede da empresa na Flórida para continuar."}
+            </p>
+          </StatusMessage>
+
+          <FieldGroup title="Endereço da sede (Florida)">
+            <FieldShell
+              hint="Endereço completo da sede principal da LLC nos EUA."
+              label="Rua e número"
+            >
+              <Input
+                onChange={(event) =>
+                  onChangeBusinessAddress("street", event.target.value)
+                }
+                placeholder="Ex.: 1000 Brickell Ave, Suite 100"
+                value={businessAddress.street}
+              />
+            </FieldShell>
+            <FieldShell label="Cidade">
+              <Input
+                onChange={(event) =>
+                  onChangeBusinessAddress("city", event.target.value)
+                }
+                placeholder="Ex.: Miami"
+                value={businessAddress.city}
+              />
+            </FieldShell>
+            <FieldShell
+              hint="Estado fixo: Flórida (FL) para o MVP."
+              label="Estado"
+            >
+              <Input
+                disabled
+                readOnly
+                value={businessAddress.state}
+              />
+            </FieldShell>
+            <FieldShell label="ZIP Code">
+              <Input
+                inputMode="numeric"
+                maxLength={10}
+                onChange={(event) =>
+                  onChangeBusinessAddress("zip", event.target.value)
+                }
+                placeholder="Ex.: 33131"
+                value={businessAddress.zip}
+              />
+            </FieldShell>
+          </FieldGroup>
+
+          <ReviewSummary
+            items={[
+              { label: "Serviço", value: selectedLabel ?? "Pendente" },
+              { label: "Nome", value: trimmedLlcName },
+              { label: "Sócios", value: String(memberCount) },
+              {
+                label: "Endereço",
+                value: isAddressComplete
+                  ? `${businessAddress.city}, FL`
+                  : "Pendente",
+              },
+            ]}
+            title="Resumo"
+          />
+
+          <FormPreviewShell
+            sections={["Article I", "Article II", "Article III"]}
+            subtitle="State of Florida · Division of Corporations"
+            title="Articles of Organization"
+          />
+        </div>
+        <StepNavigation
+          backDisabled={false}
+          backLabel="Voltar"
           nextDisabled
           nextLabel="Continuar"
-          onBack={onBackToMemberCount}
+          onBack={onBackToMemberData}
         />
       </StepCard>
     );
@@ -638,8 +757,16 @@ export function GuidedIntakeShell() {
   const [memberData, setMemberData] = useState<MemberDraft[]>([
     { fullName: "", address: "", ownershipPercentage: "100" },
   ]);
+  const [businessAddress, setBusinessAddress] = useState<BusinessAddressDraft>({
+    street: "",
+    city: "",
+    state: "FL",
+    zip: "",
+  });
   const currentStep =
-    activeStep === "member_data"
+    activeStep === "business_address"
+      ? 6
+      : activeStep === "member_data"
       ? 5
       : activeStep === "member_count"
       ? 4
@@ -649,7 +776,9 @@ export function GuidedIntakeShell() {
           ? 2
           : 1;
   const currentLabel =
-    activeStep === "member_data"
+    activeStep === "business_address"
+      ? "Endereço"
+      : activeStep === "member_data"
       ? "Dados dos sócios"
       : activeStep === "member_count"
       ? "Sócios"
@@ -710,18 +839,26 @@ export function GuidedIntakeShell() {
     );
   }
 
+  function handleChangeBusinessAddress(
+    field: keyof BusinessAddressDraft,
+    value: string,
+  ) {
+    setBusinessAddress((current) => ({ ...current, [field]: value }));
+  }
+
   return (
     <div className="min-h-screen bg-muted/30">
       <ProgressHeader
         currentStep={currentStep}
         label={currentLabel}
-        totalSteps={8}
+        totalSteps={9}
       />
       <main className="mx-auto flex w-full max-w-6xl flex-1 px-4 py-8 sm:px-6 lg:px-8">
         <div className="grid w-full gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
           <StepFrame
             activeStep={activeStep}
             businessActivity={businessActivity}
+            businessAddress={businessAddress}
             customBusinessActivity={customBusinessActivity}
             llcName={llcName}
             memberCount={memberCount}
@@ -729,12 +866,15 @@ export function GuidedIntakeShell() {
             onBackToBusinessActivity={() => setActiveStep("business_activity")}
             onBackToMemberCount={() => setActiveStep("member_count")}
             onBackToLlcName={() => setActiveStep("llc_name")}
+            onBackToMemberData={() => setActiveStep("member_data")}
             onChangeBusinessActivity={setBusinessActivity}
+            onChangeBusinessAddress={handleChangeBusinessAddress}
             onChangeCustomBusinessActivity={setCustomBusinessActivity}
             onChangeLlcName={setLlcName}
             onChangeMemberData={handleChangeMemberData}
             onChangeMemberCount={handleChangeMemberCount}
             onContinueToBusinessActivity={() => setActiveStep("business_activity")}
+            onContinueToBusinessAddress={() => setActiveStep("business_address")}
             onContinueToMemberData={() => setActiveStep("member_data")}
             onContinueToMemberCount={() => setActiveStep("member_count")}
             onResetService={handleResetService}

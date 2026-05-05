@@ -181,7 +181,7 @@
         background: linear-gradient(90deg, var(--green), var(--blue));
         border-radius: inherit;
         height: 100%;
-        width: 40%;
+        width: 50%;
       }
 
       ul {
@@ -268,12 +268,13 @@
           <span class="pill done" data-en="Current phase" data-pt="Fase atual">Current phase</span>
           <p class="phase" data-en="Phase 3: Guided Intake Flow" data-pt="Fase 3: Fluxo guiado de intake">Phase 3: Guided Intake Flow</p>
           <p
-            data-en="P3-T05 is complete. Service selection, local LLC name validation, local business activity selection, and local member count selection are implemented without backend, uploads, or persistence."
-            data-pt="P3-T05 está concluída. Seleção de serviço, validação local do nome da LLC, seleção local da atividade e seleção local do número de sócios foram implementadas sem backend, uploads ou persistência."
+            data-en="P3-T07 is complete. Service selection, local LLC name validation, local business activity selection, local member count selection, local member data capture, and local business address capture are implemented without backend, uploads, or persistence."
+            data-pt="P3-T07 está concluída. Seleção de serviço, validação local do nome da LLC, seleção local da atividade, seleção local do número de sócios, captura local dos dados dos sócios e captura local do endereço comercial foram implementadas sem backend, uploads ou persistência."
           >
-            P3-T05 is complete. Service selection, local LLC name validation,
-            local business activity selection, and local member count selection
-            are implemented without backend, uploads, or persistence.
+            P3-T07 is complete. Service selection, local LLC name validation,
+            local business activity selection, local member count selection,
+            local member data capture, and local business address capture are
+            implemented without backend, uploads, or persistence.
           </p>
           <div class="progress-wrap" aria-label="Project progress">
             <div class="progress-label">
@@ -318,6 +319,8 @@
             <li data-en="P3-T03 LLC name step and suffix validation implemented." data-pt="P3-T03 etapa de nome da LLC e validação de sufixo implementadas.">P3-T03 LLC name step and suffix validation implemented.</li>
             <li data-en="P3-T04 business activity step implemented." data-pt="P3-T04 etapa de atividade da empresa implementada.">P3-T04 business activity step implemented.</li>
             <li data-en="P3-T05 member count step implemented." data-pt="P3-T05 etapa de número de sócios implementada.">P3-T05 member count step implemented.</li>
+            <li data-en="P3-T06 member data step implemented." data-pt="P3-T06 etapa de dados dos sócios implementada.">P3-T06 member data step implemented.</li>
+            <li data-en="P3-T07 business address step implemented." data-pt="P3-T07 etapa de endereço comercial implementada.">P3-T07 business address step implemented.</li>
             <li data-en="Lint and production build pass." data-pt="Lint e build de produção passam.">Lint and production build pass.</li>
           </ul>
         </article>
@@ -333,32 +336,33 @@
             <li data-en="LLC name entry validates compatible suffixes locally." data-pt="A entrada do nome da LLC valida sufixos compatíveis localmente.">LLC name entry validates compatible suffixes locally.</li>
             <li data-en="Business activity selection uses existing prototype categories and local state only." data-pt="A seleção de atividade usa categorias existentes do protótipo e apenas estado local.">Business activity selection uses existing prototype categories and local state only.</li>
             <li data-en="Member count selection supports 1 to 10 members and shows Single-Member / Multi-Member context." data-pt="A seleção do número de sócios suporta de 1 a 10 sócios e mostra o contexto Single-Member / Multi-Member.">Member count selection supports 1 to 10 members and shows Single-Member / Multi-Member context.</li>
+            <li data-en="Member data entry captures name, address, and ownership percentage per member in local state." data-pt="A entrada de dados dos sócios captura nome, endereço e participação de cada sócio em estado local.">Member data entry captures name, address, and ownership percentage per member in local state.</li>
+            <li data-en="Business address entry captures street, city, state (FL), and ZIP in local state. Continue enabled when required fields are filled." data-pt="A entrada do endereço comercial captura rua, cidade, estado (FL) e CEP em estado local. Continuar habilitado quando os campos obrigatórios estão preenchidos.">Business address entry captures street, city, state (FL), and ZIP in local state. Continue enabled when required fields are filled.</li>
             <li data-en="No Supabase, uploads, persistence, generated forms, submission, or payment." data-pt="Ainda não há Supabase, uploads, persistência, formulários gerados, envio ou pagamento.">No Supabase, uploads, persistence, generated forms, submission, or payment.</li>
           </ul>
         </article>
 
         <article class="card task">
-          <span class="pill done" data-en="Current task" data-pt="Tarefa atual">Current task</span>
-          <h2 data-en="P3-T05 Complete" data-pt="P3-T05 concluído">P3-T05 Complete</h2>
+          <span class="pill done" data-en="Last completed" data-pt="Última concluída">Last completed</span>
+          <h2 data-en="P3-T07 Complete" data-pt="P3-T07 concluído">P3-T07 Complete</h2>
           <p
-            data-en="Completed. Member count selection is available after business activity selection, with local 1 to 10 controls and Single-Member / Multi-Member context."
-            data-pt="Concluído. A seleção do número de sócios está disponível após a seleção de atividade, com controles locais de 1 a 10 e contexto Single-Member / Multi-Member."
+            data-en="Completed. Business address entry is available after member data. Fields capture street, city, state (FL, locked), and ZIP in local state."
+            data-pt="Concluído. A entrada do endereço comercial está disponível após os dados dos sócios. Os campos capturam rua, cidade, estado (FL, fixo) e CEP em estado local."
           >
-            Completed. Member count selection is available after business
-            activity selection, with local 1 to 10 controls and Single-Member /
-            Multi-Member context.
+            Completed. Business address entry is available after member data.
+            Fields capture street, city, state (FL, locked), and ZIP in local state.
           </p>
         </article>
 
         <article class="card next">
           <span class="pill" data-en="Next task" data-pt="Próxima tarefa">Next task</span>
-          <h2 data-en="P3-T06 Member Data Step" data-pt="P3-T06 Etapa de dados dos sócios">P3-T06 Member Data Step</h2>
+          <h2 data-en="P3-T08 Registered Agent Step" data-pt="P3-T08 Etapa de Registered Agent">P3-T08 Registered Agent Step</h2>
           <p
-            data-en="Implement the next step: local member detail fields based on the selected member count."
-            data-pt="Implementar a próxima etapa: campos locais de dados dos sócios com base no número de sócios selecionado."
+            data-en="Implement the next step: present AbreUSA, self, or other Registered Agent options and capture the selection in local state."
+            data-pt="Implementar a próxima etapa: apresentar as opções AbreUSA, próprio ou outro como Registered Agent e capturar a seleção em estado local."
           >
-            Implement the next step: local member detail fields based on the
-            selected member count.
+            Implement the next step: present AbreUSA, self, or other Registered
+            Agent options and capture the selection in local state.
           </p>
         </article>
       </section>

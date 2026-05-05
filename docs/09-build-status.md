@@ -4,55 +4,54 @@
 
 Phase 3: Guided Intake Flow.
 
-Phase 2 is complete. `P3-T05` is complete. The guided-flow shell now includes service selection, local LLC name validation, local business activity selection, and local member count selection without backend or persistence.
+Phase 2 is complete. `P3-T07` is complete. The guided-flow shell now includes service selection, local LLC name validation, local business activity selection, local member count selection, local member data capture, and local business address capture without backend or persistence.
 
 ## Last Completed Task
 
-Task ID: `P3-T05`
+Task ID: `P3-T07`
 
-Title: Implement member count step shell.
+Title: Implement business address step shell.
 
 Result:
 
-- Member count step shell implemented after business activity selection.
-- Member count captured in local client state only.
-- UI supports the documented prototype range of 1 to 10 members.
-- UI communicates Single-Member LLC vs Multi-Member LLC context.
-- No member detail fields, backend, upload, persistence, generated form, submission, or payment behavior added.
+- Business address step shell implemented after member data entry.
+- Fields capture street address, city, state (locked to FL), and ZIP in local client state only.
+- Continue is enabled when street, city, and ZIP are non-empty.
+- Progress sidebar updated to include Endereço as step 6 of 9.
+- No backend, upload, persistence, generated form, submission, or payment behavior added.
 
 ## Current Task
 
-Task ID: `P3-T05`
-
-Title: Implement member count step shell.
-
-Status: Complete.
-
-Scope:
-
-- Add the next interactive step after business activity selection.
-- Capture member count in local client state only.
-- Support the documented prototype range of 1 to 10 members.
-- Show single-member vs multi-member context in the UI.
-- Keep data unpersisted.
-- Keep Supabase, uploads, generated forms, and submission out of scope.
+None. P3-T07 is complete.
 
 ## Next Task
 
-Task ID: `P3-T06`
+Task ID: `P3-T08`
 
-Title: Implement member data step shell.
+Title: Implement Registered Agent step shell.
 
-Status: Awaiting confirmation.
+Status: Awaiting execution.
 
 Scope:
 
-- Add the next interactive step after member count selection.
-- Render local member detail fields based on the selected member count.
-- Capture each member name, address, and ownership percentage in local client state only.
-- Keep ownership total validation as UI-only if included in this slice.
+- Add the next interactive step after business address entry.
+- Present the three Registered Agent options: AbreUSA, self, or other.
+- Capture the selection in local client state only.
+- If "other" is selected, capture agent name and address locally.
 - Keep data unpersisted.
 - Keep Supabase, uploads, generated forms, and submission out of scope.
+
+Acceptance criteria:
+
+- User can move from business address to the Registered Agent step.
+- User can select AbreUSA, self, or other as the Registered Agent.
+- If "other" is selected, agent name and address fields appear locally.
+- Existing steps remain intact.
+- Existing static shell remains visually intact.
+- No backend calls are introduced.
+- No document upload or persistence is introduced.
+- `npm run lint` passes.
+- `npm run build` passes.
 
 ## Completed Tasks
 
@@ -87,56 +86,35 @@ Scope:
 - `P3-T03` LLC name step shell and validation plan implemented.
 - `P3-T04` business activity step shell implemented.
 - `P3-T05` member count step shell implemented.
+- `P3-T06` member data step shell implemented.
+- `P3-T07` business address step shell implemented.
 
 ## What Is Implemented
 
 - The app renders a static AbreUSA shell from `components/app-shell.tsx`.
 - The home route uses the App Router page at `app/page.tsx`.
-- The app now uses a small client component at `components/guided-intake-shell.tsx` for service selection and progress state.
-- The shell includes:
-  - Sticky header.
-  - Brand mark.
-  - Static progress indicator placeholder.
-  - Main container for future guided steps.
-  - Side progress area for future step groups.
-- The guided-flow primitive layer includes:
-  - `StepCard`.
-  - `StepNavigation`.
-  - `StatusMessage`.
-  - `FieldGroup`.
-  - `FieldShell`.
-  - `ReviewSummary`.
-  - `FormPreviewShell`.
-  - `ConfirmationShell`.
-  - `ProtocolStatusShell`.
-- The shell is structural only.
-- Service selection behavior is implemented for the first Phase 3 slice.
-- Progress updates when a supported service path is selected.
-- LLC name entry is implemented in local client state.
-- UI validates LLC-compatible suffixes before continuing to the next planned step.
-- Business activity selection is implemented in local client state.
-- The `Other` business activity path supports a local custom text value.
-- Member count selection is implemented in local client state.
-- Member count is constrained to 1 to 10 in the UI.
-- The UI communicates Single-Member LLC vs Multi-Member LLC context.
-- No form handling is implemented beyond service selection, LLC name validation, business activity selection, and member count selection.
-- No Supabase connection is implemented.
-- No document upload or data persistence is implemented.
-- `/progress/index.html` is available as a standalone static dashboard for stakeholders.
-- GitHub Pages can publish `/progress/` from the repository root after GitHub Pages is enabled in repository settings.
+- The app uses a client component at `components/guided-intake-shell.tsx` for guided flow and progress state.
+- The shell includes sticky header, brand mark, progress bar, main container, and side progress area.
+- The guided-flow primitive layer: `StepCard`, `StepNavigation`, `StatusMessage`, `FieldGroup`, `FieldShell`, `ReviewSummary`, `FormPreviewShell`, `ConfirmationShell`, `ProtocolStatusShell`.
+- Service selection (step 1) for Complete Package and Florida LLC paths.
+- LLC name entry (step 2) with LLC suffix validation in local state.
+- Business activity selection (step 3) with existing prototype categories and custom "Other" entry.
+- Member count selection (step 4) for 1 to 10 members with Single/Multi-Member context.
+- Member data entry (step 5) — name, address, and ownership percentage per member in local state; Continue enabled when ownership totals 100%.
+- Business address entry (step 6) — street, city, state (FL, locked), ZIP in local state; Continue enabled when street, city, and ZIP are filled.
+- Progress header and sidebar reflect step 6 of 9.
+- No Supabase connection, document upload, or data persistence is implemented.
+- `/progress/index.html` available as stakeholder dashboard.
 
 ## What Is NOT Implemented
 
-- Full Phase 3 guided intake flow.
-- Customer questionnaire steps.
-- Member data steps.
-- Address, Registered Agent, EIN, document, review, approval, and confirmation steps.
-- Client-side validation beyond LLC name suffix validation, basic activity selection state, and member count bounds.
-- Phase 4 document collection.
-- Phase 5 review and generated form previews.
-- Phase 6 order submission workflow.
+- Registered Agent step.
+- EIN questions step.
+- Branching for EIN-only and Registered Agent-only flows.
+- Document upload and extraction.
+- Review and generated form previews.
+- Order submission workflow.
 - Supabase schema/storage implementation.
-- Real or placeholder document extraction UI states.
 - Production document retention and reviewer access decisions.
 - GitHub Pages must still be enabled in GitHub settings after the repo is pushed.
 
@@ -144,33 +122,19 @@ Scope:
 
 Execute one task only:
 
-`P3-T06: Implement member data step shell`
+`P3-T08: Implement Registered Agent step shell`
 
 Deliverable:
 
-- Add the next interactive step after member count selection.
-- Render local member detail fields based on the selected member count.
-- Capture each member name, address, and ownership percentage in local client state only.
-- Keep ownership total validation as UI-only if included in this slice.
+- Add step after business address entry.
+- Present AbreUSA / self / other options.
+- Capture selection (and agent details if "other") in local state.
 - Update `/docs/07-roadmap.md`, `/docs/09-build-status.md`, and `/progress/index.html` after implementation.
-
-Acceptance criteria:
-
-- User can move from member count selection to the member data step.
-- The number of rendered member sections matches the selected member count.
-- User can enter member name, address, and ownership percentage locally.
-- Existing service selection, LLC name validation, business activity selection, and member count selection remain intact.
-- Existing static shell remains visually intact.
-- No backend calls are introduced.
-- No document upload or persistence is introduced.
-- `npm run lint` passes.
-- `npm run build` passes.
 
 ## Blockers And Risks
 
 - EIN-only flow remains deferred and must not be implemented yet.
 - Registered Agent-only flow remains deferred and must not be implemented yet.
-- Supabase is planned but not connected; do not add backend work in the first Phase 3 slice.
+- Supabase is planned but not connected; do not add backend work in the current Phase 3 slice.
 - Document upload, extraction, generated forms, and submission workflow are later phases.
 - GitHub Pages still needs to be enabled in GitHub settings after pushing.
-- The dev server previously started on `localhost:3001` because port `3000` was already in use.

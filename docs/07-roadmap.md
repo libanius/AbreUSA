@@ -121,7 +121,7 @@ Next task:
 
 ## Phase 3: Guided Intake Flow
 
-Status: Current phase. Member count step implemented.
+Status: Current phase. Business address step (P3-T07) implemented.
 
 Goal: implement the customer questionnaire.
 
@@ -254,15 +254,32 @@ P3-T05 status:
 - UI communicates Single-Member LLC vs Multi-Member LLC context.
 - No member detail fields, backend, upload, persistence, generated form, submission, or payment behavior added.
 
+P3-T06 status:
+
+- Complete.
+- Member data step shell implemented after member count selection.
+- Number of rendered member sections matches the selected member count.
+- Each member captures name, address, and ownership percentage in local client state only.
+- No backend, upload, persistence, generated form, submission, or payment behavior added.
+
+P3-T07 status:
+
+- Complete.
+- Business address step shell implemented after member data entry.
+- Fields capture street, city, state (locked to FL), and ZIP in local client state only.
+- Continue is enabled when street, city, and ZIP are non-empty.
+- Progress sidebar updated to include Endereço as step 6 of 9.
+- No backend, upload, persistence, generated form, submission, or payment behavior added.
+
 Next Phase 3 task:
 
-- Task ID: `P3-T06`.
-- Title: Implement member data step shell.
+- Task ID: `P3-T08`.
+- Title: Implement Registered Agent step shell.
 - Scope:
-  - Add the next interactive step after member count selection.
-  - Render local member detail fields based on the selected member count.
-  - Capture each member name, address, and ownership percentage in local client state only.
-  - Keep ownership total validation as UI-only if included in this slice.
+  - Add the next interactive step after business address entry.
+  - Present the three Registered Agent options: AbreUSA, self, or other.
+  - Capture the selection in local client state only.
+  - If "other" is selected, capture agent name and address locally.
   - Keep data unpersisted.
   - Keep Supabase, uploads, generated forms, and submission out of scope.
 
