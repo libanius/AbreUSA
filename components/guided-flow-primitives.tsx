@@ -88,24 +88,34 @@ export function StepCard({ eyebrow, title, badge, children }: StepCardProps) {
 type StepNavigationProps = {
   backLabel: string;
   nextLabel: string;
+  backDisabled?: boolean;
+  nextDisabled?: boolean;
+  onBack?: () => void;
+  onNext?: () => void;
 };
 
 export function StepNavigation({
   backLabel,
   nextLabel,
+  backDisabled = true,
+  nextDisabled = true,
+  onBack,
+  onNext,
 }: StepNavigationProps) {
   return (
     <div className="mt-6 flex flex-col-reverse gap-3 border-t pt-5 sm:flex-row sm:items-center sm:justify-between">
       <button
         className="inline-flex h-9 items-center justify-center rounded-lg border bg-background px-4 text-sm font-medium text-muted-foreground"
-        disabled
+        disabled={backDisabled}
+        onClick={onBack}
         type="button"
       >
         {backLabel}
       </button>
       <button
         className="inline-flex h-9 items-center justify-center rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground disabled:opacity-60"
-        disabled
+        disabled={nextDisabled}
+        onClick={onNext}
         type="button"
       >
         {nextLabel}

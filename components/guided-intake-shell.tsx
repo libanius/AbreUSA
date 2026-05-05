@@ -12,6 +12,7 @@ import {
   StepCard,
   StepNavigation,
 } from "@/components/guided-flow-primitives";
+import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
 type ServiceId = "complete" | "florida_llc";
@@ -39,6 +40,8 @@ const serviceOptions: ServiceOption[] = [
 ];
 
 const progressItems = ["Serviço", "Empresa", "Documentos", "Revisão"];
+const llcSuffixPattern =
+  /\b(l\.?\s?l\.?\s?c\.?|limited liability company)\.?$/i;
 
 function ServiceSelection({
   selectedService,
@@ -97,9 +100,15 @@ function ServiceSelection({
 }
 
 function StepFrame({
+  llcName,
+  onChangeLlcName,
+  onResetService,
   selectedService,
   onSelectService,
 }: {
+  llcName: string;
+  onChangeLlcName: (name: string) => void;
+  onResetService: () => void;
   selectedService: ServiceId | null;
   onSelectService: (service: ServiceId) => void;
 }) {
@@ -107,23 +116,96 @@ function StepFrame({
     return serviceOptions.find((service) => service.id === selectedService)
       ?.title;
   }, [selectedService]);
+  const trimmedLlcName = llcName.trim();
+  const hasLlcName = trimmedLlcName.length > 0;
+  const hasValidSuffix = llcSuffixPattern.test(trimmedLlcName);
+
+  if (selectedService) {
+    return (
+      <StepCard
+        badge="Rascunho local"
+        eyebrow="Passo 2 · Empresa"
+        title="Qual será o nome da LLC?"
+      >
+        <div className="grid gap-3">
+          <StatusMessage
+            title={
+              hasValidSuffix
+                ? "Nome compatível"
+                : hasLlcName
+                  ? "Sufixo obrigatório"
+                  : "Nome pendente"
+            }
+            tone={hasValidSuffix ? "success" : hasLlcName ? "warning" : "info"}
+          >
+            <p>
+              {hasValidSuffix
+                ? "O nome informado contém um sufixo compatível com LLC."
+                : hasLlcName
+                  ? "Inclua um sufixo como LLC, L.L.C. ou Limited Liability Company."
+                  : "Informe o nome desejado para continuar a validação local."}
+            </p>
+          </StatusMessage>
+
+          <FieldGroup title="Nome da empresa">
+            <FieldShell
+              hint="Validação local somente para estrutura do nome; disponibilidade oficial não é consultada neste passo."
+              label="Nome legal desejado"
+            >
+              <Input
+                aria-invalid={hasLlcName && !hasValidSuffix}
+                onChange={(event) => onChangeLlcName(event.target.value)}
+                placeholder="Ex.: Minha Empresa LLC"
+                value={llcName}
+              />
+            </FieldShell>
+          </FieldGroup>
+
+          <ReviewSummary
+            items={[
+              { label: "Serviço", value: selectedLabel ?? "Pendente" },
+              { label: "Estado", value: "Florida" },
+              { label: "Tipo", value: "LLC" },
+              {
+                label: "Nome",
+                value: hasLlcName ? trimmedLlcName : "Pendente",
+              },
+              {
+                label: "Validação",
+                value: hasValidSuffix ? "Sufixo compatível" : "Pendente",
+              },
+            ]}
+            title="Resumo"
+          />
+
+          <FormPreviewShell
+            sections={["Article I", "Article II", "Article III"]}
+            subtitle="State of Florida · Division of Corporations"
+            title="Articles of Organization"
+          />
+        </div>
+        <StepNavigation
+          backDisabled={false}
+          backLabel="Voltar"
+          nextLabel={hasValidSuffix ? "Continuar" : "Validar nome"}
+          onBack={onResetService}
+        />
+      </StepCard>
+    );
+  }
 
   return (
     <StepCard
-      badge={selectedService ? "Serviço selecionado" : "Fluxo guiado"}
+      badge="Fluxo guiado"
       eyebrow="Passo 1 · Serviço"
       title="O que você precisa?"
     >
       <div className="grid gap-3">
         <StatusMessage
-          title={selectedService ? "Caminho iniciado" : "Seleção pendente"}
-          tone={selectedService ? "success" : "info"}
+          title="Seleção pendente"
+          tone="info"
         >
-          <p>
-            {selectedService
-              ? "O próximo passo será preparado para o caminho selecionado."
-              : "Escolha um serviço para iniciar o fluxo guiado."}
-          </p>
+          <p>Escolha um serviço para iniciar o fluxo guiado.</p>
         </StatusMessage>
         <ServiceSelection
           onSelect={onSelectService}
@@ -141,7 +223,7 @@ function StepFrame({
             { label: "Tipo", value: "LLC" },
             {
               label: "Status",
-              value: selectedService ? "Iniciado" : "Aguardando seleção",
+              value: "Aguardando seleção",
             },
           ]}
           title="Resumo"
@@ -154,7 +236,7 @@ function StepFrame({
       </div>
       <StepNavigation
         backLabel="Voltar"
-        nextLabel={selectedService ? "Continuar" : "Selecionar serviço"}
+        nextLabel="Selecionar serviço"
       />
     </StepCard>
   );
@@ -162,6 +244,7 @@ function StepFrame({
 
 export function GuidedIntakeShell() {
   const [selectedService, setSelectedService] = useState<ServiceId | null>(null);
+  const [llcName, setLlcName] = useState("");
   const currentStep = selectedService ? 2 : 1;
   const currentLabel = selectedService ? "Empresa" : "Serviço";
 
@@ -175,6 +258,9 @@ export function GuidedIntakeShell() {
       <main className="mx-auto flex w-full max-w-6xl flex-1 px-4 py-8 sm:px-6 lg:px-8">
         <div className="grid w-full gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
           <StepFrame
+            llcName={llcName}
+            onChangeLlcName={setLlcName}
+            onResetService={() => setSelectedService(null)}
             onSelectService={setSelectedService}
             selectedService={selectedService}
           />

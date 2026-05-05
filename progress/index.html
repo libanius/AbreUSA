@@ -181,7 +181,7 @@
         background: linear-gradient(90deg, var(--green), var(--blue));
         border-radius: inherit;
         height: 100%;
-        width: 28%;
+        width: 32%;
       }
 
       ul {
@@ -266,13 +266,13 @@
       <section class="grid overview">
         <article class="card">
           <span class="pill done" data-en="Current phase" data-pt="Fase atual">Current phase</span>
-          <p class="phase" data-en="Phase 3: Guided Intake Flow Planning" data-pt="Fase 3: Planejamento do fluxo guiado de intake">Phase 3: Guided Intake Flow Planning</p>
+          <p class="phase" data-en="Phase 3: Guided Intake Flow" data-pt="Fase 3: Fluxo guiado de intake">Phase 3: Guided Intake Flow</p>
           <p
-            data-en="P3-T02 is complete. The first interactive guided-flow slice is implemented without backend, uploads, or persistence."
-            data-pt="P3-T02 está concluída. O primeiro recorte interativo do fluxo guiado foi implementado sem backend, uploads ou persistência."
+            data-en="P3-T03 is complete. Service selection and local LLC name validation are implemented without backend, uploads, or persistence."
+            data-pt="P3-T03 está concluída. Seleção de serviço e validação local do nome da LLC foram implementadas sem backend, uploads ou persistência."
           >
-            P3-T02 is complete. The first interactive guided-flow slice is
-            implemented without backend, uploads, or persistence.
+            P3-T03 is complete. Service selection and local LLC name validation
+            are implemented without backend, uploads, or persistence.
           </p>
           <div class="progress-wrap" aria-label="Project progress">
             <div class="progress-label">
@@ -314,6 +314,7 @@
             <li data-en="Phase 2 shell composition reviewed and closed." data-pt="Composição do shell da Fase 2 revisada e encerrada.">Phase 2 shell composition reviewed and closed.</li>
             <li data-en="P3-T01 first intake implementation slice planned." data-pt="P3-T01 primeiro recorte de implementação do intake planejado.">P3-T01 first intake implementation slice planned.</li>
             <li data-en="P3-T02 service selection and step-state shell implemented." data-pt="P3-T02 seleção de serviço e shell de estado de etapas implementados.">P3-T02 service selection and step-state shell implemented.</li>
+            <li data-en="P3-T03 LLC name step and suffix validation implemented." data-pt="P3-T03 etapa de nome da LLC e validação de sufixo implementadas.">P3-T03 LLC name step and suffix validation implemented.</li>
             <li data-en="Lint and production build pass." data-pt="Lint e build de produção passam.">Lint and production build pass.</li>
           </ul>
         </article>
@@ -324,32 +325,34 @@
             <li data-en="Home route renders a static AbreUSA shell." data-pt="A rota inicial renderiza um shell estático da AbreUSA.">Home route renders a static AbreUSA shell.</li>
             <li data-en="Header includes brand and progress placeholder." data-pt="O cabeçalho inclui marca e indicador de progresso.">Header includes brand and progress placeholder.</li>
             <li data-en="Main content supports future multi-step guided flow." data-pt="O conteúdo principal suporta o futuro fluxo guiado em múltiplas etapas.">Main content supports future multi-step guided flow.</li>
-            <li data-en="Reusable guided-flow and preview primitives are structural only." data-pt="Os primitivos reutilizáveis do fluxo guiado e preview são apenas estruturais.">Reusable guided-flow and preview primitives are structural only.</li>
-            <li data-en="No business logic, forms, Supabase, uploads, or persistence." data-pt="Ainda não há lógica de negócio, formulários, Supabase, uploads ou persistência.">No business logic, forms, Supabase, uploads, or persistence.</li>
+            <li data-en="Reusable guided-flow and preview primitives support the current local flow shell." data-pt="Os primitivos reutilizáveis do fluxo guiado e preview dão suporte ao shell local atual.">Reusable guided-flow and preview primitives support the current local flow shell.</li>
+            <li data-en="Service selection is available for Complete Package and Florida LLC paths." data-pt="A seleção de serviço está disponível para os caminhos Pacote Completo e LLC na Flórida.">Service selection is available for Complete Package and Florida LLC paths.</li>
+            <li data-en="LLC name entry validates compatible suffixes locally." data-pt="A entrada do nome da LLC valida sufixos compatíveis localmente.">LLC name entry validates compatible suffixes locally.</li>
+            <li data-en="No Supabase, uploads, persistence, generated forms, submission, or payment." data-pt="Ainda não há Supabase, uploads, persistência, formulários gerados, envio ou pagamento.">No Supabase, uploads, persistence, generated forms, submission, or payment.</li>
           </ul>
         </article>
 
         <article class="card task">
           <span class="pill done" data-en="Current task" data-pt="Tarefa atual">Current task</span>
-          <h2 data-en="P3-T02 Complete" data-pt="P3-T02 concluído">P3-T02 Complete</h2>
+          <h2 data-en="P3-T03 Complete" data-pt="P3-T03 concluído">P3-T03 Complete</h2>
           <p
-            data-en="Completed. Service selection and progress state are available for the Complete Package / Florida LLC path."
-            data-pt="Concluído. Seleção de serviço e estado de progresso estão disponíveis para o caminho Pacote Completo / LLC na Flórida."
+            data-en="Completed. LLC name entry and LLC-compatible suffix validation are available after service selection."
+            data-pt="Concluído. Entrada do nome da LLC e validação de sufixo compatível estão disponíveis após a seleção de serviço."
           >
-            Completed. Service selection and progress state are available for
-            the Complete Package / Florida LLC path.
+            Completed. LLC name entry and LLC-compatible suffix validation are
+            available after service selection.
           </p>
         </article>
 
         <article class="card next">
           <span class="pill" data-en="Next task" data-pt="Próxima tarefa">Next task</span>
-          <h2 data-en="P3-T03 LLC Name Step" data-pt="P3-T03 Etapa de nome da LLC">P3-T03 LLC Name Step</h2>
+          <h2 data-en="P3-T04 Business Activity Step" data-pt="P3-T04 Etapa de atividade da empresa">P3-T04 Business Activity Step</h2>
           <p
-            data-en="Implement the next step: local LLC name entry and LLC-compatible suffix validation."
-            data-pt="Implementar a próxima etapa: entrada local do nome da LLC e validação de sufixo compatível com LLC."
+            data-en="Implement the next step: local business activity selection after a valid LLC name."
+            data-pt="Implementar a próxima etapa: seleção local da atividade da empresa após um nome de LLC válido."
           >
-            Implement the next step: local LLC name entry and LLC-compatible
-            suffix validation.
+            Implement the next step: local business activity selection after a
+            valid LLC name.
           </p>
         </article>
       </section>

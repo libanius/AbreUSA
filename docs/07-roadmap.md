@@ -121,7 +121,7 @@ Next task:
 
 ## Phase 3: Guided Intake Flow
 
-Status: Current phase. First slice implemented.
+Status: Current phase. LLC name step implemented.
 
 Goal: implement the customer questionnaire.
 
@@ -201,6 +201,26 @@ Next Phase 3 task:
   - Add the next interactive step after service selection.
   - Capture only local client state.
   - Add LLC suffix validation in the UI.
+  - Keep data unpersisted.
+  - Keep Supabase, uploads, generated forms, and submission out of scope.
+
+P3-T03 status:
+
+- Complete.
+- LLC name step shell implemented after service selection.
+- LLC name is captured in local client state only.
+- UI validates LLC-compatible suffixes such as `LLC`, `L.L.C.`, and `Limited Liability Company`.
+- Review summary reflects selected service, Florida LLC context, local LLC name, and validation status.
+- No backend, upload, persistence, generated form, submission, or payment behavior added.
+
+Next Phase 3 task:
+
+- Task ID: `P3-T04`.
+- Title: Implement business activity step shell.
+- Scope:
+  - Add the next interactive step after valid LLC name entry.
+  - Capture business activity in local client state only.
+  - Use existing business activity categories only if already documented or present in product evidence.
   - Keep data unpersisted.
   - Keep Supabase, uploads, generated forms, and submission out of scope.
 

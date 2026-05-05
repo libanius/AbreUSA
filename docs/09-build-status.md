@@ -4,51 +4,51 @@
 
 Phase 3: Guided Intake Flow.
 
-Phase 2 is complete. `P3-T02` is complete. The first interactive guided-flow slice is implemented without backend or persistence.
+Phase 2 is complete. `P3-T03` is complete. The guided-flow shell now includes service selection and local LLC name validation without backend or persistence.
 
 ## Last Completed Task
-
-Task ID: `P2-T04`
-
-Title: Static confirmation/status shell and Phase 2 closure.
-
-Result:
-
-- Static confirmation shell implemented.
-- Static protocol/status display shell implemented.
-- Phase 2 shell composition reviewed and closed.
-- Roadmap, build status, and progress dashboard updated.
-- Verification completed: `npm run lint` passes.
-- Verification completed: `npm run build` passes.
-
-## Current Task
-
-Task ID: `P3-T02`
-
-Title: Implement service selection and step-state shell.
-
-Status: Complete.
-
-Scope:
-
-- Convert the static shell into a minimal client-side guided-flow shell.
-- Add service selection as the first interactive step.
-- Support only Complete Package / Florida LLC path in this slice.
-- Keep EIN-only and Registered Agent-only deferred.
-
-## Next Task
 
 Task ID: `P3-T03`
 
 Title: Implement LLC name step shell and validation plan.
 
-Status: Awaiting confirmation.
+Result:
+
+- LLC name step shell implemented after service selection.
+- LLC name captured in local client state only.
+- LLC-compatible suffix validation added in the UI.
+- Review summary reflects selected service, Florida LLC context, local LLC name, and validation status.
+- No backend, upload, persistence, generated form, submission, or payment behavior added.
+
+## Current Task
+
+Task ID: `P3-T03`
+
+Title: Implement LLC name step shell and validation plan.
+
+Status: Complete.
 
 Scope:
 
 - Add the next interactive step after service selection.
-- Capture only local client state.
+- Capture LLC name in local client state only.
 - Add LLC suffix validation in the UI.
+- Keep data unpersisted.
+- Keep Supabase, uploads, generated forms, and submission out of scope.
+
+## Next Task
+
+Task ID: `P3-T04`
+
+Title: Implement business activity step shell.
+
+Status: Awaiting confirmation.
+
+Scope:
+
+- Add the next interactive step after valid LLC name entry.
+- Capture business activity in local client state only.
+- Use existing business activity categories only if already documented or present in product evidence.
 - Keep data unpersisted.
 - Keep Supabase, uploads, generated forms, and submission out of scope.
 
@@ -82,6 +82,7 @@ Scope:
 - GitHub Pages setup instructions documented in `05-platform-strategy.md`.
 - `P3-T01` first intake implementation slice planned.
 - `P3-T02` service selection and step-state shell implemented.
+- `P3-T03` LLC name step shell and validation plan implemented.
 
 ## What Is Implemented
 
@@ -107,7 +108,9 @@ Scope:
 - The shell is structural only.
 - Service selection behavior is implemented for the first Phase 3 slice.
 - Progress updates when a supported service path is selected.
-- No form handling is implemented beyond service selection.
+- LLC name entry is implemented in local client state.
+- UI validates LLC-compatible suffixes before continuing to the next planned step.
+- No form handling is implemented beyond service selection and LLC name validation.
 - No Supabase connection is implemented.
 - No document upload or data persistence is implemented.
 - `/progress/index.html` is available as a standalone static dashboard for stakeholders.
@@ -116,9 +119,11 @@ Scope:
 ## What Is NOT Implemented
 
 - Full Phase 3 guided intake flow.
-- LLC name step.
 - Customer questionnaire steps.
-- Client-side validation.
+- Business activity step.
+- Member count and member data steps.
+- Address, Registered Agent, EIN, document, review, approval, and confirmation steps.
+- Client-side validation beyond LLC name suffix validation.
 - Phase 4 document collection.
 - Phase 5 review and generated form previews.
 - Phase 6 order submission workflow.
@@ -131,20 +136,20 @@ Scope:
 
 Execute one task only:
 
-`P3-T03: Implement LLC name step shell and validation plan`
+`P3-T04: Implement business activity step shell`
 
 Deliverable:
 
-- Add the next interactive step after service selection.
-- Capture LLC name in local client state only.
-- Validate that the name includes an LLC-compatible suffix.
+- Add the next interactive step after valid LLC name entry.
+- Capture business activity in local client state only.
+- Keep business activity choices constrained to documented/product-evidence categories.
 - Update `/docs/07-roadmap.md`, `/docs/09-build-status.md`, and `/progress/index.html` after implementation.
 
 Acceptance criteria:
 
-- User can move from service selection to the LLC name step.
-- User can enter a company name locally.
-- UI communicates whether the name has an LLC-compatible suffix.
+- User can move from a valid LLC name state to the business activity step.
+- User can select or enter a business activity locally.
+- Existing service selection and LLC name validation remain intact.
 - Existing static shell remains visually intact.
 - No backend calls are introduced.
 - No document upload or persistence is introduced.
