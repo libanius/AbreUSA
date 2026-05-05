@@ -16,7 +16,12 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
 type ServiceId = "complete" | "florida_llc";
-type FlowStep = "service" | "llc_name" | "business_activity" | "member_count";
+type FlowStep =
+  | "service"
+  | "llc_name"
+  | "business_activity"
+  | "member_count"
+  | "member_data";
 type BusinessActivityId =
   | "tech"
   | "ecomm"
@@ -39,6 +44,12 @@ type ServiceOption = {
 type BusinessActivityOption = {
   id: BusinessActivityId;
   label: string;
+};
+
+type MemberDraft = {
+  fullName: string;
+  address: string;
+  ownershipPercentage: string;
 };
 
 const serviceOptions: ServiceOption[] = [
@@ -69,7 +80,16 @@ const businessActivityOptions: BusinessActivityOption[] = [
   { id: "other", label: "Outro" },
 ];
 
-const progressItems = ["Serviço", "Empresa", "Atividade", "Documentos", "Revisão"];
+const progressItems = [
+  "Serviço",
+  "Empresa",
+  "Atividade",
+  "Sócios",
+  "Dados",
+  "Documentos",
+  "Revisão",
+  "Envio",
+];
 const llcSuffixPattern =
   /\b(l\.?\s?l\.?\s?c\.?|limited liability company)\.?$/i;
 
@@ -135,13 +155,17 @@ function StepFrame({
   customBusinessActivity,
   llcName,
   memberCount,
+  memberData,
   onBackToBusinessActivity,
+  onBackToMemberCount,
   onBackToLlcName,
   onChangeBusinessActivity,
   onChangeCustomBusinessActivity,
   onChangeLlcName,
+  onChangeMemberData,
   onChangeMemberCount,
   onContinueToBusinessActivity,
+  onContinueToMemberData,
   onContinueToMemberCount,
   onResetService,
   selectedService,
@@ -152,13 +176,21 @@ function StepFrame({
   customBusinessActivity: string;
   llcName: string;
   memberCount: number;
+  memberData: MemberDraft[];
   onBackToBusinessActivity: () => void;
+  onBackToMemberCount: () => void;
   onBackToLlcName: () => void;
   onChangeBusinessActivity: (activity: BusinessActivityId) => void;
   onChangeCustomBusinessActivity: (activity: string) => void;
   onChangeLlcName: (name: string) => void;
+  onChangeMemberData: (
+    index: number,
+    field: keyof MemberDraft,
+    value: string,
+  ) => void;
   onChangeMemberCount: (count: number) => void;
   onContinueToBusinessActivity: () => void;
+  onContinueToMemberData: () => void;
   onContinueToMemberCount: () => void;
   onResetService: () => void;
   selectedService: ServiceId | null;
@@ -176,6 +208,123 @@ function StepFrame({
       ? customBusinessActivity.trim()
       : businessActivityOptions.find((activity) => activity.id === businessActivity)
           ?.label;
+  const visibleMembers = Array.from({ length: memberCount }, (_, index) => {
+    return (
+      memberData[index] ?? {
+        fullName: "",
+        address: "",
+        ownershipPercentage: String(Math.round(100 / memberCount)),
+      }
+    );
+  });
+  const ownershipTotal = visibleMembers.reduce((total, member) => {
+    return total + (Number(member.ownershipPercentage) || 0);
+  }, 0);
+  const hasOwnershipEntries = visibleMembers.some(
+    (member) => member.ownershipPercentage.trim().length > 0,
+  );
+  const ownershipMatches = ownershipTotal === 100;
+
+  if (activeStep === "member_data") {
+    return (
+      <StepCard
+        badge="Rascunho local"
+        eyebrow="Passo 5 · Dados dos sócios"
+        title="Dados de cada sócio"
+      >
+        <div className="grid gap-3">
+          <StatusMessage
+            title={ownershipMatches ? "Participação total: 100%" : "Revise as participações"}
+            tone={ownershipMatches ? "success" : "warning"}
+          >
+            <p>
+              {ownershipMatches
+                ? "A soma das participações informadas está em 100%."
+                : `A soma atual é ${ownershipTotal}%. Ajuste os percentuais para totalizar 100%.`}
+            </p>
+          </StatusMessage>
+
+          <FieldGroup title="Informações dos sócios">
+            {visibleMembers.map((member, index) => {
+              const memberLabel =
+                index === 0 ? "Sócio principal" : `Sócio ${index + 1}`;
+
+              return (
+                <div
+                  className="grid gap-4 rounded-md border bg-card p-4"
+                  key={index}
+                >
+                  <p className="text-sm font-semibold text-foreground">
+                    {memberLabel}
+                  </p>
+                  <FieldShell label="Nome completo">
+                    <Input
+                      onChange={(event) =>
+                        onChangeMemberData(index, "fullName", event.target.value)
+                      }
+                      placeholder="Como no passaporte"
+                      value={member.fullName}
+                    />
+                  </FieldShell>
+                  <FieldShell label="Endereço">
+                    <Input
+                      onChange={(event) =>
+                        onChangeMemberData(index, "address", event.target.value)
+                      }
+                      placeholder="Street, City, State, ZIP"
+                      value={member.address}
+                    />
+                  </FieldShell>
+                  <FieldShell label="Participação (%)">
+                    <Input
+                      inputMode="numeric"
+                      max={100}
+                      min={1}
+                      onChange={(event) =>
+                        onChangeMemberData(
+                          index,
+                          "ownershipPercentage",
+                          event.target.value,
+                        )
+                      }
+                      type="number"
+                      value={member.ownershipPercentage}
+                    />
+                  </FieldShell>
+                </div>
+              );
+            })}
+          </FieldGroup>
+
+          <ReviewSummary
+            items={[
+              { label: "Serviço", value: selectedLabel ?? "Pendente" },
+              { label: "Nome", value: trimmedLlcName },
+              { label: "Sócios", value: String(memberCount) },
+              {
+                label: "Participação",
+                value: hasOwnershipEntries ? `${ownershipTotal}%` : "Pendente",
+              },
+            ]}
+            title="Resumo"
+          />
+
+          <FormPreviewShell
+            sections={["Article I", "Article II", "Article III"]}
+            subtitle="State of Florida · Division of Corporations"
+            title="Articles of Organization"
+          />
+        </div>
+        <StepNavigation
+          backDisabled={false}
+          backLabel="Voltar"
+          nextDisabled
+          nextLabel="Continuar"
+          onBack={onBackToMemberCount}
+        />
+      </StepCard>
+    );
+  }
 
   if (activeStep === "member_count") {
     const isSingleMember = memberCount === 1;
@@ -257,6 +406,7 @@ function StepFrame({
           nextDisabled={false}
           nextLabel="Continuar"
           onBack={onBackToBusinessActivity}
+          onNext={onContinueToMemberData}
         />
       </StepCard>
     );
@@ -485,8 +635,13 @@ export function GuidedIntakeShell() {
     useState<BusinessActivityId | null>(null);
   const [customBusinessActivity, setCustomBusinessActivity] = useState("");
   const [memberCount, setMemberCount] = useState(1);
+  const [memberData, setMemberData] = useState<MemberDraft[]>([
+    { fullName: "", address: "", ownershipPercentage: "100" },
+  ]);
   const currentStep =
-    activeStep === "member_count"
+    activeStep === "member_data"
+      ? 5
+      : activeStep === "member_count"
       ? 4
       : activeStep === "business_activity"
         ? 3
@@ -494,7 +649,9 @@ export function GuidedIntakeShell() {
           ? 2
           : 1;
   const currentLabel =
-    activeStep === "member_count"
+    activeStep === "member_data"
+      ? "Dados dos sócios"
+      : activeStep === "member_count"
       ? "Sócios"
       : activeStep === "business_activity"
       ? "Atividade"
@@ -513,6 +670,44 @@ export function GuidedIntakeShell() {
     setBusinessActivity(null);
     setCustomBusinessActivity("");
     setMemberCount(1);
+    setMemberData([{ fullName: "", address: "", ownershipPercentage: "100" }]);
+  }
+
+  function handleChangeMemberCount(count: number) {
+    setMemberCount(count);
+    setMemberData((currentMembers) =>
+      Array.from({ length: count }, (_, index) => {
+        return (
+          currentMembers[index] ?? {
+            fullName: "",
+            address: "",
+            ownershipPercentage: String(Math.round(100 / count)),
+          }
+        );
+      }),
+    );
+  }
+
+  function handleChangeMemberData(
+    index: number,
+    field: keyof MemberDraft,
+    value: string,
+  ) {
+    setMemberData((currentMembers) =>
+      Array.from({ length: memberCount }, (_, memberIndex) => {
+        const existing = currentMembers[memberIndex] ?? {
+          fullName: "",
+          address: "",
+          ownershipPercentage: String(Math.round(100 / memberCount)),
+        };
+
+        if (memberIndex !== index) {
+          return existing;
+        }
+
+        return { ...existing, [field]: value };
+      }),
+    );
   }
 
   return (
@@ -530,13 +725,17 @@ export function GuidedIntakeShell() {
             customBusinessActivity={customBusinessActivity}
             llcName={llcName}
             memberCount={memberCount}
+            memberData={memberData}
             onBackToBusinessActivity={() => setActiveStep("business_activity")}
+            onBackToMemberCount={() => setActiveStep("member_count")}
             onBackToLlcName={() => setActiveStep("llc_name")}
             onChangeBusinessActivity={setBusinessActivity}
             onChangeCustomBusinessActivity={setCustomBusinessActivity}
             onChangeLlcName={setLlcName}
-            onChangeMemberCount={setMemberCount}
+            onChangeMemberData={handleChangeMemberData}
+            onChangeMemberCount={handleChangeMemberCount}
             onContinueToBusinessActivity={() => setActiveStep("business_activity")}
+            onContinueToMemberData={() => setActiveStep("member_data")}
             onContinueToMemberCount={() => setActiveStep("member_count")}
             onResetService={handleResetService}
             onSelectService={handleSelectService}
