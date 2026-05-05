@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
 type ServiceId = "complete" | "florida_llc";
-type FlowStep = "service" | "llc_name" | "business_activity";
+type FlowStep = "service" | "llc_name" | "business_activity" | "member_count";
 type BusinessActivityId =
   | "tech"
   | "ecomm"
@@ -134,11 +134,15 @@ function StepFrame({
   businessActivity,
   customBusinessActivity,
   llcName,
+  memberCount,
+  onBackToBusinessActivity,
   onBackToLlcName,
   onChangeBusinessActivity,
   onChangeCustomBusinessActivity,
   onChangeLlcName,
+  onChangeMemberCount,
   onContinueToBusinessActivity,
+  onContinueToMemberCount,
   onResetService,
   selectedService,
   onSelectService,
@@ -147,11 +151,15 @@ function StepFrame({
   businessActivity: BusinessActivityId | null;
   customBusinessActivity: string;
   llcName: string;
+  memberCount: number;
+  onBackToBusinessActivity: () => void;
   onBackToLlcName: () => void;
   onChangeBusinessActivity: (activity: BusinessActivityId) => void;
   onChangeCustomBusinessActivity: (activity: string) => void;
   onChangeLlcName: (name: string) => void;
+  onChangeMemberCount: (count: number) => void;
   onContinueToBusinessActivity: () => void;
+  onContinueToMemberCount: () => void;
   onResetService: () => void;
   selectedService: ServiceId | null;
   onSelectService: (service: ServiceId) => void;
@@ -168,6 +176,91 @@ function StepFrame({
       ? customBusinessActivity.trim()
       : businessActivityOptions.find((activity) => activity.id === businessActivity)
           ?.label;
+
+  if (activeStep === "member_count") {
+    const isSingleMember = memberCount === 1;
+
+    return (
+      <StepCard
+        badge="Rascunho local"
+        eyebrow="Passo 4 · Sócios"
+        title="Quantos sócios terá a LLC?"
+      >
+        <div className="grid gap-3">
+          <StatusMessage
+            title={isSingleMember ? "Single-Member LLC" : "Multi-Member LLC"}
+            tone={isSingleMember ? "info" : "warning"}
+          >
+            <p>
+              {isSingleMember
+                ? "A LLC terá apenas um sócio neste rascunho local."
+                : "Cada sócio deverá informar nome completo, endereço e percentual de participação em uma etapa futura."}
+            </p>
+          </StatusMessage>
+
+          <FieldGroup title="Número de sócios">
+            <div className="flex items-center justify-center gap-4 rounded-md border bg-card p-5">
+              <button
+                aria-label="Diminuir número de sócios"
+                className="flex size-10 items-center justify-center rounded-md border bg-background text-xl font-semibold disabled:opacity-40"
+                disabled={memberCount <= 1}
+                onClick={() => onChangeMemberCount(Math.max(1, memberCount - 1))}
+                type="button"
+              >
+                -
+              </button>
+              <div className="min-w-24 text-center">
+                <p className="text-4xl font-semibold text-foreground">
+                  {memberCount}
+                </p>
+                <p className="mt-1 text-xs font-medium text-muted-foreground">
+                  {isSingleMember ? "sócio" : "sócios"}
+                </p>
+              </div>
+              <button
+                aria-label="Aumentar número de sócios"
+                className="flex size-10 items-center justify-center rounded-md border bg-background text-xl font-semibold disabled:opacity-40"
+                disabled={memberCount >= 10}
+                onClick={() => onChangeMemberCount(Math.min(10, memberCount + 1))}
+                type="button"
+              >
+                +
+              </button>
+            </div>
+          </FieldGroup>
+
+          <ReviewSummary
+            items={[
+              { label: "Serviço", value: selectedLabel ?? "Pendente" },
+              { label: "Nome", value: trimmedLlcName },
+              {
+                label: "Atividade",
+                value: selectedActivityLabel || "Pendente",
+              },
+              {
+                label: "Estrutura",
+                value: isSingleMember ? "Single-Member LLC" : "Multi-Member LLC",
+              },
+            ]}
+            title="Resumo"
+          />
+
+          <FormPreviewShell
+            sections={["Article I", "Article II", "Article III"]}
+            subtitle="State of Florida · Division of Corporations"
+            title="Articles of Organization"
+          />
+        </div>
+        <StepNavigation
+          backDisabled={false}
+          backLabel="Voltar"
+          nextDisabled={false}
+          nextLabel="Continuar"
+          onBack={onBackToBusinessActivity}
+        />
+      </StepCard>
+    );
+  }
 
   if (activeStep === "business_activity") {
     return (
@@ -251,8 +344,10 @@ function StepFrame({
         <StepNavigation
           backDisabled={false}
           backLabel="Voltar"
+          nextDisabled={!selectedActivityLabel}
           nextLabel={selectedActivityLabel ? "Continuar" : "Selecionar atividade"}
           onBack={onBackToLlcName}
+          onNext={onContinueToMemberCount}
         />
       </StepCard>
     );
@@ -389,10 +484,19 @@ export function GuidedIntakeShell() {
   const [businessActivity, setBusinessActivity] =
     useState<BusinessActivityId | null>(null);
   const [customBusinessActivity, setCustomBusinessActivity] = useState("");
+  const [memberCount, setMemberCount] = useState(1);
   const currentStep =
-    activeStep === "business_activity" ? 3 : selectedService ? 2 : 1;
+    activeStep === "member_count"
+      ? 4
+      : activeStep === "business_activity"
+        ? 3
+        : selectedService
+          ? 2
+          : 1;
   const currentLabel =
-    activeStep === "business_activity"
+    activeStep === "member_count"
+      ? "Sócios"
+      : activeStep === "business_activity"
       ? "Atividade"
       : selectedService
         ? "Empresa"
@@ -408,6 +512,7 @@ export function GuidedIntakeShell() {
     setActiveStep("service");
     setBusinessActivity(null);
     setCustomBusinessActivity("");
+    setMemberCount(1);
   }
 
   return (
@@ -424,11 +529,15 @@ export function GuidedIntakeShell() {
             businessActivity={businessActivity}
             customBusinessActivity={customBusinessActivity}
             llcName={llcName}
+            memberCount={memberCount}
+            onBackToBusinessActivity={() => setActiveStep("business_activity")}
             onBackToLlcName={() => setActiveStep("llc_name")}
             onChangeBusinessActivity={setBusinessActivity}
             onChangeCustomBusinessActivity={setCustomBusinessActivity}
             onChangeLlcName={setLlcName}
+            onChangeMemberCount={setMemberCount}
             onContinueToBusinessActivity={() => setActiveStep("business_activity")}
+            onContinueToMemberCount={() => setActiveStep("member_count")}
             onResetService={handleResetService}
             onSelectService={handleSelectService}
             selectedService={selectedService}

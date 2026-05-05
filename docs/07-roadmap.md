@@ -4,7 +4,7 @@
 
 Phase 3: Guided Intake Flow.
 
-Phase 2 is complete. `P3-T01` has defined the first implementation slice for Phase 3. Product code for Phase 3 has not started yet.
+Phase 2 is complete. Phase 3 guided intake implementation is in progress.
 
 ## Phase 0: App Spine Confirmation
 
@@ -121,7 +121,7 @@ Next task:
 
 ## Phase 3: Guided Intake Flow
 
-Status: Current phase. Business activity step implemented.
+Status: Current phase. Member count step implemented.
 
 Goal: implement the customer questionnaire.
 
@@ -242,6 +242,27 @@ Next Phase 3 task:
   - Capture member count in local client state only.
   - Support the documented prototype range of 1 to 10 members.
   - Show single-member vs multi-member context in the UI.
+  - Keep data unpersisted.
+  - Keep Supabase, uploads, generated forms, and submission out of scope.
+
+P3-T05 status:
+
+- Complete.
+- Member count step shell implemented after business activity selection.
+- Member count is captured in local client state only.
+- UI supports the documented prototype range of 1 to 10 members.
+- UI communicates Single-Member LLC vs Multi-Member LLC context.
+- No member detail fields, backend, upload, persistence, generated form, submission, or payment behavior added.
+
+Next Phase 3 task:
+
+- Task ID: `P3-T06`.
+- Title: Implement member data step shell.
+- Scope:
+  - Add the next interactive step after member count selection.
+  - Render local member detail fields based on the selected member count.
+  - Capture each member name, address, and ownership percentage in local client state only.
+  - Keep ownership total validation as UI-only if included in this slice.
   - Keep data unpersisted.
   - Keep Supabase, uploads, generated forms, and submission out of scope.
 

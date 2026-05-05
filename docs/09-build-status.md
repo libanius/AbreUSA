@@ -4,45 +4,29 @@
 
 Phase 3: Guided Intake Flow.
 
-Phase 2 is complete. `P3-T04` is complete. The guided-flow shell now includes service selection, local LLC name validation, and local business activity selection without backend or persistence.
+Phase 2 is complete. `P3-T05` is complete. The guided-flow shell now includes service selection, local LLC name validation, local business activity selection, and local member count selection without backend or persistence.
 
 ## Last Completed Task
-
-Task ID: `P3-T04`
-
-Title: Implement business activity step shell.
-
-Result:
-
-- Business activity step shell implemented after valid LLC name entry.
-- Business activity captured in local client state only.
-- Activity options use existing product-evidence categories from the prototype.
-- `Other` activity supports a local custom text entry.
-- No backend, upload, persistence, generated form, submission, or payment behavior added.
-
-## Current Task
-
-Task ID: `P3-T04`
-
-Title: Implement business activity step shell.
-
-Status: Complete.
-
-Scope:
-
-- Add the next interactive step after valid LLC name entry.
-- Capture business activity in local client state only.
-- Use existing business activity categories only if already documented or present in product evidence.
-- Keep data unpersisted.
-- Keep Supabase, uploads, generated forms, and submission out of scope.
-
-## Next Task
 
 Task ID: `P3-T05`
 
 Title: Implement member count step shell.
 
-Status: Awaiting confirmation.
+Result:
+
+- Member count step shell implemented after business activity selection.
+- Member count captured in local client state only.
+- UI supports the documented prototype range of 1 to 10 members.
+- UI communicates Single-Member LLC vs Multi-Member LLC context.
+- No member detail fields, backend, upload, persistence, generated form, submission, or payment behavior added.
+
+## Current Task
+
+Task ID: `P3-T05`
+
+Title: Implement member count step shell.
+
+Status: Complete.
 
 Scope:
 
@@ -50,6 +34,23 @@ Scope:
 - Capture member count in local client state only.
 - Support the documented prototype range of 1 to 10 members.
 - Show single-member vs multi-member context in the UI.
+- Keep data unpersisted.
+- Keep Supabase, uploads, generated forms, and submission out of scope.
+
+## Next Task
+
+Task ID: `P3-T06`
+
+Title: Implement member data step shell.
+
+Status: Awaiting confirmation.
+
+Scope:
+
+- Add the next interactive step after member count selection.
+- Render local member detail fields based on the selected member count.
+- Capture each member name, address, and ownership percentage in local client state only.
+- Keep ownership total validation as UI-only if included in this slice.
 - Keep data unpersisted.
 - Keep Supabase, uploads, generated forms, and submission out of scope.
 
@@ -85,6 +86,7 @@ Scope:
 - `P3-T02` service selection and step-state shell implemented.
 - `P3-T03` LLC name step shell and validation plan implemented.
 - `P3-T04` business activity step shell implemented.
+- `P3-T05` member count step shell implemented.
 
 ## What Is Implemented
 
@@ -114,7 +116,10 @@ Scope:
 - UI validates LLC-compatible suffixes before continuing to the next planned step.
 - Business activity selection is implemented in local client state.
 - The `Other` business activity path supports a local custom text value.
-- No form handling is implemented beyond service selection, LLC name validation, and business activity selection.
+- Member count selection is implemented in local client state.
+- Member count is constrained to 1 to 10 in the UI.
+- The UI communicates Single-Member LLC vs Multi-Member LLC context.
+- No form handling is implemented beyond service selection, LLC name validation, business activity selection, and member count selection.
 - No Supabase connection is implemented.
 - No document upload or data persistence is implemented.
 - `/progress/index.html` is available as a standalone static dashboard for stakeholders.
@@ -124,9 +129,9 @@ Scope:
 
 - Full Phase 3 guided intake flow.
 - Customer questionnaire steps.
-- Member count and member data steps.
+- Member data steps.
 - Address, Registered Agent, EIN, document, review, approval, and confirmation steps.
-- Client-side validation beyond LLC name suffix validation and basic activity selection state.
+- Client-side validation beyond LLC name suffix validation, basic activity selection state, and member count bounds.
 - Phase 4 document collection.
 - Phase 5 review and generated form previews.
 - Phase 6 order submission workflow.
@@ -139,22 +144,22 @@ Scope:
 
 Execute one task only:
 
-`P3-T05: Implement member count step shell`
+`P3-T06: Implement member data step shell`
 
 Deliverable:
 
-- Add the next interactive step after business activity selection.
-- Capture member count in local client state only.
-- Support the documented prototype range of 1 to 10 members.
-- Show single-member vs multi-member context in the UI.
+- Add the next interactive step after member count selection.
+- Render local member detail fields based on the selected member count.
+- Capture each member name, address, and ownership percentage in local client state only.
+- Keep ownership total validation as UI-only if included in this slice.
 - Update `/docs/07-roadmap.md`, `/docs/09-build-status.md`, and `/progress/index.html` after implementation.
 
 Acceptance criteria:
 
-- User can move from business activity selection to the member count step.
-- User can increase/decrease member count locally from 1 to 10.
-- UI communicates single-member vs multi-member context.
-- Existing service selection, LLC name validation, and business activity selection remain intact.
+- User can move from member count selection to the member data step.
+- The number of rendered member sections matches the selected member count.
+- User can enter member name, address, and ownership percentage locally.
+- Existing service selection, LLC name validation, business activity selection, and member count selection remain intact.
 - Existing static shell remains visually intact.
 - No backend calls are introduced.
 - No document upload or persistence is introduced.
