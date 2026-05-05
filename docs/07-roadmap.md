@@ -121,7 +121,7 @@ Next task:
 
 ## Phase 3: Guided Intake Flow
 
-Status: Current phase. Business address step (P3-T07) implemented.
+Status: Current phase. Registered Agent step (P3-T08) implemented.
 
 Goal: implement the customer questionnaire.
 
@@ -271,15 +271,24 @@ P3-T07 status:
 - Progress sidebar updated to include Endereço as step 6 of 9.
 - No backend, upload, persistence, generated form, submission, or payment behavior added.
 
+P3-T08 status:
+
+- Complete.
+- Registered Agent step shell implemented after business address entry.
+- Three options presented: AbreUSA, self, or other.
+- If "other" is selected, name, address, city, state (locked to FL), and ZIP fields appear.
+- Continue is enabled when a valid selection is made and "other" fields are filled if applicable.
+- Progress sidebar updated to include Agente as step 7 of 10.
+- No backend, upload, persistence, generated form, submission, or payment behavior added.
+
 Next Phase 3 task:
 
-- Task ID: `P3-T08`.
-- Title: Implement Registered Agent step shell.
+- Task ID: `P3-T09`.
+- Title: Implement EIN questions step shell.
 - Scope:
-  - Add the next interactive step after business address entry.
-  - Present the three Registered Agent options: AbreUSA, self, or other.
-  - Capture the selection in local client state only.
-  - If "other" is selected, capture agent name and address locally.
+  - Add the next interactive step after Registered Agent selection.
+  - Show EIN questions only when service includes EIN (Complete Package).
+  - Capture EIN/IRS SS-4 fields in local client state only: reason for applying, entity type, responsible party name and passport number, start date, and fiscal closing month.
   - Keep data unpersisted.
   - Keep Supabase, uploads, generated forms, and submission out of scope.
 

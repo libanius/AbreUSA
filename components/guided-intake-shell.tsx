@@ -22,7 +22,8 @@ type FlowStep =
   | "business_activity"
   | "member_count"
   | "member_data"
-  | "business_address";
+  | "business_address"
+  | "registered_agent";
 type BusinessActivityId =
   | "tech"
   | "ecomm"
@@ -55,6 +56,17 @@ type MemberDraft = {
 
 type BusinessAddressDraft = {
   street: string;
+  city: string;
+  state: string;
+  zip: string;
+};
+
+type RegisteredAgentChoice = "abreusa" | "self" | "other";
+
+type RegisteredAgentDraft = {
+  choice: RegisteredAgentChoice | null;
+  name: string;
+  address: string;
   city: string;
   state: string;
   zip: string;
@@ -95,10 +107,33 @@ const progressItems = [
   "Sócios",
   "Dados",
   "Endereço",
+  "Agente",
   "Documentos",
   "Revisão",
   "Envio",
 ];
+const registeredAgentOptions: {
+  id: RegisteredAgentChoice;
+  title: string;
+  description: string;
+}[] = [
+  {
+    id: "abreusa",
+    title: "AbreUSA",
+    description: "AbreUSA Registered Agent Services LLC — Miami, FL.",
+  },
+  {
+    id: "self",
+    title: "Próprio sócio",
+    description: "Um dos sócios atuará como Registered Agent na Flórida.",
+  },
+  {
+    id: "other",
+    title: "Outro agente",
+    description: "Informe o nome e endereço do Registered Agent escolhido.",
+  },
+];
+
 const llcSuffixPattern =
   /\b(l\.?\s?l\.?\s?c\.?|limited liability company)\.?$/i;
 
@@ -166,7 +201,9 @@ function StepFrame({
   llcName,
   memberCount,
   memberData,
+  registeredAgent,
   onBackToBusinessActivity,
+  onBackToBusinessAddress,
   onBackToMemberCount,
   onBackToLlcName,
   onBackToMemberData,
@@ -176,10 +213,12 @@ function StepFrame({
   onChangeLlcName,
   onChangeMemberData,
   onChangeMemberCount,
+  onChangeRegisteredAgent,
   onContinueToBusinessActivity,
   onContinueToBusinessAddress,
   onContinueToMemberData,
   onContinueToMemberCount,
+  onContinueToRegisteredAgent,
   onResetService,
   selectedService,
   onSelectService,
@@ -191,7 +230,9 @@ function StepFrame({
   llcName: string;
   memberCount: number;
   memberData: MemberDraft[];
+  registeredAgent: RegisteredAgentDraft;
   onBackToBusinessActivity: () => void;
+  onBackToBusinessAddress: () => void;
   onBackToMemberCount: () => void;
   onBackToLlcName: () => void;
   onBackToMemberData: () => void;
@@ -205,10 +246,12 @@ function StepFrame({
     value: string,
   ) => void;
   onChangeMemberCount: (count: number) => void;
+  onChangeRegisteredAgent: (field: keyof RegisteredAgentDraft, value: string) => void;
   onContinueToBusinessActivity: () => void;
   onContinueToBusinessAddress: () => void;
   onContinueToMemberData: () => void;
   onContinueToMemberCount: () => void;
+  onContinueToRegisteredAgent: () => void;
   onResetService: () => void;
   selectedService: ServiceId | null;
   onSelectService: (service: ServiceId) => void;
@@ -344,6 +387,173 @@ function StepFrame({
     );
   }
 
+  if (activeStep === "registered_agent") {
+    const isOther = registeredAgent.choice === "other";
+    const hasOtherName = registeredAgent.name.trim().length > 0;
+    const hasOtherAddress = registeredAgent.address.trim().length > 0;
+    const hasOtherCity = registeredAgent.city.trim().length > 0;
+    const hasOtherZip = registeredAgent.zip.trim().length > 0;
+    const isAgentComplete =
+      registeredAgent.choice === "abreusa" ||
+      registeredAgent.choice === "self" ||
+      (isOther && hasOtherName && hasOtherAddress && hasOtherCity && hasOtherZip);
+    const selectedAgentLabel =
+      registeredAgent.choice === "abreusa"
+        ? "AbreUSA"
+        : registeredAgent.choice === "self"
+        ? "Próprio sócio"
+        : registeredAgent.choice === "other"
+        ? registeredAgent.name.trim() || "Outro agente"
+        : null;
+
+    return (
+      <StepCard
+        badge="Rascunho local"
+        eyebrow="Passo 7 · Registered Agent"
+        title="Quem será o Registered Agent?"
+      >
+        <div className="grid gap-3">
+          <StatusMessage
+            title={isAgentComplete ? "Agente selecionado" : "Seleção pendente"}
+            tone={isAgentComplete ? "success" : "info"}
+          >
+            <p>
+              {isAgentComplete
+                ? "O Registered Agent foi registrado localmente para esta etapa."
+                : "Selecione o Registered Agent para a LLC na Flórida."}
+            </p>
+          </StatusMessage>
+
+          <FieldGroup title="Registered Agent">
+            <div className="grid gap-3">
+              {registeredAgentOptions.map((option) => {
+                const selected = option.id === registeredAgent.choice;
+
+                return (
+                  <button
+                    aria-pressed={selected}
+                    className={cn(
+                      "rounded-md border bg-card p-4 text-left transition-colors",
+                      "focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/40",
+                      selected
+                        ? "border-emerald-600 bg-emerald-50"
+                        : "hover:border-emerald-300 hover:bg-emerald-50/40",
+                    )}
+                    key={option.id}
+                    onClick={() => onChangeRegisteredAgent("choice", option.id)}
+                    type="button"
+                  >
+                    <div className="flex gap-4">
+                      <span
+                        className={cn(
+                          "mt-1 size-3 shrink-0 rounded-full border",
+                          selected
+                            ? "border-emerald-600 bg-emerald-600"
+                            : "border-muted-foreground/40",
+                        )}
+                      />
+                      <span className="min-w-0 flex-1">
+                        <span className="block text-sm font-semibold text-foreground">
+                          {option.title}
+                        </span>
+                        <span className="mt-1 block text-sm leading-6 text-muted-foreground">
+                          {option.description}
+                        </span>
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
+            {isOther ? (
+              <div className="grid gap-4 rounded-md border bg-card p-4">
+                <p className="text-sm font-semibold text-foreground">
+                  Dados do Registered Agent
+                </p>
+                <FieldShell label="Nome completo do agente">
+                  <Input
+                    onChange={(event) =>
+                      onChangeRegisteredAgent("name", event.target.value)
+                    }
+                    placeholder="Ex.: Florida Registered Agent LLC"
+                    value={registeredAgent.name}
+                  />
+                </FieldShell>
+                <FieldShell label="Endereço">
+                  <Input
+                    onChange={(event) =>
+                      onChangeRegisteredAgent("address", event.target.value)
+                    }
+                    placeholder="Ex.: 123 Main St"
+                    value={registeredAgent.address}
+                  />
+                </FieldShell>
+                <FieldShell label="Cidade">
+                  <Input
+                    onChange={(event) =>
+                      onChangeRegisteredAgent("city", event.target.value)
+                    }
+                    placeholder="Ex.: Orlando"
+                    value={registeredAgent.city}
+                  />
+                </FieldShell>
+                <FieldShell
+                  hint="Estado fixo: Flórida (FL). O Registered Agent deve estar na Flórida."
+                  label="Estado"
+                >
+                  <Input disabled readOnly value={registeredAgent.state} />
+                </FieldShell>
+                <FieldShell label="ZIP Code">
+                  <Input
+                    inputMode="numeric"
+                    maxLength={10}
+                    onChange={(event) =>
+                      onChangeRegisteredAgent("zip", event.target.value)
+                    }
+                    placeholder="Ex.: 32801"
+                    value={registeredAgent.zip}
+                  />
+                </FieldShell>
+              </div>
+            ) : null}
+          </FieldGroup>
+
+          <ReviewSummary
+            items={[
+              { label: "Serviço", value: selectedLabel ?? "Pendente" },
+              { label: "Nome", value: trimmedLlcName },
+              {
+                label: "Endereço",
+                value: businessAddress.city
+                  ? `${businessAddress.city}, FL`
+                  : "Pendente",
+              },
+              {
+                label: "Agente",
+                value: selectedAgentLabel ?? "Pendente",
+              },
+            ]}
+            title="Resumo"
+          />
+
+          <FormPreviewShell
+            sections={["Article I", "Article II", "Article III"]}
+            subtitle="State of Florida · Division of Corporations"
+            title="Articles of Organization"
+          />
+        </div>
+        <StepNavigation
+          backDisabled={false}
+          backLabel="Voltar"
+          nextDisabled
+          nextLabel="Continuar"
+          onBack={onBackToBusinessAddress}
+        />
+      </StepCard>
+    );
+  }
+
   if (activeStep === "business_address") {
     const hasStreet = businessAddress.street.trim().length > 0;
     const hasCity = businessAddress.city.trim().length > 0;
@@ -437,9 +647,10 @@ function StepFrame({
         <StepNavigation
           backDisabled={false}
           backLabel="Voltar"
-          nextDisabled
-          nextLabel="Continuar"
+          nextDisabled={!isAddressComplete}
+          nextLabel={isAddressComplete ? "Continuar" : "Preencher endereço"}
           onBack={onBackToMemberData}
+          onNext={onContinueToRegisteredAgent}
         />
       </StepCard>
     );
@@ -763,8 +974,18 @@ export function GuidedIntakeShell() {
     state: "FL",
     zip: "",
   });
+  const [registeredAgent, setRegisteredAgent] = useState<RegisteredAgentDraft>({
+    choice: null,
+    name: "",
+    address: "",
+    city: "",
+    state: "FL",
+    zip: "",
+  });
   const currentStep =
-    activeStep === "business_address"
+    activeStep === "registered_agent"
+      ? 7
+      : activeStep === "business_address"
       ? 6
       : activeStep === "member_data"
       ? 5
@@ -776,7 +997,9 @@ export function GuidedIntakeShell() {
           ? 2
           : 1;
   const currentLabel =
-    activeStep === "business_address"
+    activeStep === "registered_agent"
+      ? "Registered Agent"
+      : activeStep === "business_address"
       ? "Endereço"
       : activeStep === "member_data"
       ? "Dados dos sócios"
@@ -846,12 +1069,19 @@ export function GuidedIntakeShell() {
     setBusinessAddress((current) => ({ ...current, [field]: value }));
   }
 
+  function handleChangeRegisteredAgent(
+    field: keyof RegisteredAgentDraft,
+    value: string,
+  ) {
+    setRegisteredAgent((current) => ({ ...current, [field]: value }));
+  }
+
   return (
     <div className="min-h-screen bg-muted/30">
       <ProgressHeader
         currentStep={currentStep}
         label={currentLabel}
-        totalSteps={9}
+        totalSteps={10}
       />
       <main className="mx-auto flex w-full max-w-6xl flex-1 px-4 py-8 sm:px-6 lg:px-8">
         <div className="grid w-full gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
@@ -863,7 +1093,9 @@ export function GuidedIntakeShell() {
             llcName={llcName}
             memberCount={memberCount}
             memberData={memberData}
+            registeredAgent={registeredAgent}
             onBackToBusinessActivity={() => setActiveStep("business_activity")}
+            onBackToBusinessAddress={() => setActiveStep("business_address")}
             onBackToMemberCount={() => setActiveStep("member_count")}
             onBackToLlcName={() => setActiveStep("llc_name")}
             onBackToMemberData={() => setActiveStep("member_data")}
@@ -873,10 +1105,12 @@ export function GuidedIntakeShell() {
             onChangeLlcName={setLlcName}
             onChangeMemberData={handleChangeMemberData}
             onChangeMemberCount={handleChangeMemberCount}
+            onChangeRegisteredAgent={handleChangeRegisteredAgent}
             onContinueToBusinessActivity={() => setActiveStep("business_activity")}
             onContinueToBusinessAddress={() => setActiveStep("business_address")}
             onContinueToMemberData={() => setActiveStep("member_data")}
             onContinueToMemberCount={() => setActiveStep("member_count")}
+            onContinueToRegisteredAgent={() => setActiveStep("registered_agent")}
             onResetService={handleResetService}
             onSelectService={handleSelectService}
             selectedService={selectedService}
