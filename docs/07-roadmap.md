@@ -315,7 +315,7 @@ Phase 3 is complete. The Complete Package path can be fully walked through with 
 
 ## Phase 4: Document Collection
 
-Status: Current phase. Planning task (P4-T01) is complete. P4-T02 implementation is in place pending lint/build verification.
+Status: Current phase. Planning task (P4-T01) is complete. P4-T02 implementation and lint/build verification are complete. Browser verification remains blocked by local tooling/server access.
 
 Goal: support document uploads and extraction review.
 
@@ -380,7 +380,7 @@ First Phase 4 implementation slice:
 
 P4-T02 status:
 
-- Implementation in place, pending verification.
+- Complete.
 - Document collection step shell added after EIN questions for Complete Package.
 - Florida LLC path now routes from Registered Agent to document collection.
 - Passport and U.S. address proof are captured as local file metadata only.
@@ -388,24 +388,29 @@ P4-T02 status:
 - Placeholder/manual extraction review fields are visible and editable.
 - Extracted fields remain customer-reviewable and are not submitted or persisted.
 - No backend calls, Supabase storage, persistent uploads, document URLs, generated forms, submission, or payment were introduced.
-- Verification blocked in the current shell because `node` and `npm` are not available on PATH; `npm run lint` and `npm run build` could not run.
+- `npm run lint` passes when run with Homebrew Node 22 on PATH.
+- `npm run build` passes when run with Homebrew Node 22 on PATH and network access for Next.js Google Font fetching.
 
 Next Phase 4 task:
 
 - Task ID: `P4-T02V`.
-- Title: Verify local document collection implementation.
+- Title: Browser-verify local document collection implementation.
 - Scope:
-  - Run `npm run lint`.
-  - Run `npm run build`.
-  - Browser-check the Complete Package and Florida LLC paths through document collection after a dev server is available.
+  - Browser-check the Complete Package and Florida LLC paths through document collection after browser tooling and a reachable dev server are available.
   - Fix any issues found without expanding scope beyond P4-T02.
 - Acceptance criteria:
-  - `npm run lint` passes.
-  - `npm run build` passes.
   - Complete Package path reaches document collection after EIN questions.
   - Florida LLC path reaches document collection after Registered Agent.
   - Attaching both required files enables the document step continuation gate.
   - Manual extraction fields remain editable.
+  - No browser console errors are introduced by the document collection step.
+
+P4-T02V status:
+
+- Blocked in the current shell.
+- `agent-browser` is not available on PATH.
+- `npx --no-install playwright --version` attempted to reach the npm registry and failed under restricted network, indicating Playwright is not locally installed.
+- `npm run dev` starts only when run with escalated localhost binding, but the server did not accept HTTP requests from this environment.
 
 ## Phase 5: Review And Generated Forms
 

@@ -4,32 +4,15 @@
 
 Phase 4: Document Collection.
 
-Phase 3 is complete. Exit criteria passed (P3-T10). Phase 4 planning is complete (P4-T01). P4-T02 implementation is in place pending lint/build verification.
+Phase 3 is complete. Exit criteria passed (P3-T10). Phase 4 planning is complete (P4-T01). P4-T02 implementation and lint/build verification are complete. Browser verification remains blocked by local tooling/server access.
 
 ## Last Completed Task
-
-Task ID: `P4-T01`
-
-Title: Phase 4 planning — document collection architecture.
-
-Result:
-
-- First Phase 4 implementation slice defined.
-- Placeholder/manual extraction strategy confirmed for MVP.
-- First upload scope set to local-only file references in client state.
-- Supabase private storage deferred until secure storage, retention, and reviewer access decisions are ready to implement.
-- Acceptance criteria added for the next implementation task.
-- No Phase 4 product code was changed.
-
-## Current Task
 
 Task ID: `P4-T02`
 
 Title: Implement local document collection step shell.
 
-Status: Implementation in place, pending verification.
-
-Current result:
+Result:
 
 - Document collection step shell added after EIN questions for Complete Package.
 - Florida LLC path now routes from Registered Agent to document collection.
@@ -38,31 +21,44 @@ Current result:
 - Placeholder/manual extraction review fields are visible and editable.
 - Extracted fields remain customer-reviewable and are not submitted or persisted.
 - No backend calls, Supabase storage, persistent uploads, document URLs, generated forms, submission, or payment were introduced.
-- Verification blocked because this shell does not have `node` or `npm` available on PATH.
+- `npm run lint` passes when run with Homebrew Node 22 on PATH.
+- `npm run build` passes when run with Homebrew Node 22 on PATH and network access for Next.js Google Font fetching.
+
+## Current Task
+
+Task ID: `P4-T02V`
+
+Title: Browser-verify local document collection implementation.
+
+Status: Blocked in current shell.
+
+Current result:
+
+- `agent-browser` is not available on PATH.
+- `npx --no-install playwright --version` attempted to reach the npm registry and failed under restricted network, indicating Playwright is not locally installed.
+- `npm run dev` starts only with escalated localhost binding, but the dev server did not accept HTTP requests from this environment.
+- Browser path verification has not been completed.
 
 ## Next Task
 
 Task ID: `P4-T02V`
 
-Title: Verify local document collection implementation.
+Title: Browser-verify local document collection implementation.
 
-Status: Awaiting execution.
+Status: Awaiting available browser tooling and reachable dev server.
 
 Scope:
 
-- Run `npm run lint`.
-- Run `npm run build`.
-- Browser-check Complete Package and Florida LLC paths through document collection after a dev server is available.
+- Browser-check Complete Package and Florida LLC paths through document collection after browser tooling and a reachable dev server are available.
 - Fix any issues found without expanding scope beyond P4-T02.
 
 Acceptance criteria:
 
-- `npm run lint` passes.
-- `npm run build` passes.
 - Complete Package path reaches document collection after EIN questions.
 - Florida LLC path reaches document collection after Registered Agent.
 - Attaching both required files enables the document step continuation gate.
 - Manual extraction fields remain editable.
+- No browser console errors are introduced by the document collection step.
 
 ## Completed Tasks
 
@@ -75,7 +71,8 @@ Acceptance criteria:
 - Phase 4 planning complete: P4-T01 closed.
   - First document collection implementation slice defined.
   - Local-only upload scope and placeholder/manual extraction confirmed for P4-T02.
-- Phase 4 implementation started: P4-T02 implementation is in place pending verification.
+- Phase 4 implementation complete: P4-T02 closed after lint/build verification.
+  - Browser verification remains blocked as P4-T02V.
 
 ## What Is Implemented
 
@@ -97,7 +94,7 @@ Acceptance criteria:
 
 ## What Is NOT Implemented
 
-- P4-T02 lint/build/browser verification.
+- P4-T02V browser verification.
 - Phase 5: review and generated form previews.
 - Phase 6: order submission workflow.
 - EIN-only and Registered Agent-only flows (deferred, Post-MVP).
@@ -109,12 +106,11 @@ Acceptance criteria:
 
 Execute one task only:
 
-`P4-T02V: Verify local document collection implementation`
+`P4-T02V: Browser-verify local document collection implementation`
 
 Deliverable:
 
-- Run `npm run lint` and `npm run build`.
-- Start the dev server when Node/npm are available.
+- Make browser tooling available or use a reachable dev server.
 - Browser-check the Complete Package and Florida LLC paths through document collection.
 - Fix any scoped issues found.
 - Update `/docs/07-roadmap.md`, `/docs/09-build-status.md`, and `/progress/index.html` after verification.
@@ -125,5 +121,6 @@ Deliverable:
 - Registered Agent-only flow remains deferred and must not be implemented yet.
 - Supabase is planned but deferred for the first Phase 4 implementation slice.
 - Document retention and reviewer access rules remain unresolved before production storage.
-- Current shell has no `node` or `npm` on PATH, blocking lint/build/dev-server verification.
+- `node` and `npm` are available only through Homebrew Node 22 path prefix in this shell.
+- Browser tooling is unavailable locally and dev-server HTTP access is blocked in this environment.
 - GitHub Pages still needs to be enabled in GitHub settings after pushing.
