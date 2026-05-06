@@ -4,44 +4,57 @@
 
 Phase 4: Document Collection.
 
-Phase 3 is complete. Exit criteria passed (P3-T10). Phase 4 planning is the next step.
+Phase 3 is complete. Exit criteria passed (P3-T10). Phase 4 planning is complete (P4-T01). The next step is the first Phase 4 implementation slice.
 
 ## Last Completed Task
-
-Task ID: `P3-T10`
-
-Title: Phase 3 exit criteria — full intake walkthrough and validation review.
-
-Result:
-
-- Full walkthrough audit completed against the User Flows document.
-- All back and continue navigation verified correct for both service paths.
-- Florida LLC path correctly gated at Registered Agent step pending Phase 4.
-- Three bugs found and fixed:
-  1. `handleResetService` now resets all state (llcName, businessAddress, registeredAgent, einQuestions were previously left dirty on restart).
-  2. `handleChangeMemberCount` now resets all ownership percentages to equal split when count changes (previously left first member at 100%, breaking the total).
-  3. Multi-member status message updated to remove stale "future step" reference now that member data step is built.
-- `npm run lint` passes. `npm run build` passes.
-
-## Current Task
-
-None. Phase 3 is complete.
-
-## Next Task
 
 Task ID: `P4-T01`
 
 Title: Phase 4 planning — document collection architecture.
 
+Result:
+
+- First Phase 4 implementation slice defined.
+- Placeholder/manual extraction strategy confirmed for MVP.
+- First upload scope set to local-only file references in client state.
+- Supabase private storage deferred until secure storage, retention, and reviewer access decisions are ready to implement.
+- Acceptance criteria added for the next implementation task.
+- No Phase 4 product code was changed.
+
+## Current Task
+
+None. P4-T01 planning is complete.
+
+## Next Task
+
+Task ID: `P4-T02`
+
+Title: Implement local document collection step shell.
+
 Status: Awaiting execution.
 
 Scope:
 
-- Define the first Phase 4 implementation slice before writing document collection code.
-- Identify which Phase 2 primitives (UploadZone placeholder, extraction states) are ready to connect.
-- Confirm placeholder extraction strategy (manual review, no real AI for MVP).
-- Decide whether passport and address proof uploads are captured as local file references only or require Supabase storage in this phase.
-- Add acceptance criteria before any Phase 4 product code is written.
+- Add document collection after EIN questions for Complete Package and after Registered Agent for Florida LLC.
+- Capture passport and U.S. address proof as local file references only.
+- Show upload status for each required document.
+- Add placeholder extraction states and editable manual correction fields.
+- Keep extracted data non-final until customer review.
+- Do not introduce Supabase, real AI extraction, persistence, storage URLs, generated forms, submission, or payment.
+
+Acceptance criteria:
+
+- Complete Package path reaches document collection after EIN questions.
+- Florida LLC path reaches document collection after Registered Agent.
+- Customer can attach one passport file and one U.S. address proof file in local state.
+- Continue is disabled until both required documents are attached.
+- Each document shows a clear local upload status.
+- Placeholder extraction review fields are visible and editable.
+- Extracted fields are not treated as final without customer review.
+- No backend calls are introduced.
+- No document persistence or storage URLs are introduced.
+- `npm run lint` passes.
+- `npm run build` passes.
 
 ## Completed Tasks
 
@@ -51,6 +64,9 @@ Scope:
 - Phase 3 complete: P3-T01 through P3-T10 all closed.
   - Service selection, LLC name validation, business activity, member count, member data, business address, Registered Agent, and EIN questions all implemented in local state.
   - Phase 3 exit criteria passed: all navigation, branching, and validation verified.
+- Phase 4 planning complete: P4-T01 closed.
+  - First document collection implementation slice defined.
+  - Local-only upload scope and placeholder/manual extraction confirmed for P4-T02.
 
 ## What Is Implemented
 
@@ -82,18 +98,21 @@ Scope:
 
 Execute one task only:
 
-`P4-T01: Phase 4 planning — document collection architecture`
+`P4-T02: Implement local document collection step shell`
 
 Deliverable:
 
-- Define the first Phase 4 implementation slice.
-- Confirm placeholder extraction strategy and upload scope.
-- Add acceptance criteria before Phase 4 product code begins.
-- Update `/docs/07-roadmap.md`, `/docs/09-build-status.md`, and `/progress/index.html` after planning.
+- Add the local document collection step for passport and U.S. address proof.
+- Wire Complete Package and Florida LLC paths into document collection.
+- Add editable placeholder extraction review fields.
+- Keep uploads local-only with no backend or persistence.
+- Run `npm run lint` and `npm run build`.
+- Update `/docs/07-roadmap.md`, `/docs/09-build-status.md`, and `/progress/index.html` after implementation.
 
 ## Blockers And Risks
 
 - EIN-only flow remains deferred and must not be implemented yet.
 - Registered Agent-only flow remains deferred and must not be implemented yet.
-- Supabase is planned but not confirmed for Phase 4; the planning task must decide upload scope before code begins.
+- Supabase is planned but deferred for the first Phase 4 implementation slice.
+- Document retention and reviewer access rules remain unresolved before production storage.
 - GitHub Pages still needs to be enabled in GitHub settings after pushing.

@@ -4,7 +4,7 @@
 
 Phase 4: Document Collection.
 
-Phase 3 is complete. Phase 3 exit criteria passed (P3-T10). Phase 4 planning is the next step.
+Phase 3 is complete. Phase 3 exit criteria passed (P3-T10). Phase 4 planning is complete (P4-T01). The next step is the first Phase 4 implementation slice.
 
 ## Phase 0: App Spine Confirmation
 
@@ -315,6 +315,8 @@ Phase 3 is complete. The Complete Package path can be fully walked through with 
 
 ## Phase 4: Document Collection
 
+Status: Current phase. Planning task (P4-T01) is complete. No Phase 4 product code has been written yet.
+
 Goal: support document uploads and extraction review.
 
 Deliverables:
@@ -329,6 +331,52 @@ Exit criteria:
 
 - Customer can attach required documents.
 - Extracted data is never final without review.
+
+P4-T01 status:
+
+- Complete.
+- First Phase 4 implementation slice defined below.
+- Placeholder/manual extraction strategy confirmed for MVP.
+- Upload scope for the first implementation slice is local-only file capture in client state.
+- Supabase private storage is deferred until the secure storage, retention, and reviewer access decisions are ready to implement.
+- No product code was changed in this planning task.
+
+First Phase 4 implementation slice:
+
+- Task ID: `P4-T02`.
+- Title: Implement local document collection step shell.
+- Scope:
+  - Add document collection after EIN questions for Complete Package and after Registered Agent for Florida LLC.
+  - Capture passport and U.S. address proof as local file references only.
+  - Show upload status for each required document.
+  - Add placeholder extraction states that can be reviewed manually by the customer.
+  - Add manual correction fields for extracted passport and U.S. address proof targets listed in `06-data-model.md`.
+  - Keep extracted data editable and clearly non-final until customer review.
+  - Use existing Phase 2 primitives where possible.
+- Out of scope:
+  - Supabase storage.
+  - Real AI extraction.
+  - Persistent uploads.
+  - Public or private document URLs.
+  - Document retention rules.
+  - Internal reviewer access.
+  - Generated forms.
+  - Order submission.
+  - Payment.
+  - EIN-only flow.
+  - Registered Agent-only flow.
+- Acceptance criteria:
+  - Complete Package path reaches document collection after EIN questions.
+  - Florida LLC path reaches document collection after Registered Agent.
+  - Customer can attach one passport file and one U.S. address proof file in local state.
+  - Continue is disabled until both required documents are attached.
+  - Each document shows a clear local upload status.
+  - Placeholder extraction review fields are visible and editable.
+  - Extracted fields are not treated as final without customer review.
+  - No backend calls are introduced.
+  - No document persistence or storage URLs are introduced.
+  - `npm run lint` passes.
+  - `npm run build` passes.
 
 ## Phase 5: Review And Generated Forms
 
