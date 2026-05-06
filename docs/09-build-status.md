@@ -4,7 +4,7 @@
 
 Phase 4: Document Collection.
 
-Phase 3 is complete. Exit criteria passed (P3-T10). Phase 4 planning is complete (P4-T01). The next step is the first Phase 4 implementation slice.
+Phase 3 is complete. Exit criteria passed (P3-T10). Phase 4 planning is complete (P4-T01). P4-T02 implementation is in place pending lint/build verification.
 
 ## Last Completed Task
 
@@ -23,38 +23,46 @@ Result:
 
 ## Current Task
 
-None. P4-T01 planning is complete.
-
-## Next Task
-
 Task ID: `P4-T02`
 
 Title: Implement local document collection step shell.
+
+Status: Implementation in place, pending verification.
+
+Current result:
+
+- Document collection step shell added after EIN questions for Complete Package.
+- Florida LLC path now routes from Registered Agent to document collection.
+- Passport and U.S. address proof are captured as local file metadata only.
+- Each required document shows local pending/attached status.
+- Placeholder/manual extraction review fields are visible and editable.
+- Extracted fields remain customer-reviewable and are not submitted or persisted.
+- No backend calls, Supabase storage, persistent uploads, document URLs, generated forms, submission, or payment were introduced.
+- Verification blocked because this shell does not have `node` or `npm` available on PATH.
+
+## Next Task
+
+Task ID: `P4-T02V`
+
+Title: Verify local document collection implementation.
 
 Status: Awaiting execution.
 
 Scope:
 
-- Add document collection after EIN questions for Complete Package and after Registered Agent for Florida LLC.
-- Capture passport and U.S. address proof as local file references only.
-- Show upload status for each required document.
-- Add placeholder extraction states and editable manual correction fields.
-- Keep extracted data non-final until customer review.
-- Do not introduce Supabase, real AI extraction, persistence, storage URLs, generated forms, submission, or payment.
+- Run `npm run lint`.
+- Run `npm run build`.
+- Browser-check Complete Package and Florida LLC paths through document collection after a dev server is available.
+- Fix any issues found without expanding scope beyond P4-T02.
 
 Acceptance criteria:
 
-- Complete Package path reaches document collection after EIN questions.
-- Florida LLC path reaches document collection after Registered Agent.
-- Customer can attach one passport file and one U.S. address proof file in local state.
-- Continue is disabled until both required documents are attached.
-- Each document shows a clear local upload status.
-- Placeholder extraction review fields are visible and editable.
-- Extracted fields are not treated as final without customer review.
-- No backend calls are introduced.
-- No document persistence or storage URLs are introduced.
 - `npm run lint` passes.
 - `npm run build` passes.
+- Complete Package path reaches document collection after EIN questions.
+- Florida LLC path reaches document collection after Registered Agent.
+- Attaching both required files enables the document step continuation gate.
+- Manual extraction fields remain editable.
 
 ## Completed Tasks
 
@@ -67,10 +75,11 @@ Acceptance criteria:
 - Phase 4 planning complete: P4-T01 closed.
   - First document collection implementation slice defined.
   - Local-only upload scope and placeholder/manual extraction confirmed for P4-T02.
+- Phase 4 implementation started: P4-T02 implementation is in place pending verification.
 
 ## What Is Implemented
 
-- Full guided intake for Complete Package path (steps 1–8) in local client state:
+- Full guided intake for Complete Package path (steps 1–9) in local client state:
   - Service selection.
   - LLC name entry with suffix validation.
   - Business activity selection with custom "Other" entry.
@@ -79,14 +88,16 @@ Acceptance criteria:
   - Business address entry (street, city, state FL, ZIP); gated on required fields.
   - Registered Agent selection (AbreUSA, self, other); branching to EIN for Complete Package.
   - EIN questions (reason, entity type, responsible party name and passport, start date, fiscal month).
-- Florida LLC path implemented through Registered Agent; gated at Registered Agent pending Phase 4.
+- Document collection for passport and U.S. address proof in local client state.
+- Editable placeholder/manual extraction review fields for passport and address proof targets.
+- Florida LLC path implemented through document collection.
 - Progress header and sidebar reflect 11-step flow.
 - All state resets correctly when user returns to service selection.
 - `/progress/index.html` available as stakeholder dashboard.
 
 ## What Is NOT Implemented
 
-- Phase 4: document upload and extraction UI.
+- P4-T02 lint/build/browser verification.
 - Phase 5: review and generated form previews.
 - Phase 6: order submission workflow.
 - EIN-only and Registered Agent-only flows (deferred, Post-MVP).
@@ -98,16 +109,15 @@ Acceptance criteria:
 
 Execute one task only:
 
-`P4-T02: Implement local document collection step shell`
+`P4-T02V: Verify local document collection implementation`
 
 Deliverable:
 
-- Add the local document collection step for passport and U.S. address proof.
-- Wire Complete Package and Florida LLC paths into document collection.
-- Add editable placeholder extraction review fields.
-- Keep uploads local-only with no backend or persistence.
 - Run `npm run lint` and `npm run build`.
-- Update `/docs/07-roadmap.md`, `/docs/09-build-status.md`, and `/progress/index.html` after implementation.
+- Start the dev server when Node/npm are available.
+- Browser-check the Complete Package and Florida LLC paths through document collection.
+- Fix any scoped issues found.
+- Update `/docs/07-roadmap.md`, `/docs/09-build-status.md`, and `/progress/index.html` after verification.
 
 ## Blockers And Risks
 
@@ -115,4 +125,5 @@ Deliverable:
 - Registered Agent-only flow remains deferred and must not be implemented yet.
 - Supabase is planned but deferred for the first Phase 4 implementation slice.
 - Document retention and reviewer access rules remain unresolved before production storage.
+- Current shell has no `node` or `npm` on PATH, blocking lint/build/dev-server verification.
 - GitHub Pages still needs to be enabled in GitHub settings after pushing.

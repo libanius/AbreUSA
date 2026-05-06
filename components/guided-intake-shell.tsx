@@ -24,7 +24,8 @@ type FlowStep =
   | "member_data"
   | "business_address"
   | "registered_agent"
-  | "ein_questions";
+  | "ein_questions"
+  | "documents";
 type BusinessActivityId =
   | "tech"
   | "ecomm"
@@ -93,6 +94,32 @@ type EinQuestionsDraft = {
   responsiblePartyPassportNumber: string;
   startDate: string;
   fiscalClosingMonth: string;
+};
+
+type DocumentKind = "passport" | "addressProof";
+
+type DocumentFileDraft = {
+  name: string;
+  size: number;
+  type: string;
+};
+
+type DocumentExtractionDraft = {
+  fullName: string;
+  dateOfBirth: string;
+  passportNumber: string;
+  passportExpiration: string;
+  nationality: string;
+  streetAddress: string;
+  city: string;
+  state: string;
+  zip: string;
+};
+
+type DocumentCollectionDraft = {
+  passport: DocumentFileDraft | null;
+  addressProof: DocumentFileDraft | null;
+  extraction: DocumentExtractionDraft;
 };
 
 const serviceOptions: ServiceOption[] = [
@@ -197,6 +224,30 @@ const registeredAgentOptions: {
 const llcSuffixPattern =
   /\b(l\.?\s?l\.?\s?c\.?|limited liability company)\.?$/i;
 
+const emptyDocumentCollection: DocumentCollectionDraft = {
+  passport: null,
+  addressProof: null,
+  extraction: {
+    fullName: "",
+    dateOfBirth: "",
+    passportNumber: "",
+    passportExpiration: "",
+    nationality: "",
+    streetAddress: "",
+    city: "",
+    state: "",
+    zip: "",
+  },
+};
+
+function formatFileSize(size: number) {
+  if (size >= 1024 * 1024) {
+    return `${(size / (1024 * 1024)).toFixed(1)} MB`;
+  }
+
+  return `${Math.max(1, Math.round(size / 1024))} KB`;
+}
+
 function ServiceSelection({
   selectedService,
   onSelect,
@@ -262,6 +313,7 @@ function StepFrame({
   memberCount,
   memberData,
   einQuestions,
+  documents,
   registeredAgent,
   onBackToBusinessActivity,
   onBackToBusinessAddress,
@@ -269,9 +321,12 @@ function StepFrame({
   onBackToLlcName,
   onBackToMemberData,
   onBackToRegisteredAgent,
+  onBackFromDocuments,
   onChangeBusinessActivity,
   onChangeBusinessAddress,
   onChangeCustomBusinessActivity,
+  onChangeDocumentExtraction,
+  onChangeDocumentFile,
   onChangeEinQuestions,
   onChangeLlcName,
   onChangeMemberData,
@@ -280,6 +335,7 @@ function StepFrame({
   onContinueToBusinessActivity,
   onContinueToBusinessAddress,
   onContinueToEinQuestions,
+  onContinueToDocuments,
   onContinueToMemberData,
   onContinueToMemberCount,
   onContinueToRegisteredAgent,
@@ -291,6 +347,7 @@ function StepFrame({
   businessActivity: BusinessActivityId | null;
   businessAddress: BusinessAddressDraft;
   customBusinessActivity: string;
+  documents: DocumentCollectionDraft;
   einQuestions: EinQuestionsDraft;
   llcName: string;
   memberCount: number;
@@ -302,9 +359,15 @@ function StepFrame({
   onBackToLlcName: () => void;
   onBackToMemberData: () => void;
   onBackToRegisteredAgent: () => void;
+  onBackFromDocuments: () => void;
   onChangeBusinessActivity: (activity: BusinessActivityId) => void;
   onChangeBusinessAddress: (field: keyof BusinessAddressDraft, value: string) => void;
   onChangeCustomBusinessActivity: (activity: string) => void;
+  onChangeDocumentExtraction: (
+    field: keyof DocumentExtractionDraft,
+    value: string,
+  ) => void;
+  onChangeDocumentFile: (kind: DocumentKind, file: File | null) => void;
   onChangeEinQuestions: (field: keyof EinQuestionsDraft, value: string) => void;
   onChangeLlcName: (name: string) => void;
   onChangeMemberData: (
@@ -317,6 +380,7 @@ function StepFrame({
   onContinueToBusinessActivity: () => void;
   onContinueToBusinessAddress: () => void;
   onContinueToEinQuestions: () => void;
+  onContinueToDocuments: () => void;
   onContinueToMemberData: () => void;
   onContinueToMemberCount: () => void;
   onContinueToRegisteredAgent: () => void;
@@ -352,6 +416,234 @@ function StepFrame({
     (member) => member.ownershipPercentage.trim().length > 0,
   );
   const ownershipMatches = ownershipTotal === 100;
+
+  if (activeStep === "documents") {
+    const hasPassport = documents.passport !== null;
+    const hasAddressProof = documents.addressProof !== null;
+    const isDocumentCollectionComplete = hasPassport && hasAddressProof;
+
+    return (
+      <StepCard
+        badge="Rascunho local"
+        eyebrow="Passo 9 · Documentos"
+        title="Envie os documentos necessários"
+      >
+        <div className="grid gap-3">
+          <StatusMessage
+            title={
+              isDocumentCollectionComplete
+                ? "Documentos anexados"
+                : "Documentos pendentes"
+            }
+            tone={isDocumentCollectionComplete ? "success" : "info"}
+          >
+            <p>
+              {isDocumentCollectionComplete
+                ? "Os arquivos foram capturados apenas neste rascunho local. Nenhum upload para servidor foi feito."
+                : "Anexe o passaporte e um comprovante de endereço nos EUA para revisar os dados extraídos manualmente."}
+            </p>
+          </StatusMessage>
+
+          <FieldGroup title="Arquivos obrigatórios">
+            {[
+              {
+                kind: "passport" as const,
+                label: "Passaporte com foto",
+                hint: "Página do passaporte com foto e dados pessoais.",
+                file: documents.passport,
+              },
+              {
+                kind: "addressProof" as const,
+                label: "Comprovante de endereço nos EUA",
+                hint: "Conta, extrato, contrato de aluguel ou documento similar.",
+                file: documents.addressProof,
+              },
+            ].map((documentItem) => (
+              <div
+                className="grid gap-3 rounded-md border bg-card p-4"
+                key={documentItem.kind}
+              >
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                  <div>
+                    <p className="text-sm font-semibold text-foreground">
+                      {documentItem.label}
+                    </p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      {documentItem.hint}
+                    </p>
+                  </div>
+                  <span
+                    className={cn(
+                      "w-fit rounded-md border px-2 py-1 text-xs font-semibold",
+                      documentItem.file
+                        ? "border-emerald-200 bg-emerald-50 text-emerald-900"
+                        : "border-amber-200 bg-amber-50 text-amber-900",
+                    )}
+                  >
+                    {documentItem.file ? "Anexado localmente" : "Pendente"}
+                  </span>
+                </div>
+
+                <Input
+                  accept=".pdf,.jpg,.jpeg,.png,.webp"
+                  onChange={(event) =>
+                    onChangeDocumentFile(
+                      documentItem.kind,
+                      event.target.files?.[0] ?? null,
+                    )
+                  }
+                  type="file"
+                />
+
+                {documentItem.file ? (
+                  <div className="rounded-md border bg-background p-3 text-sm text-muted-foreground">
+                    <span className="font-medium text-foreground">
+                      {documentItem.file.name}
+                    </span>
+                    <span className="mx-2">·</span>
+                    <span>{formatFileSize(documentItem.file.size)}</span>
+                    {documentItem.file.type ? (
+                      <>
+                        <span className="mx-2">·</span>
+                        <span>{documentItem.file.type}</span>
+                      </>
+                    ) : null}
+                  </div>
+                ) : null}
+              </div>
+            ))}
+          </FieldGroup>
+
+          <FieldGroup title="Revisão manual da extração placeholder">
+            <StatusMessage title="Extração simulada" tone="warning">
+              <p>
+                Estes campos representam a revisão manual do MVP. Eles devem ser
+                confirmados pelo cliente antes de qualquer envio para a AbreUSA.
+              </p>
+            </StatusMessage>
+            <FieldShell label="Nome completo">
+              <Input
+                onChange={(event) =>
+                  onChangeDocumentExtraction("fullName", event.target.value)
+                }
+                placeholder="Como no passaporte"
+                value={documents.extraction.fullName}
+              />
+            </FieldShell>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <FieldShell label="Data de nascimento">
+                <Input
+                  onChange={(event) =>
+                    onChangeDocumentExtraction("dateOfBirth", event.target.value)
+                  }
+                  type="date"
+                  value={documents.extraction.dateOfBirth}
+                />
+              </FieldShell>
+              <FieldShell label="Nacionalidade">
+                <Input
+                  onChange={(event) =>
+                    onChangeDocumentExtraction("nationality", event.target.value)
+                  }
+                  placeholder="Ex.: Brasileira"
+                  value={documents.extraction.nationality}
+                />
+              </FieldShell>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <FieldShell label="Número do passaporte">
+                <Input
+                  onChange={(event) =>
+                    onChangeDocumentExtraction("passportNumber", event.target.value)
+                  }
+                  placeholder="Ex.: AB123456"
+                  value={documents.extraction.passportNumber}
+                />
+              </FieldShell>
+              <FieldShell label="Validade do passaporte">
+                <Input
+                  onChange={(event) =>
+                    onChangeDocumentExtraction(
+                      "passportExpiration",
+                      event.target.value,
+                    )
+                  }
+                  type="date"
+                  value={documents.extraction.passportExpiration}
+                />
+              </FieldShell>
+            </div>
+            <FieldShell label="Endereço nos EUA">
+              <Input
+                onChange={(event) =>
+                  onChangeDocumentExtraction("streetAddress", event.target.value)
+                }
+                placeholder="Rua e número"
+                value={documents.extraction.streetAddress}
+              />
+            </FieldShell>
+            <div className="grid gap-4 sm:grid-cols-3">
+              <FieldShell label="Cidade">
+                <Input
+                  onChange={(event) =>
+                    onChangeDocumentExtraction("city", event.target.value)
+                  }
+                  value={documents.extraction.city}
+                />
+              </FieldShell>
+              <FieldShell label="Estado">
+                <Input
+                  maxLength={2}
+                  onChange={(event) =>
+                    onChangeDocumentExtraction("state", event.target.value)
+                  }
+                  placeholder="FL"
+                  value={documents.extraction.state}
+                />
+              </FieldShell>
+              <FieldShell label="ZIP Code">
+                <Input
+                  inputMode="numeric"
+                  maxLength={10}
+                  onChange={(event) =>
+                    onChangeDocumentExtraction("zip", event.target.value)
+                  }
+                  value={documents.extraction.zip}
+                />
+              </FieldShell>
+            </div>
+          </FieldGroup>
+
+          <ReviewSummary
+            items={[
+              { label: "Serviço", value: selectedLabel ?? "Pendente" },
+              { label: "Nome LLC", value: trimmedLlcName },
+              {
+                label: "Passaporte",
+                value: documents.passport?.name ?? "Pendente",
+              },
+              {
+                label: "Comprovante",
+                value: documents.addressProof?.name ?? "Pendente",
+              },
+            ]}
+            title="Resumo"
+          />
+        </div>
+        <StepNavigation
+          backDisabled={false}
+          backLabel="Voltar"
+          nextDisabled={!isDocumentCollectionComplete}
+          nextLabel={
+            isDocumentCollectionComplete
+              ? "Continuar (próxima fase)"
+              : "Anexar documentos"
+          }
+          onBack={onBackFromDocuments}
+        />
+      </StepCard>
+    );
+  }
 
   if (activeStep === "member_data") {
     return (
@@ -656,9 +948,10 @@ function StepFrame({
         <StepNavigation
           backDisabled={false}
           backLabel="Voltar"
-          nextDisabled
+          nextDisabled={!isEinComplete}
           nextLabel="Continuar"
           onBack={onBackToRegisteredAgent}
+          onNext={onContinueToDocuments}
         />
       </StepCard>
     );
@@ -823,16 +1116,20 @@ function StepFrame({
         <StepNavigation
           backDisabled={false}
           backLabel="Voltar"
-          nextDisabled={!isAgentComplete || selectedService !== "complete"}
+          nextDisabled={!isAgentComplete}
           nextLabel={
             !isAgentComplete
               ? "Selecionar agente"
               : selectedService === "complete"
               ? "Continuar"
-              : "Continuar (próxima fase)"
+              : "Continuar"
           }
           onBack={onBackToBusinessAddress}
-          onNext={isAgentComplete && selectedService === "complete" ? onContinueToEinQuestions : undefined}
+          onNext={
+            isAgentComplete && selectedService === "complete"
+              ? onContinueToEinQuestions
+              : onContinueToDocuments
+          }
         />
       </StepCard>
     );
@@ -1274,8 +1571,13 @@ export function GuidedIntakeShell() {
     startDate: "",
     fiscalClosingMonth: "",
   });
+  const [documents, setDocuments] = useState<DocumentCollectionDraft>(
+    emptyDocumentCollection,
+  );
   const currentStep =
-    activeStep === "ein_questions"
+    activeStep === "documents"
+      ? 9
+      : activeStep === "ein_questions"
       ? 8
       : activeStep === "registered_agent"
       ? 7
@@ -1291,7 +1593,9 @@ export function GuidedIntakeShell() {
           ? 2
           : 1;
   const currentLabel =
-    activeStep === "ein_questions"
+    activeStep === "documents"
+      ? "Documentos"
+      : activeStep === "ein_questions"
       ? "EIN / SS-4"
       : activeStep === "registered_agent"
       ? "Registered Agent"
@@ -1330,6 +1634,7 @@ export function GuidedIntakeShell() {
       startDate: "",
       fiscalClosingMonth: "",
     });
+    setDocuments(emptyDocumentCollection);
   }
 
   function handleChangeMemberCount(count: number) {
@@ -1388,6 +1693,32 @@ export function GuidedIntakeShell() {
     setEinQuestions((current) => ({ ...current, [field]: value }));
   }
 
+  function handleChangeDocumentFile(kind: DocumentKind, file: File | null) {
+    setDocuments((current) => ({
+      ...current,
+      [kind]: file
+        ? {
+            name: file.name,
+            size: file.size,
+            type: file.type,
+          }
+        : null,
+    }));
+  }
+
+  function handleChangeDocumentExtraction(
+    field: keyof DocumentExtractionDraft,
+    value: string,
+  ) {
+    setDocuments((current) => ({
+      ...current,
+      extraction: {
+        ...current.extraction,
+        [field]: value,
+      },
+    }));
+  }
+
   return (
     <div className="min-h-screen bg-muted/30">
       <ProgressHeader
@@ -1402,6 +1733,7 @@ export function GuidedIntakeShell() {
             businessActivity={businessActivity}
             businessAddress={businessAddress}
             customBusinessActivity={customBusinessActivity}
+            documents={documents}
             einQuestions={einQuestions}
             llcName={llcName}
             memberCount={memberCount}
@@ -1413,9 +1745,16 @@ export function GuidedIntakeShell() {
             onBackToLlcName={() => setActiveStep("llc_name")}
             onBackToMemberData={() => setActiveStep("member_data")}
             onBackToRegisteredAgent={() => setActiveStep("registered_agent")}
+            onBackFromDocuments={() =>
+              setActiveStep(
+                selectedService === "complete" ? "ein_questions" : "registered_agent",
+              )
+            }
             onChangeBusinessActivity={setBusinessActivity}
             onChangeBusinessAddress={handleChangeBusinessAddress}
             onChangeCustomBusinessActivity={setCustomBusinessActivity}
+            onChangeDocumentExtraction={handleChangeDocumentExtraction}
+            onChangeDocumentFile={handleChangeDocumentFile}
             onChangeEinQuestions={handleChangeEinQuestions}
             onChangeLlcName={setLlcName}
             onChangeMemberData={handleChangeMemberData}
@@ -1423,6 +1762,7 @@ export function GuidedIntakeShell() {
             onChangeRegisteredAgent={handleChangeRegisteredAgent}
             onContinueToBusinessActivity={() => setActiveStep("business_activity")}
             onContinueToBusinessAddress={() => setActiveStep("business_address")}
+            onContinueToDocuments={() => setActiveStep("documents")}
             onContinueToEinQuestions={() => setActiveStep("ein_questions")}
             onContinueToMemberData={() => setActiveStep("member_data")}
             onContinueToMemberCount={() => setActiveStep("member_count")}

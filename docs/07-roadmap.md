@@ -315,7 +315,7 @@ Phase 3 is complete. The Complete Package path can be fully walked through with 
 
 ## Phase 4: Document Collection
 
-Status: Current phase. Planning task (P4-T01) is complete. No Phase 4 product code has been written yet.
+Status: Current phase. Planning task (P4-T01) is complete. P4-T02 implementation is in place pending lint/build verification.
 
 Goal: support document uploads and extraction review.
 
@@ -377,6 +377,35 @@ First Phase 4 implementation slice:
   - No document persistence or storage URLs are introduced.
   - `npm run lint` passes.
   - `npm run build` passes.
+
+P4-T02 status:
+
+- Implementation in place, pending verification.
+- Document collection step shell added after EIN questions for Complete Package.
+- Florida LLC path now routes from Registered Agent to document collection.
+- Passport and U.S. address proof are captured as local file metadata only.
+- Each required document shows local pending/attached status.
+- Placeholder/manual extraction review fields are visible and editable.
+- Extracted fields remain customer-reviewable and are not submitted or persisted.
+- No backend calls, Supabase storage, persistent uploads, document URLs, generated forms, submission, or payment were introduced.
+- Verification blocked in the current shell because `node` and `npm` are not available on PATH; `npm run lint` and `npm run build` could not run.
+
+Next Phase 4 task:
+
+- Task ID: `P4-T02V`.
+- Title: Verify local document collection implementation.
+- Scope:
+  - Run `npm run lint`.
+  - Run `npm run build`.
+  - Browser-check the Complete Package and Florida LLC paths through document collection after a dev server is available.
+  - Fix any issues found without expanding scope beyond P4-T02.
+- Acceptance criteria:
+  - `npm run lint` passes.
+  - `npm run build` passes.
+  - Complete Package path reaches document collection after EIN questions.
+  - Florida LLC path reaches document collection after Registered Agent.
+  - Attaching both required files enables the document step continuation gate.
+  - Manual extraction fields remain editable.
 
 ## Phase 5: Review And Generated Forms
 
