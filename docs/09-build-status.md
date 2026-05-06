@@ -4,7 +4,7 @@
 
 Phase 4: Document Collection.
 
-Phase 3 is complete. Exit criteria passed (P3-T10). Phase 4 planning is complete (P4-T01). P4-T02 implementation and lint/build verification are complete. Browser verification remains blocked by local tooling/server access.
+Phase 3 is complete. Exit criteria passed (P3-T10). Phase 4 planning is complete (P4-T01). P4-T02 implementation and environment verification are complete. Browser automation remains blocked by unavailable local tooling.
 
 ## Last Completed Task
 
@@ -23,6 +23,8 @@ Result:
 - No backend calls, Supabase storage, persistent uploads, document URLs, generated forms, submission, or payment were introduced.
 - `npm run lint` passes when run with Homebrew Node 22 on PATH.
 - `npm run build` passes when run with Homebrew Node 22 on PATH and network access for Next.js Google Font fetching.
+- `npm run dev -- --hostname 127.0.0.1 --port 3000` starts successfully when run with Homebrew Node 22 on PATH and localhost binding approval.
+- Local HTTP verification returns `200 OK` for `/`.
 
 ## Current Task
 
@@ -36,7 +38,7 @@ Current result:
 
 - `agent-browser` is not available on PATH.
 - `npx --no-install playwright --version` attempted to reach the npm registry and failed under restricted network, indicating Playwright is not locally installed.
-- `npm run dev` starts only with escalated localhost binding, but the dev server did not accept HTTP requests from this environment.
+- Dev-server HTTP access is confirmed by `curl`, but browser automation is not available to exercise the client-side flow.
 - Browser path verification has not been completed.
 
 ## Next Task
@@ -110,7 +112,7 @@ Execute one task only:
 
 Deliverable:
 
-- Make browser tooling available or use a reachable dev server.
+- Make browser tooling available.
 - Browser-check the Complete Package and Florida LLC paths through document collection.
 - Fix any scoped issues found.
 - Update `/docs/07-roadmap.md`, `/docs/09-build-status.md`, and `/progress/index.html` after verification.
@@ -121,6 +123,6 @@ Deliverable:
 - Registered Agent-only flow remains deferred and must not be implemented yet.
 - Supabase is planned but deferred for the first Phase 4 implementation slice.
 - Document retention and reviewer access rules remain unresolved before production storage.
-- `node` and `npm` are available only through Homebrew Node 22 path prefix in this shell.
-- Browser tooling is unavailable locally and dev-server HTTP access is blocked in this environment.
+- Default PATH in this shell does not include Node/npm; project commands run with `PATH=/usr/local/opt/node@22/bin:$PATH`.
+- Browser tooling is unavailable locally.
 - GitHub Pages still needs to be enabled in GitHub settings after pushing.

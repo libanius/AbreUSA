@@ -315,7 +315,7 @@ Phase 3 is complete. The Complete Package path can be fully walked through with 
 
 ## Phase 4: Document Collection
 
-Status: Current phase. Planning task (P4-T01) is complete. P4-T02 implementation and lint/build verification are complete. Browser verification remains blocked by local tooling/server access.
+Status: Current phase. Planning task (P4-T01) is complete. P4-T02 implementation and environment verification are complete. Browser automation remains blocked by unavailable local tooling.
 
 Goal: support document uploads and extraction review.
 
@@ -390,6 +390,8 @@ P4-T02 status:
 - No backend calls, Supabase storage, persistent uploads, document URLs, generated forms, submission, or payment were introduced.
 - `npm run lint` passes when run with Homebrew Node 22 on PATH.
 - `npm run build` passes when run with Homebrew Node 22 on PATH and network access for Next.js Google Font fetching.
+- `npm run dev -- --hostname 127.0.0.1 --port 3000` starts successfully when run with Homebrew Node 22 on PATH and localhost binding approval.
+- Local HTTP verification returns `200 OK` for `/`.
 
 Next Phase 4 task:
 
@@ -410,7 +412,7 @@ P4-T02V status:
 - Blocked in the current shell.
 - `agent-browser` is not available on PATH.
 - `npx --no-install playwright --version` attempted to reach the npm registry and failed under restricted network, indicating Playwright is not locally installed.
-- `npm run dev` starts only when run with escalated localhost binding, but the server did not accept HTTP requests from this environment.
+- Dev-server HTTP access is confirmed by `curl`, but browser automation is not available to exercise the client-side flow.
 
 ## Phase 5: Review And Generated Forms
 
