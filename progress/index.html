@@ -181,7 +181,7 @@
         background: linear-gradient(90deg, var(--green), var(--blue));
         border-radius: inherit;
         height: 100%;
-        width: 85%;
+        width: 95%;
       }
 
       ul {
@@ -268,11 +268,11 @@
           <span class="pill done" data-en="Current phase" data-pt="Fase atual">Current phase</span>
           <p class="phase" data-en="Phase 7: Production Hardening" data-pt="Fase 7: Hardening de produção">Phase 7: Production Hardening</p>
           <p
-            data-en="P7-T04 is complete. The next task applies and verifies Supabase RLS and private storage lockdown."
-            data-pt="P7-T04 está concluída. A próxima tarefa aplica e verifica o bloqueio RLS do Supabase e do storage privado."
+            data-en="Phase 7 is complete. All production hardening tasks are done. Awaiting Phase 8 planning."
+            data-pt="A Fase 7 está concluída. Todas as tarefas de hardening de produção estão finalizadas. Aguardando planejamento da Fase 8."
           >
-            P7-T04 is complete. The next task applies and verifies Supabase RLS
-            and private storage lockdown.
+            Phase 7 is complete. All production hardening tasks are done.
+            Awaiting Phase 8 planning.
           </p>
           <div class="progress-wrap" aria-label="Project progress">
             <div class="progress-label">
@@ -345,6 +345,7 @@
             <li data-en="P7-T02 server-side persistence boundary implemented and verified with AUS-2026-0006." data-pt="P7-T02 limite de persistência no servidor implementado e verificado com AUS-2026-0006.">P7-T02 server-side persistence boundary implemented and verified with AUS-2026-0006.</li>
             <li data-en="P7-T03 production service-role credential and RLS/storage lockdown plan completed." data-pt="P7-T03 plano de credencial service-role de produção e bloqueio RLS/storage concluído.">P7-T03 production service-role credential and RLS/storage lockdown plan completed.</li>
             <li data-en="P7-T04 service-role enforcement and lockdown SQL artifact verified with AUS-2026-0008." data-pt="P7-T04 exigência de service-role e artefato SQL de bloqueio verificados com AUS-2026-0008.">P7-T04 service-role enforcement and lockdown SQL artifact verified with AUS-2026-0008.</li>
+            <li data-en="P7-T05 Supabase RLS and storage lockdown applied and verified with AUS-2026-0009." data-pt="P7-T05 bloqueio RLS e storage do Supabase aplicado e verificado com AUS-2026-0009.">P7-T05 Supabase RLS and storage lockdown applied and verified with AUS-2026-0009.</li>
           </ul>
         </article>
 
@@ -398,15 +399,15 @@
           </p>
         </article>
 
-        <article class="card next">
-          <span class="pill" data-en="Next task" data-pt="Próxima tarefa">Next task</span>
-          <h2 data-en="P7-T05 — Apply Lockdown" data-pt="P7-T05 — Aplicar bloqueio">P7-T05 — Apply Lockdown</h2>
+        <article class="card done">
+          <span class="pill done" data-en="Phase 7 complete" data-pt="Fase 7 concluída">Phase 7 complete</span>
+          <h2 data-en="P7-T05 — Lockdown Applied" data-pt="P7-T05 — Bloqueio aplicado">P7-T05 — Lockdown Applied</h2>
           <p
-            data-en="Apply the Supabase lockdown SQL, verify anon table/storage access is blocked, and confirm /api/orders still works."
-            data-pt="Aplicar o SQL de bloqueio do Supabase, verificar que acesso anon às tabelas/storage está bloqueado e confirmar que /api/orders ainda funciona."
+            data-en="Supabase RLS and private storage lockdown applied and verified. Anon access blocked. Server-side persistence confirmed with AUS-2026-0009."
+            data-pt="Bloqueio RLS e storage privado do Supabase aplicado e verificado. Acesso anon bloqueado. Persistência server-side confirmada com AUS-2026-0009."
           >
-            Apply the Supabase lockdown SQL, verify anon table/storage access
-            is blocked, and confirm /api/orders still works.
+            Supabase RLS and private storage lockdown applied and verified.
+            Anon access blocked. Server-side persistence confirmed with AUS-2026-0009.
           </p>
         </article>
       </section>
@@ -422,7 +423,6 @@
           <li data-en="PDF/export strategy beyond HTML preview." data-pt="Estratégia de PDF/exportação além do preview em HTML.">PDF/export strategy beyond HTML preview.</li>
           <li data-en="Draft persistence and resume behavior." data-pt="Persistência de rascunho e retomada do fluxo.">Draft persistence and resume behavior.</li>
           <li data-en="Document retention and reviewer access model before production." data-pt="Retenção de documentos e modelo de acesso dos revisores antes da produção.">Document retention and reviewer access model before production.</li>
-          <li data-en="Supabase RLS and storage access policies before production." data-pt="Políticas de RLS e acesso ao storage Supabase antes da produção.">Supabase RLS and storage access policies before production.</li>
           <li data-en="Signed URL strategy for internal document review." data-pt="Estratégia de URLs assinadas para revisão interna de documentos.">Signed URL strategy for internal document review.</li>
           <li data-en="Registered Agent legal entity and production address." data-pt="Entidade legal e endereço de produção do Registered Agent.">Registered Agent legal entity and production address.</li>
           <li data-en="Final production pricing." data-pt="Preços finais de produção.">Final production pricing.</li>

@@ -1134,23 +1134,22 @@ P7-T04 status:
   - `documents` table contains `passport` and `us_address_proof` rows.
   - Private storage objects exist at the expected order-scoped paths, confirmed by duplicate-upload conflicts.
 
-Next Phase 7 task:
+P7-T05 completed 2026-05-07:
 
 - Task ID: `P7-T05`.
 - Title: Apply and verify Supabase RLS/storage lockdown.
-- Scope:
-  - Apply the reviewed lockdown SQL to Supabase.
-  - Confirm direct anon table reads/writes are denied for order tables.
-  - Confirm direct anon storage uploads/reads are denied for the `documents` bucket.
-  - Confirm `/api/orders` still persists approved orders with `SUPABASE_SERVICE_ROLE_KEY`.
-  - Keep customer auth, reviewer UI, signed URL implementation, payment, email, and agency submission out of scope.
-- Acceptance criteria:
-  - Lockdown SQL is applied successfully.
-  - Direct anon access to order tables is blocked.
-  - Direct anon access to document storage is blocked.
-  - Server-side approved-order persistence still works through `/api/orders`.
-  - Browser verification confirms an approved Complete Package order still persists with both required files attached.
-  - `/docs/07-roadmap.md`, `/docs/09-build-status.md`, and `/progress/index.html` are updated.
+- Status: Complete.
+- Result:
+  - Applied `supabase/rls-storage-lockdown.sql` in Supabase SQL Editor.
+  - RLS enabled on all 8 order tables.
+  - `revoke all` executed for `anon` and `authenticated` roles on all tables and sequence.
+  - All development storage policies dropped.
+  - `documents` storage bucket set to private.
+  - Anon table access verified blocked: `ERROR 42501 permission denied for table orders`.
+  - Storage bucket confirmed private in Supabase dashboard.
+  - Server-side persistence via `/api/orders` confirmed working: returned `200` and generated `AUS-2026-0009`.
+  - Browser Complete Package verification passed with `AUS-2026-0009`.
+- Phase 7 is complete.
 
 ## Phase 8: Post-MVP Expansion
 

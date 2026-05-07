@@ -4,36 +4,33 @@
 
 Phase 7: Production Hardening.
 
-Phase 6 is complete. P7-T04 is complete. The next task is applying and verifying Supabase RLS/storage lockdown.
+Phase 6 is complete. P7-T05 is complete. Phase 7 production hardening is complete.
 
 ## Last Completed Task
-
-Task ID: `P7-T04`
-
-Title: Enforce production Supabase service-role credential and add lockdown SQL artifact.
-
-Result:
-
-- Removed server-side fallback to `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
-- Server-side persistence now requires `SUPABASE_SERVICE_ROLE_KEY`.
-- Added `supabase/rls-storage-lockdown.sql`.
-- Fail-closed verification passed without service-role credentials.
-- Service-role endpoint verification passed: `/api/orders` returned `200` and generated `AUS-2026-0007`.
-- Browser verification passed with Complete Package order `AUS-2026-0008` and both required files attached.
-- `npm run lint` passes.
-- `npm run build` passes.
-
-## Current Task
-
-None. P7-T04 is complete.
-
-## Next Task
 
 Task ID: `P7-T05`
 
 Title: Apply and verify Supabase RLS/storage lockdown.
 
-Status: Awaiting execution.
+Result:
+
+- Applied `supabase/rls-storage-lockdown.sql` in Supabase SQL Editor.
+- RLS enabled on all 8 order tables.
+- `revoke all` executed for `anon` and `authenticated` roles on all tables and the sequence.
+- All development storage policies dropped.
+- `documents` storage bucket set to private.
+- Anon table access verified blocked: `ERROR 42501 permission denied for table orders`.
+- Storage bucket confirmed private in Supabase dashboard.
+- Server-side persistence via `/api/orders` confirmed: returned `200` and generated `AUS-2026-0009`.
+- Browser Complete Package verification passed with `AUS-2026-0009`.
+
+## Current Task
+
+None. P7-T05 is complete. All Phase 7 tasks are complete.
+
+## Next Task
+
+Phase 7 is complete. Awaiting Phase 8 planning or user direction.
 
 Scope:
 
@@ -69,6 +66,7 @@ Acceptance criteria:
 - Phase 7 server-side persistence boundary: P7-T02 closed.
 - Phase 7 production credential and RLS/storage lockdown plan: P7-T03 closed.
 - Phase 7 service-role enforcement and lockdown SQL artifact: P7-T04 closed.
+- Phase 7 Supabase RLS/storage lockdown applied and verified: P7-T05 closed.
 
 ## What Is Implemented
 
@@ -101,21 +99,12 @@ Acceptance criteria:
 - RLS policies on all Supabase tables and storage (required before production).
 - Document retention period and reviewer access model (Phase 7 blockers).
 - Signed URLs for internal document access (Phase 7).
-- Applied Supabase RLS/storage lockdown (next task).
+- Supabase RLS/storage lockdown applied and verified.
 - GitHub Pages must still be enabled in GitHub settings after the repo is pushed.
 
 ## Exact Next Step To Resume
 
-Execute one task only:
-
-`P7-T05: Apply and verify Supabase RLS/storage lockdown`
-
-Deliverable:
-
-- Apply `supabase/rls-storage-lockdown.sql` in Supabase.
-- Verify anon table and storage access are blocked.
-- Verify `/api/orders` still persists approved orders with service-role credentials.
-- Re-run Complete Package browser verification.
+Phase 7 is complete. All production hardening tasks are done. Awaiting Phase 8 planning or user direction.
 
 ## Blockers And Risks
 

@@ -40,6 +40,7 @@ drop policy if exists "Allow document uploads" on storage.objects;
 drop policy if exists "Allow document reads" on storage.objects;
 drop policy if exists "documents anon upload" on storage.objects;
 drop policy if exists "documents read" on storage.objects;
+drop policy if exists "Allow anon uploads to documents bucket" on storage.objects;
 
 update storage.buckets
 set public = false
