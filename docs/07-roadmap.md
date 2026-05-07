@@ -861,7 +861,7 @@ Direct agency submission, payment, admin portal, EIN-only flow, and Registered A
 
 ## Phase 7: Production Hardening
 
-Status: Current phase. P7-T01 is complete. The next step is moving approved-order persistence behind a server-side security boundary.
+Status: Current phase. P7-T02 is complete. The next step is production Supabase credential and RLS/storage lockdown planning.
 
 Goal: make the product safe to launch.
 
@@ -977,6 +977,41 @@ First implementable Phase 7 security slice:
   - `npm run lint` passes.
   - `npm run build` passes.
   - Browser verification confirms an approved Complete Package order persists successfully with both required files attached.
+
+P7-T02 status:
+
+- Status: Complete.
+- Added `/api/orders` route handler for approved-order persistence.
+- Moved Supabase table inserts and private document uploads into server-side persistence helpers.
+- Browser `persistOrder` now posts a multipart payload to `/api/orders` instead of importing the Supabase client.
+- Removed the unused browser Supabase client file.
+- Customer-facing flow remains unchanged.
+- `npm run lint` passes.
+- `npm run build` passes.
+- Browser verification passed for Complete Package with both required files attached.
+- Verification order: `AUS-2026-0006`.
+- Supabase verification confirmed:
+  - The order row exists.
+  - `documents` table contains `passport` and `us_address_proof` rows.
+  - Private storage objects exist at the expected order-scoped paths, confirmed by duplicate-upload conflicts.
+
+Next Phase 7 task:
+
+- Task ID: `P7-T03`.
+- Title: Plan production Supabase service-role credentials and RLS/storage lockdown SQL.
+- Scope:
+  - Decide the production server credential requirement for Supabase writes.
+  - Remove the development fallback to the anon key from the production plan.
+  - Draft SQL for enabling RLS on all order tables.
+  - Draft SQL for denying public table reads, updates, deletes, and direct inserts.
+  - Draft storage policy changes that remove direct public uploads and block document reads by default.
+  - Keep customer auth, reviewer UI, signed URL implementation, payment, email, and agency submission out of scope.
+- Acceptance criteria:
+  - Production Supabase credential requirement is documented.
+  - RLS lockdown SQL plan is documented.
+  - Storage lockdown SQL/policy plan is documented.
+  - Remaining blockers for applying the policies are explicit.
+  - `/docs/07-roadmap.md`, `/docs/09-build-status.md`, `/progress/index.html`, and `/docs/08-decisions-log.md` are updated if decisions changed.
 
 ## Phase 8: Post-MVP Expansion
 

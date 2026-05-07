@@ -268,11 +268,11 @@
           <span class="pill done" data-en="Current phase" data-pt="Fase atual">Current phase</span>
           <p class="phase" data-en="Phase 7: Production Hardening" data-pt="Fase 7: Hardening de produção">Phase 7: Production Hardening</p>
           <p
-            data-en="P7-T01 is complete. The next task moves approved-order persistence and document upload behind a server-side security boundary."
-            data-pt="P7-T01 está concluída. A próxima tarefa move a persistência de pedidos aprovados e o upload de documentos para um limite de segurança no servidor."
+            data-en="P7-T02 is complete. The next task plans production Supabase service-role credentials plus RLS and storage lockdown SQL."
+            data-pt="P7-T02 está concluída. A próxima tarefa planeja credenciais service-role do Supabase em produção, RLS e SQL de bloqueio do storage."
           >
-            P7-T01 is complete. The next task moves approved-order persistence
-            and document upload behind a server-side security boundary.
+            P7-T02 is complete. The next task plans production Supabase
+            service-role credentials plus RLS and storage lockdown SQL.
           </p>
           <div class="progress-wrap" aria-label="Project progress">
             <div class="progress-label">
@@ -342,6 +342,7 @@
             <li data-en="P6-T09 Phase 6 exit review complete; Phase 7 hardening begins." data-pt="P6-T09 Revisão de saída da Fase 6 concluída; hardening da Fase 7 iniciado.">P6-T09 Phase 6 exit review complete; Phase 7 hardening begins.</li>
             <li data-en="Phase 6 complete." data-pt="Fase 6 concluída.">Phase 6 complete.</li>
             <li data-en="P7-T01 production security hardening plan completed." data-pt="P7-T01 plano de hardening de segurança de produção concluído.">P7-T01 production security hardening plan completed.</li>
+            <li data-en="P7-T02 server-side persistence boundary implemented and verified with AUS-2026-0006." data-pt="P7-T02 limite de persistência no servidor implementado e verificado com AUS-2026-0006.">P7-T02 server-side persistence boundary implemented and verified with AUS-2026-0006.</li>
           </ul>
         </article>
 
@@ -369,10 +370,10 @@
             <li data-en="Phase 6 payload boundaries and protocol/status assumptions are documented." data-pt="Os limites de payload da Fase 6 e as premissas de protocolo/status estão documentados.">Phase 6 payload boundaries and protocol/status assumptions are documented.</li>
             <li data-en="Confirmation screen displays a local protocol placeholder and AbreUSA review timeline." data-pt="A tela de confirmação exibe um protocolo local placeholder e a linha do tempo de revisão da AbreUSA.">Confirmation screen displays a local protocol placeholder and AbreUSA review timeline.</li>
             <li data-en="Internal order payload is built locally; EIN data appears only for Complete Package." data-pt="O payload interno do pedido é montado localmente; dados de EIN aparecem apenas no Pacote Completo.">Internal order payload is built locally; EIN data appears only for Complete Package.</li>
-            <li data-en="Supabase client and six-table persistence wired on confirmation; approved orders write to orders, llcs, members, registered_agents, ein_details, and generated_forms." data-pt="Cliente Supabase e persistência em seis tabelas conectados na confirmação; pedidos aprovados gravam nas tabelas orders, llcs, members, registered_agents, ein_details e generated_forms.">Supabase client and six-table persistence wired on confirmation; approved orders write to orders, llcs, members, registered_agents, ein_details, and generated_forms.</li>
+            <li data-en="Approved orders persist through a server-side /api/orders route; browser code no longer writes directly to Supabase tables." data-pt="Pedidos aprovados persistem por uma rota /api/orders no servidor; o código do navegador não grava mais diretamente nas tabelas Supabase.">Approved orders persist through a server-side /api/orders route; browser code no longer writes directly to Supabase tables.</li>
             <li data-en="Protocol numbers generated server-side via Postgres sequence (AUS-YYYY-NNNN); no client-side collision risk." data-pt="Números de protocolo gerados no servidor via sequência Postgres (AUS-YYYY-NNNN); sem risco de colisão no cliente.">Protocol numbers generated server-side via Postgres sequence (AUS-YYYY-NNNN); no client-side collision risk.</li>
             <li data-en="Applicant contact step (name, email, phone) added as step 2 of 13; persisted to applicants table in Supabase." data-pt="Etapa de contato do solicitante (nome, e-mail, telefone) adicionada como etapa 2 de 13; persistida na tabela applicants no Supabase.">Applicant contact step (name, email, phone) added as step 2 of 13; persisted to applicants table in Supabase.</li>
-            <li data-en="Document files upload to Supabase private storage and document rows are recorded for approved orders." data-pt="Arquivos de documentos são enviados para storage privado Supabase e linhas de documentos são registradas para pedidos aprovados.">Document files upload to Supabase private storage and document rows are recorded for approved orders.</li>
+            <li data-en="Document files upload to Supabase private storage through the server-side order route, and document rows are recorded for approved orders." data-pt="Arquivos de documentos são enviados ao storage privado Supabase pela rota de pedido no servidor, e linhas de documentos são registradas para pedidos aprovados.">Document files upload to Supabase private storage through the server-side order route, and document rows are recorded for approved orders.</li>
             <li data-en="Customer handoff uses the confirmation screen and persisted contact data; AbreUSA manual follow-up remains the MVP default." data-pt="O handoff do cliente usa a tela de confirmação e dados de contato persistidos; follow-up manual da AbreUSA continua como padrão do MVP.">Customer handoff uses the confirmation screen and persisted contact data; AbreUSA manual follow-up remains the MVP default.</li>
             <li data-en="Phase 6 exit criteria are met; remaining work is production hardening." data-pt="Os critérios de saída da Fase 6 foram atendidos; o trabalho restante é hardening de produção.">Phase 6 exit criteria are met; remaining work is production hardening.</li>
             <li data-en="Production security plan requires server-side order persistence before RLS and storage lockdown." data-pt="O plano de segurança de produção exige persistência de pedidos no servidor antes do bloqueio de RLS e storage.">Production security plan requires server-side order persistence before RLS and storage lockdown.</li>
@@ -382,26 +383,26 @@
 
         <article class="card task">
           <span class="pill done" data-en="Last completed" data-pt="Última concluída">Last completed</span>
-          <h2 data-en="P7-T01 — Security Plan" data-pt="P7-T01 — Plano de segurança">P7-T01 — Security Plan</h2>
+          <h2 data-en="P7-T02 — Server Boundary" data-pt="P7-T02 — Limite no servidor">P7-T02 — Server Boundary</h2>
           <p
-            data-en="Supabase RLS, storage access, signed URLs, retention, and reviewer access were planned. Retention and reviewer access remain production blockers."
-            data-pt="RLS do Supabase, acesso ao storage, URLs assinadas, retenção e acesso de revisores foram planejados. Retenção e acesso de revisores continuam bloqueadores de produção."
+            data-en="Approved-order persistence and document upload now run through /api/orders. Complete Package verification passed with protocol AUS-2026-0006."
+            data-pt="A persistência de pedidos aprovados e o upload de documentos agora passam por /api/orders. A verificação do Pacote Completo passou com o protocolo AUS-2026-0006."
           >
-            Supabase RLS, storage access, signed URLs, retention, and reviewer
-            access were planned. Retention and reviewer access remain
-            production blockers.
+            Approved-order persistence and document upload now run through
+            /api/orders. Complete Package verification passed with protocol
+            AUS-2026-0006.
           </p>
         </article>
 
         <article class="card next">
           <span class="pill" data-en="Next task" data-pt="Próxima tarefa">Next task</span>
-          <h2 data-en="P7-T02 — Server Boundary" data-pt="P7-T02 — Limite no servidor">P7-T02 — Server Boundary</h2>
+          <h2 data-en="P7-T03 — RLS Lockdown" data-pt="P7-T03 — Bloqueio RLS">P7-T03 — RLS Lockdown</h2>
           <p
-            data-en="Move approved-order persistence and document upload behind a server-side boundary so direct browser writes can be removed."
-            data-pt="Mover a persistência de pedidos aprovados e o upload de documentos para um limite no servidor para remover gravações diretas do navegador."
+            data-en="Plan production Supabase service-role credentials and draft the RLS and storage lockdown SQL before applying production policies."
+            data-pt="Planejar credenciais service-role do Supabase em produção e rascunhar o SQL de bloqueio de RLS e storage antes de aplicar políticas de produção."
           >
-            Move approved-order persistence and document upload behind a
-            server-side boundary so direct browser writes can be removed.
+            Plan production Supabase service-role credentials and draft the RLS
+            and storage lockdown SQL before applying production policies.
           </p>
         </article>
       </section>

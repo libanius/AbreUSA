@@ -4,53 +4,53 @@
 
 Phase 7: Production Hardening.
 
-Phase 6 is complete. P7-T01 is complete. The next task is moving approved-order persistence behind a server-side security boundary.
+Phase 6 is complete. P7-T02 is complete. The next task is production Supabase credential and RLS/storage lockdown planning.
 
 ## Last Completed Task
-
-Task ID: `P7-T01`
-
-Title: Production security hardening plan — Supabase RLS, storage access, retention, and reviewer model.
-
-Result:
-
-- Current Supabase access boundary audited.
-- Production requirement set: browser must not directly insert sensitive order data or directly upload documents with the anon key.
-- RLS and storage policy requirements documented.
-- Signed URL approach documented for future internal document review.
-- Document retention period and reviewer access model remain production blockers.
-- First implementable Phase 7 security slice defined as P7-T02.
-- No product code changed.
-
-## Current Task
-
-None. P7-T01 is complete.
-
-## Next Task
 
 Task ID: `P7-T02`
 
 Title: Move approved-order persistence behind a server-side security boundary.
 
+Result:
+
+- Added `/api/orders` route handler for approved-order persistence and file upload.
+- Moved Supabase table inserts and private document uploads into server-side helpers.
+- Browser `persistOrder` now posts a multipart payload to `/api/orders`.
+- Removed the unused browser Supabase client file.
+- Customer-facing flow remains unchanged.
+- Verification passed with Complete Package order `AUS-2026-0006` and both required files attached.
+- `npm run lint` passes.
+- `npm run build` passes.
+
+## Current Task
+
+None. P7-T02 is complete.
+
+## Next Task
+
+Task ID: `P7-T03`
+
+Title: Plan production Supabase service-role credentials and RLS/storage lockdown SQL.
+
 Status: Awaiting execution.
 
 Scope:
 
-- Create a server-only Supabase persistence path for approved orders and document uploads.
-- Stop using the browser Supabase anon key for direct inserts into order tables.
-- Stop using direct browser uploads to the `documents` private bucket.
-- Keep the customer-facing flow unchanged.
-- Keep admin UI, signed URL reviewer UI, automated email, payment, and agency submission out of scope.
+- Decide the production server credential requirement for Supabase writes.
+- Remove the development fallback to the anon key from the production plan.
+- Draft SQL for enabling RLS on all order tables.
+- Draft SQL for denying public table reads, updates, deletes, and direct inserts.
+- Draft storage policy changes that remove direct public uploads and block document reads by default.
+- Keep customer auth, reviewer UI, signed URL implementation, payment, email, and agency submission out of scope.
 
 Acceptance criteria:
 
-- Browser code no longer inserts directly into order tables.
-- Browser code no longer uploads directly to the `documents` bucket.
-- Server-side persistence still creates the same approved order records and document rows.
-- Existing Complete Package and Florida LLC submission flows still reach confirmation with a server-generated protocol.
-- `npm run lint` passes.
-- `npm run build` passes.
-- Browser verification confirms an approved Complete Package order persists successfully with both required files attached.
+- Production Supabase credential requirement is documented.
+- RLS lockdown SQL plan is documented.
+- Storage lockdown SQL/policy plan is documented.
+- Remaining blockers for applying the policies are explicit.
+- `/docs/07-roadmap.md`, `/docs/09-build-status.md`, `/progress/index.html`, and `/docs/08-decisions-log.md` are updated if decisions changed.
 
 ## Completed Tasks
 
@@ -66,6 +66,7 @@ Acceptance criteria:
 - Phase 6 email/customer handoff planning: P6-T08 closed.
 - Phase 6 exit review and Phase 7 planning: P6-T09 closed.
 - Phase 7 production security hardening plan: P7-T01 closed.
+- Phase 7 server-side persistence boundary: P7-T02 closed.
 
 ## What Is Implemented
 
@@ -80,7 +81,10 @@ Acceptance criteria:
 - Customer handoff plan: confirmation screen plus manual AbreUSA follow-up using persisted applicant contact data.
 - Phase 6 exit criteria met and documented.
 - Phase 7 security hardening plan documented.
-- `lib/supabase.ts`, `lib/persist-order.ts`, `supabase/schema.sql`.
+- Server-side approved-order persistence route: `/api/orders`.
+- Server-side Supabase persistence helpers for order rows and private document uploads.
+- Browser persistence wrapper that posts to `/api/orders` instead of writing directly to Supabase.
+- `lib/persist-order.ts`, `lib/persist-order-server.ts`, `lib/supabase-server.ts`, `supabase/schema.sql`.
 - `/progress/index.html` stakeholder dashboard.
 
 ## What Is NOT Implemented
@@ -90,22 +94,21 @@ Acceptance criteria:
 - RLS policies on all Supabase tables and storage (required before production).
 - Document retention period and reviewer access model (Phase 7 blockers).
 - Signed URLs for internal document access (Phase 7).
-- Server-side order persistence boundary (next task).
+- Production service-role credential requirement and RLS/storage lockdown SQL plan (next task).
 - GitHub Pages must still be enabled in GitHub settings after the repo is pushed.
 
 ## Exact Next Step To Resume
 
 Execute one task only:
 
-`P7-T02: Move approved-order persistence behind a server-side security boundary`
+`P7-T03: Plan production Supabase service-role credentials and RLS/storage lockdown SQL`
 
 Deliverable:
 
-- Move approved-order persistence and document upload to a server-side path.
-- Remove direct browser inserts into order tables.
-- Remove direct browser uploads to the private `documents` bucket.
-- Preserve existing customer-facing submission and confirmation behavior.
-- Run lint, build, and browser verification.
+- Document the required production Supabase server credential.
+- Draft RLS lockdown SQL for all order tables.
+- Draft storage lockdown policy changes for the private `documents` bucket.
+- List blockers before applying the lockdown.
 
 ## Blockers And Risks
 
@@ -113,6 +116,6 @@ Deliverable:
 - RLS must be configured on all tables and storage before production deployment.
 - Document retention period and reviewer access model unresolved (Phase 7).
 - Raw file URLs must never be exposed publicly; signed URLs required for reviewer access (Phase 7).
-- Current browser Supabase anon-key write path is not production-ready; P7-T02 must move persistence server-side before RLS lockdown.
+- Development server path can fall back to anon credentials; production must use server-only credentials before RLS lockdown.
 - Default PATH does not include Node/npm; use `PATH=/usr/local/opt/node@22/bin:$PATH`.
 - GitHub Pages still needs to be enabled in GitHub settings after pushing.
