@@ -117,11 +117,12 @@ export function getSupabaseServerClient() {
   if (serverClient) return serverClient;
 
   const supabaseUrl = process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseKey =
-    process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
   if (!supabaseUrl || !supabaseKey) {
-    throw new Error("Missing Supabase server environment variables.");
+    throw new Error(
+      "Missing Supabase server environment variables. Configure SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY for server-side persistence.",
+    );
   }
 
   serverClient = createClient<AbreUsaDatabase>(supabaseUrl, supabaseKey, {

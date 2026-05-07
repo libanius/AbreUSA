@@ -861,7 +861,7 @@ Direct agency submission, payment, admin portal, EIN-only flow, and Registered A
 
 ## Phase 7: Production Hardening
 
-Status: Current phase. P7-T03 is complete. The next step is implementing the production Supabase credential requirement and adding the lockdown SQL artifact.
+Status: Current phase. P7-T04 is complete. The next step is applying and verifying Supabase RLS/storage lockdown.
 
 Goal: make the product safe to launch.
 
@@ -1110,6 +1110,47 @@ Next Phase 7 task:
   - `npm run lint` passes.
   - `npm run build` passes.
   - Browser verification confirms an approved Complete Package order still persists through `/api/orders` when service-role credentials are configured.
+
+P7-T04 status:
+
+- Status: Complete.
+- Server-side fallback to `NEXT_PUBLIC_SUPABASE_ANON_KEY` removed.
+- Server-side persistence now requires `SUPABASE_SERVICE_ROLE_KEY`.
+- Lockdown SQL artifact added at `supabase/rls-storage-lockdown.sql`.
+- Lockdown SQL artifact covers:
+  - RLS enablement for all order tables.
+  - Revoking public table access from `anon` and `authenticated`.
+  - Revoking public sequence access.
+  - Removing known development storage policies.
+  - Keeping the `documents` bucket private.
+- `npm run lint` passes.
+- `npm run build` passes.
+- Fail-closed verification passed: `/api/orders` returns `500` when `SUPABASE_SERVICE_ROLE_KEY` is missing.
+- Service-role endpoint verification passed: `/api/orders` returned `200` and generated `AUS-2026-0007`.
+- Browser verification with real `SUPABASE_SERVICE_ROLE_KEY` passed for Complete Package with both required files attached.
+- Final verification order: `AUS-2026-0008`.
+- Supabase verification confirmed:
+  - The order row exists.
+  - `documents` table contains `passport` and `us_address_proof` rows.
+  - Private storage objects exist at the expected order-scoped paths, confirmed by duplicate-upload conflicts.
+
+Next Phase 7 task:
+
+- Task ID: `P7-T05`.
+- Title: Apply and verify Supabase RLS/storage lockdown.
+- Scope:
+  - Apply the reviewed lockdown SQL to Supabase.
+  - Confirm direct anon table reads/writes are denied for order tables.
+  - Confirm direct anon storage uploads/reads are denied for the `documents` bucket.
+  - Confirm `/api/orders` still persists approved orders with `SUPABASE_SERVICE_ROLE_KEY`.
+  - Keep customer auth, reviewer UI, signed URL implementation, payment, email, and agency submission out of scope.
+- Acceptance criteria:
+  - Lockdown SQL is applied successfully.
+  - Direct anon access to order tables is blocked.
+  - Direct anon access to document storage is blocked.
+  - Server-side approved-order persistence still works through `/api/orders`.
+  - Browser verification confirms an approved Complete Package order still persists with both required files attached.
+  - `/docs/07-roadmap.md`, `/docs/09-build-status.md`, and `/progress/index.html` are updated.
 
 ## Phase 8: Post-MVP Expansion
 

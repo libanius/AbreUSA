@@ -268,11 +268,11 @@
           <span class="pill done" data-en="Current phase" data-pt="Fase atual">Current phase</span>
           <p class="phase" data-en="Phase 7: Production Hardening" data-pt="Fase 7: Hardening de produção">Phase 7: Production Hardening</p>
           <p
-            data-en="P7-T03 is complete. The next task enforces server-only Supabase service-role credentials and adds the lockdown SQL artifact."
-            data-pt="P7-T03 está concluída. A próxima tarefa exige credenciais service-role do Supabase apenas no servidor e adiciona o artefato SQL de bloqueio."
+            data-en="P7-T04 is complete. The next task applies and verifies Supabase RLS and private storage lockdown."
+            data-pt="P7-T04 está concluída. A próxima tarefa aplica e verifica o bloqueio RLS do Supabase e do storage privado."
           >
-            P7-T03 is complete. The next task enforces server-only Supabase
-            service-role credentials and adds the lockdown SQL artifact.
+            P7-T04 is complete. The next task applies and verifies Supabase RLS
+            and private storage lockdown.
           </p>
           <div class="progress-wrap" aria-label="Project progress">
             <div class="progress-label">
@@ -344,6 +344,7 @@
             <li data-en="P7-T01 production security hardening plan completed." data-pt="P7-T01 plano de hardening de segurança de produção concluído.">P7-T01 production security hardening plan completed.</li>
             <li data-en="P7-T02 server-side persistence boundary implemented and verified with AUS-2026-0006." data-pt="P7-T02 limite de persistência no servidor implementado e verificado com AUS-2026-0006.">P7-T02 server-side persistence boundary implemented and verified with AUS-2026-0006.</li>
             <li data-en="P7-T03 production service-role credential and RLS/storage lockdown plan completed." data-pt="P7-T03 plano de credencial service-role de produção e bloqueio RLS/storage concluído.">P7-T03 production service-role credential and RLS/storage lockdown plan completed.</li>
+            <li data-en="P7-T04 service-role enforcement and lockdown SQL artifact verified with AUS-2026-0008." data-pt="P7-T04 exigência de service-role e artefato SQL de bloqueio verificados com AUS-2026-0008.">P7-T04 service-role enforcement and lockdown SQL artifact verified with AUS-2026-0008.</li>
           </ul>
         </article>
 
@@ -376,6 +377,8 @@
             <li data-en="Applicant contact step (name, email, phone) added as step 2 of 13; persisted to applicants table in Supabase." data-pt="Etapa de contato do solicitante (nome, e-mail, telefone) adicionada como etapa 2 de 13; persistida na tabela applicants no Supabase.">Applicant contact step (name, email, phone) added as step 2 of 13; persisted to applicants table in Supabase.</li>
             <li data-en="Document files upload to Supabase private storage through the server-side order route, and document rows are recorded for approved orders." data-pt="Arquivos de documentos são enviados ao storage privado Supabase pela rota de pedido no servidor, e linhas de documentos são registradas para pedidos aprovados.">Document files upload to Supabase private storage through the server-side order route, and document rows are recorded for approved orders.</li>
             <li data-en="Production plan requires SUPABASE_SERVICE_ROLE_KEY before RLS and storage lockdown are applied." data-pt="O plano de produção exige SUPABASE_SERVICE_ROLE_KEY antes de aplicar o bloqueio RLS e storage.">Production plan requires SUPABASE_SERVICE_ROLE_KEY before RLS and storage lockdown are applied.</li>
+            <li data-en="Server persistence now fails closed when SUPABASE_SERVICE_ROLE_KEY is missing." data-pt="A persistência no servidor agora falha de forma fechada quando SUPABASE_SERVICE_ROLE_KEY está ausente.">Server persistence now fails closed when SUPABASE_SERVICE_ROLE_KEY is missing.</li>
+            <li data-en="Complete Package browser verification with service-role persistence passed with protocol AUS-2026-0008." data-pt="A verificação no navegador do Pacote Completo com persistência service-role passou com o protocolo AUS-2026-0008.">Complete Package browser verification with service-role persistence passed with protocol AUS-2026-0008.</li>
             <li data-en="Customer handoff uses the confirmation screen and persisted contact data; AbreUSA manual follow-up remains the MVP default." data-pt="O handoff do cliente usa a tela de confirmação e dados de contato persistidos; follow-up manual da AbreUSA continua como padrão do MVP.">Customer handoff uses the confirmation screen and persisted contact data; AbreUSA manual follow-up remains the MVP default.</li>
             <li data-en="Phase 6 exit criteria are met; remaining work is production hardening." data-pt="Os critérios de saída da Fase 6 foram atendidos; o trabalho restante é hardening de produção.">Phase 6 exit criteria are met; remaining work is production hardening.</li>
             <li data-en="Production security plan requires server-side order persistence before RLS and storage lockdown." data-pt="O plano de segurança de produção exige persistência de pedidos no servidor antes do bloqueio de RLS e storage.">Production security plan requires server-side order persistence before RLS and storage lockdown.</li>
@@ -385,25 +388,25 @@
 
         <article class="card task">
           <span class="pill done" data-en="Last completed" data-pt="Última concluída">Last completed</span>
-          <h2 data-en="P7-T03 — RLS Plan" data-pt="P7-T03 — Plano RLS">P7-T03 — RLS Plan</h2>
+          <h2 data-en="P7-T04 — Service Role" data-pt="P7-T04 — Service Role">P7-T04 — Service Role</h2>
           <p
-            data-en="Production service-role credentials, table RLS lockdown, and private storage lockdown were planned. No product code changed."
-            data-pt="Credenciais service-role de produção, bloqueio RLS das tabelas e bloqueio do storage privado foram planejados. Nenhum código de produto mudou."
+            data-en="Server persistence now requires SUPABASE_SERVICE_ROLE_KEY and browser verification passed with AUS-2026-0008."
+            data-pt="A persistência no servidor agora exige SUPABASE_SERVICE_ROLE_KEY e a verificação no navegador passou com AUS-2026-0008."
           >
-            Production service-role credentials, table RLS lockdown, and
-            private storage lockdown were planned. No product code changed.
+            Server persistence now requires SUPABASE_SERVICE_ROLE_KEY and
+            browser verification passed with AUS-2026-0008.
           </p>
         </article>
 
         <article class="card next">
           <span class="pill" data-en="Next task" data-pt="Próxima tarefa">Next task</span>
-          <h2 data-en="P7-T04 — Lockdown Artifact" data-pt="P7-T04 — Artefato de bloqueio">P7-T04 — Lockdown Artifact</h2>
+          <h2 data-en="P7-T05 — Apply Lockdown" data-pt="P7-T05 — Aplicar bloqueio">P7-T05 — Apply Lockdown</h2>
           <p
-            data-en="Enforce SUPABASE_SERVICE_ROLE_KEY on the server path and add the SQL artifact for table RLS and private document storage lockdown."
-            data-pt="Exigir SUPABASE_SERVICE_ROLE_KEY no caminho do servidor e adicionar o artefato SQL para RLS das tabelas e bloqueio do storage privado de documentos."
+            data-en="Apply the Supabase lockdown SQL, verify anon table/storage access is blocked, and confirm /api/orders still works."
+            data-pt="Aplicar o SQL de bloqueio do Supabase, verificar que acesso anon às tabelas/storage está bloqueado e confirmar que /api/orders ainda funciona."
           >
-            Enforce SUPABASE_SERVICE_ROLE_KEY on the server path and add the
-            SQL artifact for table RLS and private document storage lockdown.
+            Apply the Supabase lockdown SQL, verify anon table/storage access
+            is blocked, and confirm /api/orders still works.
           </p>
         </article>
       </section>
