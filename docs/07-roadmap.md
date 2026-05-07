@@ -2,9 +2,9 @@
 
 ## Current Phase
 
-Phase 4: Document Collection.
+Phase 5: Review And Generated Forms.
 
-Phase 3 is complete. Phase 3 exit criteria passed (P3-T10). Phase 4 planning is complete (P4-T01). The next step is the first Phase 4 implementation slice.
+Phase 4 is complete. Phase 4 exit criteria passed after browser verification (P4-T02V). Phase 5 planning is the next step.
 
 ## Phase 0: App Spine Confirmation
 
@@ -315,7 +315,7 @@ Phase 3 is complete. The Complete Package path can be fully walked through with 
 
 ## Phase 4: Document Collection
 
-Status: Current phase. Planning task (P4-T01) is complete. P4-T02 implementation and environment verification are complete. Browser automation remains blocked by unavailable local tooling.
+Status: Complete. Phase 4 exit criteria passed after browser verification (P4-T02V).
 
 Goal: support document uploads and extraction review.
 
@@ -393,7 +393,7 @@ P4-T02 status:
 - `npm run dev -- --hostname 127.0.0.1 --port 3000` starts successfully when run with Homebrew Node 22 on PATH and localhost binding approval.
 - Local HTTP verification returns `200 OK` for `/`.
 
-Next Phase 4 task:
+Phase 4 verification task:
 
 - Task ID: `P4-T02V`.
 - Title: Browser-verify local document collection implementation.
@@ -409,12 +409,22 @@ Next Phase 4 task:
 
 P4-T02V status:
 
-- Blocked in the current shell.
-- `agent-browser` is not available on PATH.
-- `npx --no-install playwright --version` attempted to reach the npm registry and failed under restricted network, indicating Playwright is not locally installed.
-- Dev-server HTTP access is confirmed by `curl`, but browser automation is not available to exercise the client-side flow.
+- Complete.
+- Browser verification completed with installed headless Chrome and the Chrome DevTools Protocol.
+- Complete Package path reaches document collection after EIN questions.
+- Florida LLC path reaches document collection after Registered Agent.
+- Attaching both required files enables the document step continuation gate.
+- Manual extraction fields remain editable.
+- No runtime or log errors were captured during the browser-flow verification.
+- Phase 4 exit criteria met.
+
+## Phase 4 Exit Status
+
+Phase 4 is complete. Customers can attach the required passport and U.S. address proof documents in local client state. Placeholder/manual extraction fields remain editable and are not final without customer review.
 
 ## Phase 5: Review And Generated Forms
+
+Status: Current phase. Planning task (P5-T01) is the next step. No Phase 5 product code has been written yet.
 
 Goal: generate customer-facing previews from structured intake data.
 
@@ -430,6 +440,23 @@ Exit criteria:
 
 - Generated forms reflect intake data.
 - Customer can go back and correct data before approval.
+
+Next Phase 5 task:
+
+- Task ID: `P5-T01`.
+- Title: Phase 5 planning — review and generated forms architecture.
+- Scope:
+  - Define the first Phase 5 implementation slice before writing review or form-generation code.
+  - Decide how the existing local intake and document state maps into the review screen.
+  - Confirm which generated previews are included first: Florida Articles of Organization and IRS SS-4 when EIN is included.
+  - Keep Supabase, persistence, PDF/export, submission, and payment out of scope unless the App Spine is updated.
+  - Add acceptance criteria before Phase 5 product code begins.
+- Acceptance criteria:
+  - First Phase 5 implementation slice is documented.
+  - Review screen data boundaries are documented.
+  - Generated form preview scope is documented.
+  - Out-of-scope items remain explicit.
+  - `/docs/07-roadmap.md`, `/docs/09-build-status.md`, and `/progress/index.html` are updated after planning.
 
 ## Phase 6: Order Submission Workflow
 
