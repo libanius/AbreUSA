@@ -424,7 +424,7 @@ Phase 4 is complete. Customers can attach the required passport and U.S. address
 
 ## Phase 5: Review And Generated Forms
 
-Status: Current phase. Planning task (P5-T01) is complete. No Phase 5 product code has been written yet.
+Status: Current phase. P5-T02 is complete. The next step is the local approval gate shell.
 
 Goal: generate customer-facing previews from structured intake data.
 
@@ -526,6 +526,43 @@ Generated preview scope:
   - Uses local LLC name, responsible party, passport number, reason for applying, entity type, start date, and fiscal closing month.
   - Remains an HTML preview only.
 - PDF/export, stored generated form records, and approval/submission are deferred.
+
+P5-T02 status:
+
+- Complete.
+- Local review step added after document collection.
+- Existing local intake and document state maps into customer-facing review sections.
+- Review screen includes service, LLC, business activity, members, business address, Registered Agent, documents, and placeholder extraction fields.
+- EIN review section appears only for Complete Package.
+- Florida Articles of Organization HTML preview shell appears for Complete Package and Florida LLC.
+- IRS Form SS-4 HTML preview shell appears only for Complete Package.
+- Back navigation from review returns to document collection.
+- Generated forms are labeled as previews only.
+- No backend calls, persistence, PDF/export, submission, protocol generation, or payment were introduced.
+- `npm run lint` passes.
+- `npm run build` passes.
+- Browser verification passed for Complete Package and Florida LLC paths through review.
+
+Next Phase 5 task:
+
+- Task ID: `P5-T03`.
+- Title: Implement local approval gate shell.
+- Scope:
+  - Add a non-submitting approval gate after review.
+  - Require explicit customer confirmation that the reviewed data and generated previews are ready for AbreUSA review.
+  - Keep approval local-only and clearly not submitted to AbreUSA, Sunbiz, or IRS.
+  - Preserve back navigation from approval to review.
+  - Keep protocol generation, order persistence, internal order payload, and submission workflow in Phase 6.
+- Acceptance criteria:
+  - Complete Package path reaches approval gate after review.
+  - Florida LLC path reaches approval gate after review.
+  - Approval gate requires an explicit confirmation checkbox or equivalent control before continue is enabled.
+  - Approval language states the order is not submitted yet.
+  - Customer can go back from approval to review.
+  - No backend calls, persistence, protocol generation, submission, or payment are introduced.
+  - `npm run lint` passes.
+  - `npm run build` passes.
+  - Browser verification covers Complete Package and Florida LLC paths through approval gate.
 
 ## Phase 6: Order Submission Workflow
 

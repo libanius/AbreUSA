@@ -25,7 +25,8 @@ type FlowStep =
   | "business_address"
   | "registered_agent"
   | "ein_questions"
-  | "documents";
+  | "documents"
+  | "review";
 type BusinessActivityId =
   | "tech"
   | "ecomm"
@@ -322,6 +323,7 @@ function StepFrame({
   onBackToMemberData,
   onBackToRegisteredAgent,
   onBackFromDocuments,
+  onBackToDocuments,
   onChangeBusinessActivity,
   onChangeBusinessAddress,
   onChangeCustomBusinessActivity,
@@ -336,6 +338,7 @@ function StepFrame({
   onContinueToBusinessAddress,
   onContinueToEinQuestions,
   onContinueToDocuments,
+  onContinueToReview,
   onContinueToMemberData,
   onContinueToMemberCount,
   onContinueToRegisteredAgent,
@@ -360,6 +363,7 @@ function StepFrame({
   onBackToMemberData: () => void;
   onBackToRegisteredAgent: () => void;
   onBackFromDocuments: () => void;
+  onBackToDocuments: () => void;
   onChangeBusinessActivity: (activity: BusinessActivityId) => void;
   onChangeBusinessAddress: (field: keyof BusinessAddressDraft, value: string) => void;
   onChangeCustomBusinessActivity: (activity: string) => void;
@@ -381,6 +385,7 @@ function StepFrame({
   onContinueToBusinessAddress: () => void;
   onContinueToEinQuestions: () => void;
   onContinueToDocuments: () => void;
+  onContinueToReview: () => void;
   onContinueToMemberData: () => void;
   onContinueToMemberCount: () => void;
   onContinueToRegisteredAgent: () => void;
@@ -416,6 +421,208 @@ function StepFrame({
     (member) => member.ownershipPercentage.trim().length > 0,
   );
   const ownershipMatches = ownershipTotal === 100;
+  const selectedReasonLabel =
+    einReasonOptions.find((o) => o.id === einQuestions.reasonForApplying)?.label ??
+    null;
+  const selectedEntityLabel =
+    einEntityTypeOptions.find((o) => o.id === einQuestions.entityType)?.label ??
+    null;
+  const registeredAgentLabel =
+    registeredAgent.choice === "abreusa"
+      ? "AbreUSA"
+      : registeredAgent.choice === "self"
+      ? "Próprio sócio"
+      : registeredAgent.choice === "other"
+      ? registeredAgent.name.trim() || "Outro agente"
+      : "Pendente";
+
+  if (activeStep === "review") {
+    const businessAddressSummary =
+      businessAddress.street && businessAddress.city && businessAddress.zip
+        ? `${businessAddress.street}, ${businessAddress.city}, ${businessAddress.state} ${businessAddress.zip}`
+        : "Pendente";
+    const memberSummary = visibleMembers
+      .map((member, index) => {
+        const name = member.fullName.trim() || `Sócio ${index + 1}`;
+        const percent = member.ownershipPercentage.trim() || "0";
+
+        return `${name} — ${percent}%`;
+      })
+      .join("; ");
+    const extractionAddress =
+      documents.extraction.streetAddress ||
+      documents.extraction.city ||
+      documents.extraction.state ||
+      documents.extraction.zip
+        ? `${documents.extraction.streetAddress || "Rua pendente"}, ${
+            documents.extraction.city || "Cidade pendente"
+          }, ${documents.extraction.state || "UF"} ${
+            documents.extraction.zip || "ZIP pendente"
+          }`
+        : "Pendente";
+
+    return (
+      <StepCard
+        badge="Preview local"
+        eyebrow="Passo 10 · Revisão"
+        title="Revise os dados e os previews"
+      >
+        <div className="grid gap-3">
+          <StatusMessage title="Ainda não enviado" tone="warning">
+            <p>
+              Estes dados e formulários são previews locais. Nada foi enviado
+              para a AbreUSA, Sunbiz ou IRS nesta etapa.
+            </p>
+          </StatusMessage>
+
+          <ReviewSummary
+            items={[
+              { label: "Serviço", value: selectedLabel ?? "Pendente" },
+              { label: "Estado", value: "Florida" },
+              { label: "Nome LLC", value: trimmedLlcName || "Pendente" },
+              { label: "Atividade", value: selectedActivityLabel || "Pendente" },
+            ]}
+            title="Resumo do pedido"
+          />
+
+          <ReviewSummary
+            items={[
+              { label: "Sócios", value: memberSummary || "Pendente" },
+              { label: "Participação total", value: `${ownershipTotal}%` },
+              { label: "Endereço principal", value: businessAddressSummary },
+              { label: "Registered Agent", value: registeredAgentLabel },
+            ]}
+            title="LLC e formação na Flórida"
+          />
+
+          {selectedService === "complete" ? (
+            <ReviewSummary
+              items={[
+                { label: "Motivo EIN", value: selectedReasonLabel ?? "Pendente" },
+                { label: "Tipo de entidade", value: selectedEntityLabel ?? "Pendente" },
+                {
+                  label: "Responsible Party",
+                  value: einQuestions.responsiblePartyName.trim() || "Pendente",
+                },
+                {
+                  label: "Passaporte do responsável",
+                  value:
+                    einQuestions.responsiblePartyPassportNumber.trim() ||
+                    "Pendente",
+                },
+                {
+                  label: "Data de início",
+                  value: einQuestions.startDate || "Pendente",
+                },
+                {
+                  label: "Mês fiscal",
+                  value: einQuestions.fiscalClosingMonth || "Pendente",
+                },
+              ]}
+              title="EIN / IRS SS-4"
+            />
+          ) : null}
+
+          <ReviewSummary
+            items={[
+              {
+                label: "Passaporte",
+                value: documents.passport?.name ?? "Pendente",
+              },
+              {
+                label: "Comprovante EUA",
+                value: documents.addressProof?.name ?? "Pendente",
+              },
+              {
+                label: "Nome extraído",
+                value: documents.extraction.fullName || "Pendente",
+              },
+              {
+                label: "Passaporte extraído",
+                value: documents.extraction.passportNumber || "Pendente",
+              },
+              {
+                label: "Nacionalidade",
+                value: documents.extraction.nationality || "Pendente",
+              },
+              { label: "Endereço extraído", value: extractionAddress },
+            ]}
+            title="Documentos e extração placeholder"
+          />
+
+          <FieldGroup title="Preview — Florida Articles of Organization">
+            <StatusMessage title="Preview não submetido" tone="info">
+              <p>
+                Este preview usa os dados locais da LLC e não representa
+                protocolo ou submissão oficial.
+              </p>
+            </StatusMessage>
+            <ReviewSummary
+              items={[
+                { label: "Article I — LLC Name", value: trimmedLlcName },
+                { label: "Principal Office", value: businessAddressSummary },
+                { label: "Registered Agent", value: registeredAgentLabel },
+                {
+                  label: "Management",
+                  value: memberCount === 1 ? "Member-managed, one member" : "Member-managed, multiple members",
+                },
+              ]}
+              title="Dados mapeados para o preview"
+            />
+            <FormPreviewShell
+              sections={["Article I — Name", "Article II — Address", "Article III — Registered Agent"]}
+              subtitle="Preview only · State of Florida · Division of Corporations"
+              title="Articles of Organization"
+            />
+          </FieldGroup>
+
+          {selectedService === "complete" ? (
+            <FieldGroup title="Preview — IRS Form SS-4">
+              <StatusMessage title="Preview não submetido" tone="info">
+                <p>
+                  Este preview usa os dados locais do EIN e não representa
+                  protocolo, fax, envio ou emissão pelo IRS.
+                </p>
+              </StatusMessage>
+              <ReviewSummary
+                items={[
+                  { label: "Line 1 — Legal name", value: trimmedLlcName },
+                  {
+                    label: "Responsible Party",
+                    value: einQuestions.responsiblePartyName.trim() || "Pendente",
+                  },
+                  {
+                    label: "Passport context",
+                    value:
+                      einQuestions.responsiblePartyPassportNumber.trim() ||
+                      documents.extraction.passportNumber ||
+                      "Pendente",
+                  },
+                  {
+                    label: "Line 10 — Reason",
+                    value: selectedReasonLabel ?? "Pendente",
+                  },
+                ]}
+                title="Dados mapeados para o preview"
+              />
+              <FormPreviewShell
+                sections={["Line 1 — Legal name", "Line 7b — SSN/ITIN/EIN", "Line 10 — Reason"]}
+                subtitle="Preview only · Department of the Treasury · IRS"
+                title="Form SS-4"
+              />
+            </FieldGroup>
+          ) : null}
+        </div>
+        <StepNavigation
+          backDisabled={false}
+          backLabel="Voltar"
+          nextDisabled
+          nextLabel="Aprovação (próxima fase)"
+          onBack={onBackToDocuments}
+        />
+      </StepCard>
+    );
+  }
 
   if (activeStep === "documents") {
     const hasPassport = documents.passport !== null;
@@ -636,10 +843,11 @@ function StepFrame({
           nextDisabled={!isDocumentCollectionComplete}
           nextLabel={
             isDocumentCollectionComplete
-              ? "Continuar (próxima fase)"
+              ? "Continuar"
               : "Anexar documentos"
           }
           onBack={onBackFromDocuments}
+          onNext={onContinueToReview}
         />
       </StepCard>
     );
@@ -748,10 +956,6 @@ function StepFrame({
   }
 
   if (activeStep === "ein_questions") {
-    const selectedReasonLabel =
-      einReasonOptions.find((o) => o.id === einQuestions.reasonForApplying)?.label ?? null;
-    const selectedEntityLabel =
-      einEntityTypeOptions.find((o) => o.id === einQuestions.entityType)?.label ?? null;
     const hasResponsibleName = einQuestions.responsiblePartyName.trim().length > 0;
     const hasPassportNumber = einQuestions.responsiblePartyPassportNumber.trim().length > 0;
     const isEinComplete =
@@ -968,13 +1172,7 @@ function StepFrame({
       registeredAgent.choice === "self" ||
       (isOther && hasOtherName && hasOtherAddress && hasOtherCity && hasOtherZip);
     const selectedAgentLabel =
-      registeredAgent.choice === "abreusa"
-        ? "AbreUSA"
-        : registeredAgent.choice === "self"
-        ? "Próprio sócio"
-        : registeredAgent.choice === "other"
-        ? registeredAgent.name.trim() || "Outro agente"
-        : null;
+      registeredAgentLabel === "Pendente" ? null : registeredAgentLabel;
 
     return (
       <StepCard
@@ -1575,7 +1773,9 @@ export function GuidedIntakeShell() {
     emptyDocumentCollection,
   );
   const currentStep =
-    activeStep === "documents"
+    activeStep === "review"
+      ? 10
+      : activeStep === "documents"
       ? 9
       : activeStep === "ein_questions"
       ? 8
@@ -1593,7 +1793,9 @@ export function GuidedIntakeShell() {
           ? 2
           : 1;
   const currentLabel =
-    activeStep === "documents"
+    activeStep === "review"
+      ? "Revisão"
+      : activeStep === "documents"
       ? "Documentos"
       : activeStep === "ein_questions"
       ? "EIN / SS-4"
@@ -1745,6 +1947,7 @@ export function GuidedIntakeShell() {
             onBackToLlcName={() => setActiveStep("llc_name")}
             onBackToMemberData={() => setActiveStep("member_data")}
             onBackToRegisteredAgent={() => setActiveStep("registered_agent")}
+            onBackToDocuments={() => setActiveStep("documents")}
             onBackFromDocuments={() =>
               setActiveStep(
                 selectedService === "complete" ? "ein_questions" : "registered_agent",
@@ -1764,6 +1967,7 @@ export function GuidedIntakeShell() {
             onContinueToBusinessAddress={() => setActiveStep("business_address")}
             onContinueToDocuments={() => setActiveStep("documents")}
             onContinueToEinQuestions={() => setActiveStep("ein_questions")}
+            onContinueToReview={() => setActiveStep("review")}
             onContinueToMemberData={() => setActiveStep("member_data")}
             onContinueToMemberCount={() => setActiveStep("member_count")}
             onContinueToRegisteredAgent={() => setActiveStep("registered_agent")}
