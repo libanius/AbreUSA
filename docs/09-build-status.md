@@ -4,51 +4,60 @@
 
 Phase 5: Review And Generated Forms.
 
-Phase 4 is complete. Exit criteria passed after browser verification (P4-T02V). Phase 5 planning is the next step.
+Phase 4 is complete. Exit criteria passed after browser verification (P4-T02V). Phase 5 planning is complete (P5-T01). The next step is the first Phase 5 implementation slice.
 
 ## Last Completed Task
-
-Task ID: `P4-T02V`
-
-Title: Browser-verify local document collection implementation.
-
-Result:
-
-- Browser verification completed with installed headless Chrome and the Chrome DevTools Protocol.
-- Complete Package path reaches document collection after EIN questions.
-- Florida LLC path reaches document collection after Registered Agent.
-- Attaching both required files enables the document step continuation gate.
-- Manual extraction fields remain editable.
-- No runtime or log errors were captured during the browser-flow verification.
-- Phase 4 exit criteria met.
-
-## Current Task
-
-None. Phase 4 is complete.
-
-## Next Task
 
 Task ID: `P5-T01`
 
 Title: Phase 5 planning — review and generated forms architecture.
 
+Result:
+
+- First Phase 5 implementation slice defined.
+- Review screen data boundaries documented.
+- Generated preview scope documented.
+- Supabase, persistence, PDF/export, submission, protocol generation, payment, real AI extraction, EIN-only flow, and Registered Agent-only flow remain out of scope.
+- No Phase 5 product code was changed.
+
+## Current Task
+
+None. P5-T01 planning is complete.
+
+## Next Task
+
+Task ID: `P5-T02`
+
+Title: Implement local review screen and generated preview shells.
+
 Status: Awaiting execution.
 
 Scope:
 
-- Define the first Phase 5 implementation slice before writing review or form-generation code.
-- Decide how the existing local intake and document state maps into the review screen.
-- Confirm which generated previews are included first: Florida Articles of Organization and IRS SS-4 when EIN is included.
-- Keep Supabase, persistence, PDF/export, submission, and payment out of scope unless the App Spine is updated.
-- Add acceptance criteria before Phase 5 product code begins.
+- Add a review step after document collection.
+- Map existing local intake and document state into customer-facing review sections.
+- Show review sections for service, LLC, business activity, members, business address, Registered Agent, documents, and placeholder extraction fields.
+- Show EIN review section only for Complete Package.
+- Add generated HTML preview shell for Florida Articles of Organization.
+- Add generated HTML preview shell for IRS Form SS-4 only when service includes EIN.
+- Preserve local back navigation so the customer can return to the document step and prior intake steps.
+- Keep previews clearly labeled as previews, not submitted filings.
+- Use existing Phase 2 review and form-preview primitives where possible.
+- Keep Supabase, persistence, PDF/export, submission, protocol generation, payment, real AI extraction, EIN-only flow, and Registered Agent-only flow out of scope.
 
 Acceptance criteria:
 
-- First Phase 5 implementation slice is documented.
-- Review screen data boundaries are documented.
-- Generated form preview scope is documented.
-- Out-of-scope items remain explicit.
-- `/docs/07-roadmap.md`, `/docs/09-build-status.md`, and `/progress/index.html` are updated after planning.
+- Complete Package path reaches review after document collection.
+- Florida LLC path reaches review after document collection.
+- Review screen shows all captured local data needed for customer review.
+- EIN review and IRS SS-4 preview appear only for Complete Package.
+- Florida Articles of Organization preview appears for Complete Package and Florida LLC.
+- Customer can go back from review to document collection.
+- Generated forms are labeled as previews only.
+- No backend calls, persistence, PDF/export, submission, protocol generation, or payment are introduced.
+- `npm run lint` passes.
+- `npm run build` passes.
+- Browser verification covers Complete Package and Florida LLC paths through review.
 
 ## Completed Tasks
 
@@ -67,6 +76,9 @@ Acceptance criteria:
 - Phase 4 browser verification complete: P4-T02V closed.
   - Complete Package and Florida LLC paths verified through document collection.
   - File attachment gate and manual extraction field editability verified.
+- Phase 5 planning complete: P5-T01 closed.
+  - First review and generated preview implementation slice defined.
+  - Review screen data boundaries and generated preview scope documented.
 
 ## What Is Implemented
 
@@ -99,15 +111,16 @@ Acceptance criteria:
 
 Execute one task only:
 
-`P5-T01: Phase 5 planning — review and generated forms architecture`
+`P5-T02: Implement local review screen and generated preview shells`
 
 Deliverable:
 
-- Define the first Phase 5 implementation slice.
-- Document review screen data boundaries.
-- Document generated preview scope.
-- Add acceptance criteria before Phase 5 product code begins.
-- Update `/docs/07-roadmap.md`, `/docs/09-build-status.md`, and `/progress/index.html` after planning.
+- Add the local review step after document collection.
+- Show customer-facing review sections from existing local state.
+- Add Florida Articles of Organization and conditional IRS SS-4 HTML preview shells.
+- Keep previews labeled as previews only.
+- Run `npm run lint`, `npm run build`, and browser verification through review.
+- Update `/docs/07-roadmap.md`, `/docs/09-build-status.md`, and `/progress/index.html` after implementation.
 
 ## Blockers And Risks
 

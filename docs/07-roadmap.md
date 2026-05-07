@@ -4,7 +4,7 @@
 
 Phase 5: Review And Generated Forms.
 
-Phase 4 is complete. Phase 4 exit criteria passed after browser verification (P4-T02V). Phase 5 planning is the next step.
+Phase 4 is complete. Phase 4 exit criteria passed after browser verification (P4-T02V). Phase 5 planning is complete (P5-T01). The next step is the first Phase 5 implementation slice.
 
 ## Phase 0: App Spine Confirmation
 
@@ -424,7 +424,7 @@ Phase 4 is complete. Customers can attach the required passport and U.S. address
 
 ## Phase 5: Review And Generated Forms
 
-Status: Current phase. Planning task (P5-T01) is the next step. No Phase 5 product code has been written yet.
+Status: Current phase. Planning task (P5-T01) is complete. No Phase 5 product code has been written yet.
 
 Goal: generate customer-facing previews from structured intake data.
 
@@ -457,6 +457,75 @@ Next Phase 5 task:
   - Generated form preview scope is documented.
   - Out-of-scope items remain explicit.
   - `/docs/07-roadmap.md`, `/docs/09-build-status.md`, and `/progress/index.html` are updated after planning.
+
+P5-T01 status:
+
+- Complete.
+- First Phase 5 implementation slice defined below.
+- Review screen data boundaries documented below.
+- Generated preview scope documented below.
+- No product code was changed in this planning task.
+
+First Phase 5 implementation slice:
+
+- Task ID: `P5-T02`.
+- Title: Implement local review screen and generated preview shells.
+- Scope:
+  - Add a review step after document collection.
+  - Map existing local intake and document state into customer-facing review sections.
+  - Show review sections for service, LLC, business activity, members, business address, Registered Agent, documents, and placeholder extraction fields.
+  - Show EIN review section only for Complete Package.
+  - Add generated HTML preview shell for Florida Articles of Organization.
+  - Add generated HTML preview shell for IRS Form SS-4 only when service includes EIN.
+  - Preserve local back navigation so the customer can return to the document step and prior intake steps.
+  - Keep previews clearly labeled as previews, not submitted filings.
+  - Use existing Phase 2 review and form-preview primitives where possible.
+- Out of scope:
+  - Supabase persistence.
+  - PDF/export.
+  - Order submission.
+  - Approval gate behavior beyond a non-submitting preview state.
+  - Protocol number generation.
+  - Payment.
+  - Real AI extraction.
+  - EIN-only flow.
+  - Registered Agent-only flow.
+- Acceptance criteria:
+  - Complete Package path reaches review after document collection.
+  - Florida LLC path reaches review after document collection.
+  - Review screen shows all captured local data needed for customer review.
+  - EIN review and IRS SS-4 preview appear only for Complete Package.
+  - Florida Articles of Organization preview appears for Complete Package and Florida LLC.
+  - Customer can go back from review to document collection.
+  - Generated forms are labeled as previews only.
+  - No backend calls, persistence, PDF/export, submission, protocol generation, or payment are introduced.
+  - `npm run lint` passes.
+  - `npm run build` passes.
+  - Browser verification covers Complete Package and Florida LLC paths through review.
+
+Review screen data boundaries:
+
+- Include local values captured in Phase 3 and Phase 4 only.
+- Include selected service and Florida LLC context.
+- Include LLC legal name and business activity.
+- Include member names, addresses, and ownership percentages.
+- Include Florida principal office address.
+- Include Registered Agent choice and entered agent detail when applicable.
+- Include EIN/SS-4 fields only for Complete Package.
+- Include document file names/status and editable placeholder extraction values.
+- Do not show backend order status, protocol number, payment status, reviewer status, or storage paths in this slice.
+
+Generated preview scope:
+
+- Florida Articles of Organization preview:
+  - Included for Complete Package and Florida LLC.
+  - Uses local LLC name, principal office address, Registered Agent, and member/management context.
+  - Remains an HTML preview only.
+- IRS Form SS-4 preview:
+  - Included only for Complete Package.
+  - Uses local LLC name, responsible party, passport number, reason for applying, entity type, start date, and fiscal closing month.
+  - Remains an HTML preview only.
+- PDF/export, stored generated form records, and approval/submission are deferred.
 
 ## Phase 6: Order Submission Workflow
 
