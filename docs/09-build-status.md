@@ -2,62 +2,56 @@
 
 ## Current Phase
 
-Phase 5: Review And Generated Forms.
+Phase 6: Order Submission Workflow.
 
-Phase 4 is complete. Exit criteria passed after browser verification (P4-T02V). P5-T02 is complete. The next step is the local approval gate shell.
+Phase 5 is complete. Exit criteria passed after browser verification through the local review, generated preview shells, and local approval gate. The next step is Phase 6 planning.
 
 ## Last Completed Task
-
-Task ID: `P5-T02`
-
-Title: Implement local review screen and generated preview shells.
-
-Result:
-
-- Local review step added after document collection.
-- Existing local intake and document state maps into customer-facing review sections.
-- Review screen includes service, LLC, business activity, members, business address, Registered Agent, documents, and placeholder extraction fields.
-- EIN review section appears only for Complete Package.
-- Florida Articles of Organization HTML preview shell appears for Complete Package and Florida LLC.
-- IRS Form SS-4 HTML preview shell appears only for Complete Package.
-- Back navigation from review returns to document collection.
-- Generated forms are labeled as previews only.
-- No backend calls, persistence, PDF/export, submission, protocol generation, or payment were introduced.
-- `npm run lint` passes.
-- `npm run build` passes.
-- Browser verification passed for Complete Package and Florida LLC paths through review.
-
-## Current Task
-
-None. P5-T02 is complete.
-
-## Next Task
 
 Task ID: `P5-T03`
 
 Title: Implement local approval gate shell.
 
+Result:
+
+- Non-submitting approval gate added after review.
+- Approval requires an explicit customer confirmation checkbox before continue is enabled.
+- Approval language states the order is not submitted to AbreUSA, Sunbiz, or IRS yet.
+- Back navigation from approval returns to review.
+- No backend calls, persistence, protocol generation, submission, or payment were introduced.
+- `npm run lint` passes.
+- `npm run build` passes.
+- Browser verification passed for Complete Package and Florida LLC paths through approval gate.
+
+## Current Task
+
+None. P5-T03 is complete.
+
+## Next Task
+
+Task ID: `P6-T01`
+
+Title: Phase 6 planning — order submission workflow architecture.
+
 Status: Awaiting execution.
 
 Scope:
 
-- Add a non-submitting approval gate after review.
-- Require explicit customer confirmation that the reviewed data and generated previews are ready for AbreUSA review.
-- Keep approval local-only and clearly not submitted to AbreUSA, Sunbiz, or IRS.
-- Preserve back navigation from approval to review.
-- Keep protocol generation, order persistence, internal order payload, and submission workflow in Phase 6.
+- Define the first Phase 6 implementation slice before writing submission code.
+- Decide the local-to-persisted order payload boundary.
+- Confirm protocol-number format and status lifecycle.
+- Confirm whether Supabase persistence starts in this phase or remains deferred.
+- Keep payment, real agency submission, and real email delivery out of scope unless the App Spine is updated.
+- Add acceptance criteria before Phase 6 product code begins.
 
 Acceptance criteria:
 
-- Complete Package path reaches approval gate after review.
-- Florida LLC path reaches approval gate after review.
-- Approval gate requires an explicit confirmation checkbox or equivalent control before continue is enabled.
-- Approval language states the order is not submitted yet.
-- Customer can go back from approval to review.
-- No backend calls, persistence, protocol generation, submission, or payment are introduced.
-- `npm run lint` passes.
-- `npm run build` passes.
-- Browser verification covers Complete Package and Florida LLC paths through approval gate.
+- First Phase 6 implementation slice is documented.
+- Order payload boundaries are documented.
+- Protocol and status lifecycle assumptions are documented.
+- Persistence decision is documented.
+- Out-of-scope items remain explicit.
+- `/docs/07-roadmap.md`, `/docs/09-build-status.md`, and `/progress/index.html` are updated after planning.
 
 ## Completed Tasks
 
@@ -82,10 +76,12 @@ Acceptance criteria:
 - Phase 5 implementation complete: P5-T02 closed.
   - Local review screen and generated preview shells implemented.
   - Complete Package and Florida LLC paths verified through review.
+- Phase 5 approval gate complete: P5-T03 closed.
+  - Complete Package and Florida LLC paths verified through approval gate.
 
 ## What Is Implemented
 
-- Full guided intake for Complete Package path (steps 1–10) in local client state:
+- Full guided intake for Complete Package path (steps 1–11) in local client state:
   - Service selection.
   - LLC name entry with suffix validation.
   - Business activity selection with custom "Other" entry.
@@ -99,14 +95,14 @@ Acceptance criteria:
 - Local review screen from captured intake and document state.
 - Florida Articles of Organization preview shell for Complete Package and Florida LLC.
 - IRS Form SS-4 preview shell for Complete Package only.
-- Florida LLC path implemented through document collection.
+- Local approval gate with explicit confirmation checkbox.
+- Florida LLC path implemented through review and local approval.
 - Progress header and sidebar reflect 11-step flow.
 - All state resets correctly when user returns to service selection.
 - `/progress/index.html` available as stakeholder dashboard.
 
 ## What Is NOT Implemented
 
-- P5-T03 approval gate shell.
 - Phase 6: order submission workflow.
 - EIN-only and Registered Agent-only flows (deferred, Post-MVP).
 - Supabase schema/storage implementation.
@@ -117,16 +113,14 @@ Acceptance criteria:
 
 Execute one task only:
 
-`P5-T03: Implement local approval gate shell`
+`P6-T01: Phase 6 planning — order submission workflow architecture`
 
 Deliverable:
 
-- Add a non-submitting local approval gate after review.
-- Require explicit customer confirmation before continue is enabled.
-- Keep approval language clear that nothing is submitted yet.
-- Preserve back navigation to review.
-- Run `npm run lint`, `npm run build`, and browser verification through approval gate.
-- Update `/docs/07-roadmap.md`, `/docs/09-build-status.md`, and `/progress/index.html` after implementation.
+- Define the first Phase 6 implementation slice.
+- Document order payload boundaries, protocol/status assumptions, and persistence decision.
+- Keep payment, real agency submission, and real email delivery explicitly out of scope unless confirmed.
+- Update `/docs/07-roadmap.md`, `/docs/09-build-status.md`, and `/progress/index.html` after planning.
 
 ## Blockers And Risks
 

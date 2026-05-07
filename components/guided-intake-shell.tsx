@@ -26,7 +26,8 @@ type FlowStep =
   | "registered_agent"
   | "ein_questions"
   | "documents"
-  | "review";
+  | "review"
+  | "approval";
 type BusinessActivityId =
   | "tech"
   | "ecomm"
@@ -162,7 +163,7 @@ const progressItems = [
   "EIN",
   "Documentos",
   "Revisão",
-  "Envio",
+  "Aprovação",
 ];
 const einReasonOptions: { id: EinReason; label: string; description: string }[] = [
   { id: "new_business", label: "Novo negócio", description: "Abertura de uma nova empresa nos EUA." },
@@ -315,6 +316,7 @@ function StepFrame({
   memberData,
   einQuestions,
   documents,
+  approvalConfirmed,
   registeredAgent,
   onBackToBusinessActivity,
   onBackToBusinessAddress,
@@ -324,6 +326,8 @@ function StepFrame({
   onBackToRegisteredAgent,
   onBackFromDocuments,
   onBackToDocuments,
+  onBackToReview,
+  onChangeApprovalConfirmed,
   onChangeBusinessActivity,
   onChangeBusinessAddress,
   onChangeCustomBusinessActivity,
@@ -338,6 +342,7 @@ function StepFrame({
   onContinueToBusinessAddress,
   onContinueToEinQuestions,
   onContinueToDocuments,
+  onContinueToApproval,
   onContinueToReview,
   onContinueToMemberData,
   onContinueToMemberCount,
@@ -351,6 +356,7 @@ function StepFrame({
   businessAddress: BusinessAddressDraft;
   customBusinessActivity: string;
   documents: DocumentCollectionDraft;
+  approvalConfirmed: boolean;
   einQuestions: EinQuestionsDraft;
   llcName: string;
   memberCount: number;
@@ -364,6 +370,8 @@ function StepFrame({
   onBackToRegisteredAgent: () => void;
   onBackFromDocuments: () => void;
   onBackToDocuments: () => void;
+  onBackToReview: () => void;
+  onChangeApprovalConfirmed: (confirmed: boolean) => void;
   onChangeBusinessActivity: (activity: BusinessActivityId) => void;
   onChangeBusinessAddress: (field: keyof BusinessAddressDraft, value: string) => void;
   onChangeCustomBusinessActivity: (activity: string) => void;
@@ -385,6 +393,7 @@ function StepFrame({
   onContinueToBusinessAddress: () => void;
   onContinueToEinQuestions: () => void;
   onContinueToDocuments: () => void;
+  onContinueToApproval: () => void;
   onContinueToReview: () => void;
   onContinueToMemberData: () => void;
   onContinueToMemberCount: () => void;
@@ -435,6 +444,70 @@ function StepFrame({
       : registeredAgent.choice === "other"
       ? registeredAgent.name.trim() || "Outro agente"
       : "Pendente";
+
+  if (activeStep === "approval") {
+    return (
+      <StepCard
+        badge="Aprovação local"
+        eyebrow="Passo 11 · Aprovação"
+        title="Confirme a revisão do pedido"
+      >
+        <div className="grid gap-3">
+          <StatusMessage title="Ainda não enviado" tone="warning">
+            <p>
+              Esta confirmação é apenas local. Nada será enviado para a
+              AbreUSA, Sunbiz ou IRS nesta etapa.
+            </p>
+          </StatusMessage>
+
+          <ReviewSummary
+            items={[
+              { label: "Serviço", value: selectedLabel ?? "Pendente" },
+              { label: "Estado", value: "Florida" },
+              { label: "Nome LLC", value: trimmedLlcName || "Pendente" },
+              {
+                label: "Previews",
+                value:
+                  selectedService === "complete"
+                    ? "Articles of Organization e IRS SS-4"
+                    : "Articles of Organization",
+              },
+            ]}
+            title="Pedido revisado"
+          />
+
+          <FieldGroup title="Confirmação do cliente">
+            <label className="flex gap-3 rounded-md border bg-card p-4 text-sm leading-6 text-foreground">
+              <input
+                checked={approvalConfirmed}
+                className="mt-1 size-4 shrink-0 accent-emerald-600"
+                onChange={(event) =>
+                  onChangeApprovalConfirmed(event.target.checked)
+                }
+                type="checkbox"
+              />
+              <span>
+                Confirmo que revisei os dados e previews e autorizo preparar
+                este pedido para revisão da AbreUSA. Entendo que isso ainda não
+                cria protocolo oficial nem submete documentos a órgãos externos.
+              </span>
+            </label>
+          </FieldGroup>
+        </div>
+        <StepNavigation
+          backDisabled={false}
+          backLabel="Voltar"
+          nextDisabled={!approvalConfirmed}
+          nextLabel={
+            approvalConfirmed
+              ? "Continuar (próxima fase)"
+              : "Confirmar revisão"
+          }
+          onBack={onBackToReview}
+        />
+      </StepCard>
+    );
+  }
 
   if (activeStep === "review") {
     const businessAddressSummary =
@@ -616,9 +689,10 @@ function StepFrame({
         <StepNavigation
           backDisabled={false}
           backLabel="Voltar"
-          nextDisabled
-          nextLabel="Aprovação (próxima fase)"
+          nextDisabled={false}
+          nextLabel="Aprovar dados"
           onBack={onBackToDocuments}
+          onNext={onContinueToApproval}
         />
       </StepCard>
     );
@@ -1772,8 +1846,11 @@ export function GuidedIntakeShell() {
   const [documents, setDocuments] = useState<DocumentCollectionDraft>(
     emptyDocumentCollection,
   );
+  const [approvalConfirmed, setApprovalConfirmed] = useState(false);
   const currentStep =
-    activeStep === "review"
+    activeStep === "approval"
+      ? 11
+      : activeStep === "review"
       ? 10
       : activeStep === "documents"
       ? 9
@@ -1793,7 +1870,9 @@ export function GuidedIntakeShell() {
           ? 2
           : 1;
   const currentLabel =
-    activeStep === "review"
+    activeStep === "approval"
+      ? "Aprovação"
+      : activeStep === "review"
       ? "Revisão"
       : activeStep === "documents"
       ? "Documentos"
@@ -1837,6 +1916,7 @@ export function GuidedIntakeShell() {
       fiscalClosingMonth: "",
     });
     setDocuments(emptyDocumentCollection);
+    setApprovalConfirmed(false);
   }
 
   function handleChangeMemberCount(count: number) {
@@ -1932,6 +2012,7 @@ export function GuidedIntakeShell() {
         <div className="grid w-full gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
           <StepFrame
             activeStep={activeStep}
+            approvalConfirmed={approvalConfirmed}
             businessActivity={businessActivity}
             businessAddress={businessAddress}
             customBusinessActivity={customBusinessActivity}
@@ -1948,11 +2029,13 @@ export function GuidedIntakeShell() {
             onBackToMemberData={() => setActiveStep("member_data")}
             onBackToRegisteredAgent={() => setActiveStep("registered_agent")}
             onBackToDocuments={() => setActiveStep("documents")}
+            onBackToReview={() => setActiveStep("review")}
             onBackFromDocuments={() =>
               setActiveStep(
                 selectedService === "complete" ? "ein_questions" : "registered_agent",
               )
             }
+            onChangeApprovalConfirmed={setApprovalConfirmed}
             onChangeBusinessActivity={setBusinessActivity}
             onChangeBusinessAddress={handleChangeBusinessAddress}
             onChangeCustomBusinessActivity={setCustomBusinessActivity}
@@ -1965,6 +2048,7 @@ export function GuidedIntakeShell() {
             onChangeRegisteredAgent={handleChangeRegisteredAgent}
             onContinueToBusinessActivity={() => setActiveStep("business_activity")}
             onContinueToBusinessAddress={() => setActiveStep("business_address")}
+            onContinueToApproval={() => setActiveStep("approval")}
             onContinueToDocuments={() => setActiveStep("documents")}
             onContinueToEinQuestions={() => setActiveStep("ein_questions")}
             onContinueToReview={() => setActiveStep("review")}

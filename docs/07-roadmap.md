@@ -2,9 +2,9 @@
 
 ## Current Phase
 
-Phase 5: Review And Generated Forms.
+Phase 6: Order Submission Workflow.
 
-Phase 4 is complete. Phase 4 exit criteria passed after browser verification (P4-T02V). Phase 5 planning is complete (P5-T01). The next step is the first Phase 5 implementation slice.
+Phase 5 is complete. Phase 5 exit criteria passed after browser verification for the local review, generated preview shells, and approval gate. The next step is Phase 6 planning.
 
 ## Phase 0: App Spine Confirmation
 
@@ -424,7 +424,7 @@ Phase 4 is complete. Customers can attach the required passport and U.S. address
 
 ## Phase 5: Review And Generated Forms
 
-Status: Current phase. P5-T02 is complete. The next step is the local approval gate shell.
+Status: Complete. P5-T03 is complete.
 
 Goal: generate customer-facing previews from structured intake data.
 
@@ -440,6 +440,7 @@ Exit criteria:
 
 - Generated forms reflect intake data.
 - Customer can go back and correct data before approval.
+- Customer can explicitly confirm approval locally before Phase 6 submission work begins.
 
 Next Phase 5 task:
 
@@ -564,7 +565,25 @@ Next Phase 5 task:
   - `npm run build` passes.
   - Browser verification covers Complete Package and Florida LLC paths through approval gate.
 
+P5-T03 status:
+
+- Complete.
+- Non-submitting approval gate added after review.
+- Approval requires an explicit customer confirmation checkbox before continue is enabled.
+- Approval language states the order is not submitted to AbreUSA, Sunbiz, or IRS yet.
+- Back navigation from approval returns to review.
+- No backend calls, persistence, protocol generation, submission, or payment were introduced.
+- `npm run lint` passes.
+- `npm run build` passes.
+- Browser verification passed for Complete Package and Florida LLC paths through approval gate.
+
+## Phase 5 Exit Status
+
+Phase 5 is complete. Customers can review captured local intake/document data, inspect local generated preview shells, return to correct data, and explicitly confirm local approval. Official submission, protocol generation, persistence, and customer confirmation screen remain Phase 6 work.
+
 ## Phase 6: Order Submission Workflow
+
+Status: Current phase. Awaiting Phase 6 planning.
 
 Goal: convert approved intake into an internal AbreUSA order.
 
@@ -581,6 +600,18 @@ Exit criteria:
 
 - Approved order is saved and traceable.
 - Customer sees a clear next step and timeline.
+
+Next Phase 6 task:
+
+- Task ID: `P6-T01`.
+- Title: Phase 6 planning — order submission workflow architecture.
+- Scope:
+  - Define the first Phase 6 implementation slice before writing submission code.
+  - Decide the local-to-persisted order payload boundary.
+  - Confirm protocol-number format and status lifecycle.
+  - Confirm whether Supabase persistence starts in this phase or remains deferred.
+  - Keep payment, real agency submission, and real email delivery out of scope unless the App Spine is updated.
+  - Add acceptance criteria before Phase 6 product code begins.
 
 ## Phase 7: Production Hardening
 
