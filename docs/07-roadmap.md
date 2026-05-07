@@ -4,7 +4,7 @@
 
 Phase 6: Order Submission Workflow.
 
-Phase 5 is complete. P6-T07 is complete. The next step is P6-T08 email notification and customer handoff planning.
+Phase 5 is complete. P6-T08 is complete. The next step is Phase 6 exit review and Phase 7 planning.
 
 ## Phase 0: App Spine Confirmation
 
@@ -583,7 +583,7 @@ Phase 5 is complete. Customers can review captured local intake/document data, i
 
 ## Phase 6: Order Submission Workflow
 
-Status: Current phase. P6-T07 is complete. The next step is the email notification plan.
+Status: Current phase. P6-T08 is complete. The next step is Phase 6 exit review and Phase 7 planning.
 
 Goal: convert approved intake into an internal AbreUSA order.
 
@@ -775,6 +775,64 @@ Next Phase 6 task:
   - Customer handoff/timeline copy requirements are documented.
   - Any implementation slice is explicitly scoped before code changes.
   - `/docs/07-roadmap.md`, `/docs/09-build-status.md`, and `/progress/index.html` are updated after the task.
+
+P6-T08 status:
+
+- Status: Complete.
+- Decision: Planning only. Email sending implementation is deferred.
+- MVP customer handoff will be handled by the confirmation screen plus AbreUSA manual follow-up using the persisted applicant contact data.
+- No email provider, Vercel email integration, Supabase trigger, or transactional email implementation is added in Phase 6.
+- Customer notification contents documented below.
+- Customer handoff and timeline copy requirements documented below.
+- Payment, direct agency submission, admin portal, RLS hardening, signed document URLs, and retention policy remain out of scope.
+
+Email notification decision:
+
+- Phase 6 does not implement automated email sending.
+- Automated email remains deferred until a sender/provider is confirmed.
+- Candidate future implementation paths:
+  - Vercel/Resend transactional email from the app.
+  - Supabase Edge Function triggered after order persistence.
+  - Manual AbreUSA operational email outside the app for MVP.
+- MVP default for now:
+  - Store applicant contact data.
+  - Show protocol and next-step timeline on the confirmation screen.
+  - AbreUSA team follows up manually using the persisted applicant email/phone.
+
+Customer notification contents:
+
+- Protocol number.
+- Selected service.
+- LLC legal name.
+- Confirmation that the order was received by AbreUSA for internal review.
+- Clear statement that no government filing has been submitted yet.
+- Expected next step: AbreUSA reviews data/documents and contacts the customer if anything is missing.
+- Estimated initial response window: to be confirmed before production launch.
+- Support/contact channel: to be confirmed before production launch.
+
+Customer handoff and timeline copy requirements:
+
+- Confirmation screen must remain the authoritative customer-facing handoff in the MVP.
+- Copy must avoid implying Sunbiz or IRS submission has happened.
+- Copy must say AbreUSA reviews the order first.
+- Copy must say the customer should keep the protocol number for follow-up.
+- Copy must not promise exact government processing timelines before legal/operational confirmation.
+
+Next Phase 6 task:
+
+- Task ID: `P6-T09`.
+- Title: Phase 6 exit review and Phase 7 planning.
+- Scope:
+  - Review Phase 6 deliverables against exit criteria.
+  - Decide whether the current MVP can move to Phase 7 hardening.
+  - List remaining Phase 6 gaps, if any.
+  - Define first Phase 7 hardening slice.
+  - Keep new feature implementation out of scope.
+- Acceptance criteria:
+  - Phase 6 exit status is documented.
+  - Phase 7 first task is documented.
+  - Remaining risks/blockers are clearly listed.
+  - `/docs/07-roadmap.md`, `/docs/09-build-status.md`, and `/progress/index.html` are updated.
 
 ## Phase 7: Production Hardening
 

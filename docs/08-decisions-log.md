@@ -255,6 +255,16 @@ Reason:
 
 Files are currently captured only as local metadata. Uploading to private storage makes them available for AbreUSA internal review.
 
+### 2026-05-07: Email Sending Deferred For MVP Handoff
+
+Decision:
+
+Do not implement automated email sending in Phase 6. Use the confirmation screen plus persisted applicant contact data for MVP handoff, and let AbreUSA follow up manually until an email provider/sender is confirmed.
+
+Reason:
+
+The app already persists protocol number, applicant contact, order data, and document files. Automated transactional email requires sender/domain/provider decisions and operational copy approval. Deferring implementation avoids adding an unconfirmed delivery dependency while preserving the customer handoff through the confirmation screen.
+
 ## Pending Confirmation Gates
 
 ### App Spine Confirmation

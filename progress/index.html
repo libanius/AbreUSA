@@ -268,12 +268,11 @@
           <span class="pill done" data-en="Current phase" data-pt="Fase atual">Current phase</span>
           <p class="phase" data-en="Phase 6: Order Submission Workflow" data-pt="Fase 6: Fluxo de envio do pedido">Phase 6: Order Submission Workflow</p>
           <p
-            data-en="Document upload to Supabase private storage is implemented and verified. The next task is email notification and customer handoff planning."
-            data-pt="O upload de documentos para storage privado Supabase está implementado e verificado. A próxima tarefa é planejar notificação por e-mail e handoff do cliente."
+            data-en="Email notification and customer handoff are planned for MVP. The next task is Phase 6 exit review and Phase 7 planning."
+            data-pt="Notificação por e-mail e handoff do cliente estão planejados para o MVP. A próxima tarefa é revisar a saída da Fase 6 e planejar a Fase 7."
           >
-            Document upload to Supabase private storage is implemented and
-            verified. The next task is email notification and customer handoff
-            planning.
+            Email notification and customer handoff are planned for MVP. The
+            next task is Phase 6 exit review and Phase 7 planning.
           </p>
           <div class="progress-wrap" aria-label="Project progress">
             <div class="progress-label">
@@ -339,6 +338,7 @@
             <li data-en="P6-T05 Production protocol generation implemented; server-side AUS-YYYY-NNNN via Postgres sequence verified in browser." data-pt="P6-T05 Geração de protocolo de produção implementada; AUS-YYYY-NNNN gerado pelo servidor via sequência Postgres verificada no navegador.">P6-T05 Production protocol generation implemented; server-side AUS-YYYY-NNNN via Postgres sequence verified in browser.</li>
             <li data-en="P6-T06 Applicant contact step added (name, email, phone); applicants table verified in Supabase with AUS-2026-0004." data-pt="P6-T06 Etapa de contato do solicitante adicionada (nome, e-mail, telefone); tabela applicants verificada no Supabase com AUS-2026-0004.">P6-T06 Applicant contact step added (name, email, phone); applicants table verified in Supabase with AUS-2026-0004.</li>
             <li data-en="P6-T07 Document upload to Supabase private storage verified with AUS-2026-0005." data-pt="P6-T07 Upload de documentos para storage privado Supabase verificado com AUS-2026-0005.">P6-T07 Document upload to Supabase private storage verified with AUS-2026-0005.</li>
+            <li data-en="P6-T08 Email notification and customer handoff planned; automated email deferred." data-pt="P6-T08 Notificação por e-mail e handoff do cliente planejados; e-mail automático adiado.">P6-T08 Email notification and customer handoff planned; automated email deferred.</li>
           </ul>
         </article>
 
@@ -370,32 +370,32 @@
             <li data-en="Protocol numbers generated server-side via Postgres sequence (AUS-YYYY-NNNN); no client-side collision risk." data-pt="Números de protocolo gerados no servidor via sequência Postgres (AUS-YYYY-NNNN); sem risco de colisão no cliente.">Protocol numbers generated server-side via Postgres sequence (AUS-YYYY-NNNN); no client-side collision risk.</li>
             <li data-en="Applicant contact step (name, email, phone) added as step 2 of 13; persisted to applicants table in Supabase." data-pt="Etapa de contato do solicitante (nome, e-mail, telefone) adicionada como etapa 2 de 13; persistida na tabela applicants no Supabase.">Applicant contact step (name, email, phone) added as step 2 of 13; persisted to applicants table in Supabase.</li>
             <li data-en="Document files upload to Supabase private storage and document rows are recorded for approved orders." data-pt="Arquivos de documentos são enviados para storage privado Supabase e linhas de documentos são registradas para pedidos aprovados.">Document files upload to Supabase private storage and document rows are recorded for approved orders.</li>
-            <li data-en="No email notification, payment, public document URLs, or production RLS hardening yet." data-pt="Ainda não há notificação por e-mail, pagamento, URLs públicas de documentos ou hardening RLS de produção.">No email notification, payment, public document URLs, or production RLS hardening yet.</li>
+            <li data-en="Customer handoff uses the confirmation screen and persisted contact data; AbreUSA manual follow-up remains the MVP default." data-pt="O handoff do cliente usa a tela de confirmação e dados de contato persistidos; follow-up manual da AbreUSA continua como padrão do MVP.">Customer handoff uses the confirmation screen and persisted contact data; AbreUSA manual follow-up remains the MVP default.</li>
+            <li data-en="No automated email, payment, public document URLs, or production RLS hardening yet." data-pt="Ainda não há e-mail automático, pagamento, URLs públicas de documentos ou hardening RLS de produção.">No automated email, payment, public document URLs, or production RLS hardening yet.</li>
           </ul>
         </article>
 
         <article class="card task">
           <span class="pill done" data-en="Last completed" data-pt="Última concluída">Last completed</span>
-          <h2 data-en="P6-T07 — Document Upload" data-pt="P6-T07 — Upload de Documentos">P6-T07 — Document Upload</h2>
+          <h2 data-en="P6-T08 — Email Handoff" data-pt="P6-T08 — Handoff por E-mail">P6-T08 — Email Handoff</h2>
           <p
-            data-en="Passport and U.S. address proof files upload to the private documents bucket; document rows and private object existence verified with AUS-2026-0005."
-            data-pt="Passaporte e comprovante de endereço nos EUA são enviados para o bucket privado documents; linhas e objetos privados verificados com AUS-2026-0005."
+            data-en="Automated email is deferred; MVP handoff uses the confirmation screen and AbreUSA manual follow-up with persisted contact data."
+            data-pt="E-mail automático foi adiado; o handoff do MVP usa a tela de confirmação e follow-up manual da AbreUSA com dados de contato persistidos."
           >
-            Passport and U.S. address proof files upload to the private
-            documents bucket; document rows and private object existence
-            verified with AUS-2026-0005.
+            Automated email is deferred; MVP handoff uses the confirmation
+            screen and AbreUSA manual follow-up with persisted contact data.
           </p>
         </article>
 
         <article class="card next">
           <span class="pill" data-en="Next task" data-pt="Próxima tarefa">Next task</span>
-          <h2 data-en="P6-T08 — Email Handoff" data-pt="P6-T08 — Handoff por E-mail">P6-T08 — Email Handoff</h2>
+          <h2 data-en="P6-T09 — Exit Review" data-pt="P6-T09 — Revisão de saída">P6-T09 — Exit Review</h2>
           <p
-            data-en="Plan whether Phase 6 needs email implementation or only a documented customer notification and AbreUSA handoff process."
-            data-pt="Planejar se a Fase 6 precisa de implementação de e-mail ou apenas documentação de notificação do cliente e handoff para AbreUSA."
+            data-en="Review Phase 6 against exit criteria, list remaining gaps, and define the first Phase 7 hardening slice."
+            data-pt="Revisar a Fase 6 contra os critérios de saída, listar lacunas restantes e definir o primeiro recorte de hardening da Fase 7."
           >
-            Plan whether Phase 6 needs email implementation or only a
-            documented customer notification and AbreUSA handoff process.
+            Review Phase 6 against exit criteria, list remaining gaps, and
+            define the first Phase 7 hardening slice.
           </p>
         </article>
       </section>

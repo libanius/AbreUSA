@@ -4,52 +4,48 @@
 
 Phase 6: Order Submission Workflow.
 
-P6-T07 is complete. Browser and Supabase verification passed for document file upload to private storage. The next step is P6-T08 email notification and customer handoff planning.
+P6-T08 is complete. Email notification and customer handoff are documented as a plan-only MVP handoff. The next step is Phase 6 exit review and Phase 7 planning.
 
 ## Last Completed Task
-
-Task ID: `P6-T07`
-
-Title: Document file upload to Supabase private storage bucket.
-
-Result:
-
-- `documents` private storage bucket created in Supabase.
-- Storage upload policy created for anon role.
-- `documents` table created in Supabase; RLS disabled for development.
-- `supabase/schema.sql` updated with `documents` table.
-- `documentFiles` state added to hold actual `File` objects separate from serializable metadata.
-- `handleChangeDocumentFile` populates both serializable metadata and actual `File` objects.
-- `lib/persist-order.ts` uploads passport and U.S. address proof files to `documents/{orderId}/{type}.{ext}` and inserts rows in the `documents` table.
-- `npm run lint` passes. `npm run build` passes.
-- Browser verification passed with Complete Package flow and both files attached.
-- Supabase verification passed for `AUS-2026-0005`: document rows exist for passport and U.S. address proof.
-- Private bucket object verification passed by same-path upload conflict for `passport.pdf` and `us_address_proof.pdf`.
-
-## Current Task
-
-None. P6-T07 is complete.
-
-## Next Task
 
 Task ID: `P6-T08`
 
 Title: Plan email notification and customer handoff.
 
+Result:
+
+- Decision: planning only. Automated email sending is deferred.
+- MVP handoff uses the confirmation screen plus persisted applicant contact data.
+- AbreUSA manual follow-up remains the default until a sender/provider is confirmed.
+- Customer notification contents documented: protocol number, service, LLC name, review status, no government submission yet, next steps, response window, and support channel.
+- Customer handoff/timeline copy requirements documented.
+- No email provider, Vercel email integration, Supabase trigger, or transactional email implementation was added.
+
+## Current Task
+
+None. P6-T08 is complete.
+
+## Next Task
+
+Task ID: `P6-T09`
+
+Title: Phase 6 exit review and Phase 7 planning.
+
 Status: Awaiting execution.
 
 Scope:
 
-- Decide whether Phase 6 needs only an email notification plan or a first implementation.
-- Define the minimum customer notification contents after approved order persistence.
-- Define whether email sends from the app, Supabase, Vercel, or remains an AbreUSA manual operation for MVP.
-- Keep payment, direct agency submission, admin portal, RLS hardening, signed document URLs, and retention policy out of scope unless the App Spine is updated.
+- Review Phase 6 deliverables against exit criteria.
+- Decide whether the current MVP can move to Phase 7 hardening.
+- List remaining Phase 6 gaps, if any.
+- Define first Phase 7 hardening slice.
+- Keep new feature implementation out of scope.
 
 Acceptance criteria:
 
-- Email notification decision is documented.
-- Customer handoff/timeline copy requirements are documented.
-- Any implementation slice is explicitly scoped before code changes.
+- Phase 6 exit status is documented.
+- Phase 7 first task is documented.
+- Remaining risks/blockers are clearly listed.
 - `/docs/07-roadmap.md`, `/docs/09-build-status.md`, and `/progress/index.html` are updated after the task.
 
 ## Completed Tasks
@@ -63,6 +59,7 @@ Acceptance criteria:
 - Phase 6 production protocol generation: P6-T05 closed.
 - Phase 6 applicant contact step: P6-T06 closed.
 - Phase 6 document file upload: P6-T07 closed.
+- Phase 6 email/customer handoff planning: P6-T08 closed.
 
 ## What Is Implemented
 
@@ -74,12 +71,13 @@ Acceptance criteria:
 - Supabase persistence: orders, llcs, members, registered_agents, ein_details, generated_forms, applicants.
 - Document file upload to Supabase private storage.
 - `documents` table schema and storage bucket created in Supabase.
+- Customer handoff plan: confirmation screen plus manual AbreUSA follow-up using persisted applicant contact data.
 - `lib/supabase.ts`, `lib/persist-order.ts`, `supabase/schema.sql`.
 - `/progress/index.html` stakeholder dashboard.
 
 ## What Is NOT Implemented
 
-- Email notification plan or implementation.
+- Automated email notification implementation.
 - EIN-only and Registered Agent-only flows (deferred, Post-MVP).
 - RLS policies on all Supabase tables and storage (required before production).
 - Document retention period and reviewer access model (Phase 7 blockers).
@@ -90,13 +88,14 @@ Acceptance criteria:
 
 Execute one task only:
 
-`P6-T08: Plan email notification and customer handoff`
+`P6-T09: Phase 6 exit review and Phase 7 planning`
 
 Deliverable:
 
-- Decide whether this phase needs a plan only or first email implementation.
-- Document customer notification contents and handoff/timeline copy.
-- Keep payment, direct agency submission, admin portal, RLS hardening, signed document URLs, and retention policy out of scope unless confirmed.
+- Review Phase 6 deliverables against exit criteria.
+- Decide whether to move to Phase 7 hardening.
+- Document remaining Phase 6 gaps, if any.
+- Define the first Phase 7 hardening slice.
 - Update `/docs/07-roadmap.md`, `/docs/09-build-status.md`, and `/progress/index.html`.
 
 ## Blockers And Risks
