@@ -275,6 +275,16 @@ Reason:
 
 Approved orders are now persisted and traceable with server-generated protocol numbers. Applicant contact data and document files are persisted for manual AbreUSA follow-up, and the customer receives a clear confirmation screen and handoff timeline. Remaining risks are production hardening concerns rather than Phase 6 order submission blockers.
 
+### 2026-05-07: Production Persistence Requires Server-Side Boundary
+
+Decision:
+
+Before production, approved-order persistence and document upload must move behind a server-side boundary. The browser must not directly insert sensitive order data into Supabase tables or directly upload passport/address files to the private `documents` bucket with the anon key.
+
+Reason:
+
+The current Phase 6 implementation was acceptable for development verification but depends on public client-side Supabase writes. Production RLS and storage hardening require a server-controlled write path so public table access can be denied and private document access can be controlled through server-side authorization and short-lived signed URLs.
+
 ## Pending Confirmation Gates
 
 ### App Spine Confirmation

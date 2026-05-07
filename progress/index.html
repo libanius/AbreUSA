@@ -268,12 +268,11 @@
           <span class="pill done" data-en="Current phase" data-pt="Fase atual">Current phase</span>
           <p class="phase" data-en="Phase 7: Production Hardening" data-pt="Fase 7: Hardening de produção">Phase 7: Production Hardening</p>
           <p
-            data-en="Phase 6 is complete. The next task is production security hardening for Supabase data, document storage, signed URLs, retention, and reviewer access."
-            data-pt="A Fase 6 está concluída. A próxima tarefa é o hardening de segurança de produção para dados Supabase, storage de documentos, URLs assinadas, retenção e acesso de revisores."
+            data-en="P7-T01 is complete. The next task moves approved-order persistence and document upload behind a server-side security boundary."
+            data-pt="P7-T01 está concluída. A próxima tarefa move a persistência de pedidos aprovados e o upload de documentos para um limite de segurança no servidor."
           >
-            Phase 6 is complete. The next task is production security hardening
-            for Supabase data, document storage, signed URLs, retention, and
-            reviewer access.
+            P7-T01 is complete. The next task moves approved-order persistence
+            and document upload behind a server-side security boundary.
           </p>
           <div class="progress-wrap" aria-label="Project progress">
             <div class="progress-label">
@@ -342,6 +341,7 @@
             <li data-en="P6-T08 Email notification and customer handoff planned; automated email deferred." data-pt="P6-T08 Notificação por e-mail e handoff do cliente planejados; e-mail automático adiado.">P6-T08 Email notification and customer handoff planned; automated email deferred.</li>
             <li data-en="P6-T09 Phase 6 exit review complete; Phase 7 hardening begins." data-pt="P6-T09 Revisão de saída da Fase 6 concluída; hardening da Fase 7 iniciado.">P6-T09 Phase 6 exit review complete; Phase 7 hardening begins.</li>
             <li data-en="Phase 6 complete." data-pt="Fase 6 concluída.">Phase 6 complete.</li>
+            <li data-en="P7-T01 production security hardening plan completed." data-pt="P7-T01 plano de hardening de segurança de produção concluído.">P7-T01 production security hardening plan completed.</li>
           </ul>
         </article>
 
@@ -375,33 +375,33 @@
             <li data-en="Document files upload to Supabase private storage and document rows are recorded for approved orders." data-pt="Arquivos de documentos são enviados para storage privado Supabase e linhas de documentos são registradas para pedidos aprovados.">Document files upload to Supabase private storage and document rows are recorded for approved orders.</li>
             <li data-en="Customer handoff uses the confirmation screen and persisted contact data; AbreUSA manual follow-up remains the MVP default." data-pt="O handoff do cliente usa a tela de confirmação e dados de contato persistidos; follow-up manual da AbreUSA continua como padrão do MVP.">Customer handoff uses the confirmation screen and persisted contact data; AbreUSA manual follow-up remains the MVP default.</li>
             <li data-en="Phase 6 exit criteria are met; remaining work is production hardening." data-pt="Os critérios de saída da Fase 6 foram atendidos; o trabalho restante é hardening de produção.">Phase 6 exit criteria are met; remaining work is production hardening.</li>
+            <li data-en="Production security plan requires server-side order persistence before RLS and storage lockdown." data-pt="O plano de segurança de produção exige persistência de pedidos no servidor antes do bloqueio de RLS e storage.">Production security plan requires server-side order persistence before RLS and storage lockdown.</li>
             <li data-en="No automated email, payment, public document URLs, or production RLS hardening yet." data-pt="Ainda não há e-mail automático, pagamento, URLs públicas de documentos ou hardening RLS de produção.">No automated email, payment, public document URLs, or production RLS hardening yet.</li>
           </ul>
         </article>
 
         <article class="card task">
           <span class="pill done" data-en="Last completed" data-pt="Última concluída">Last completed</span>
-          <h2 data-en="P6-T09 — Exit Review" data-pt="P6-T09 — Revisão de saída">P6-T09 — Exit Review</h2>
+          <h2 data-en="P7-T01 — Security Plan" data-pt="P7-T01 — Plano de segurança">P7-T01 — Security Plan</h2>
           <p
-            data-en="Phase 6 deliverables were reviewed against exit criteria. The project is moving to Phase 7 production hardening with no remaining Phase 6 implementation blockers."
-            data-pt="Os entregáveis da Fase 6 foram revisados contra os critérios de saída. O projeto passa para a Fase 7 de hardening de produção sem bloqueadores restantes de implementação da Fase 6."
+            data-en="Supabase RLS, storage access, signed URLs, retention, and reviewer access were planned. Retention and reviewer access remain production blockers."
+            data-pt="RLS do Supabase, acesso ao storage, URLs assinadas, retenção e acesso de revisores foram planejados. Retenção e acesso de revisores continuam bloqueadores de produção."
           >
-            Phase 6 deliverables were reviewed against exit criteria. The
-            project is moving to Phase 7 production hardening with no remaining
-            Phase 6 implementation blockers.
+            Supabase RLS, storage access, signed URLs, retention, and reviewer
+            access were planned. Retention and reviewer access remain
+            production blockers.
           </p>
         </article>
 
         <article class="card next">
           <span class="pill" data-en="Next task" data-pt="Próxima tarefa">Next task</span>
-          <h2 data-en="P7-T01 — Security Hardening" data-pt="P7-T01 — Hardening de segurança">P7-T01 — Security Hardening</h2>
+          <h2 data-en="P7-T02 — Server Boundary" data-pt="P7-T02 — Limite no servidor">P7-T02 — Server Boundary</h2>
           <p
-            data-en="Plan production security hardening for Supabase RLS, private storage access, signed URLs, document retention, and reviewer access."
-            data-pt="Planejar o hardening de segurança de produção para RLS do Supabase, acesso ao storage privado, URLs assinadas, retenção de documentos e acesso de revisores."
+            data-en="Move approved-order persistence and document upload behind a server-side boundary so direct browser writes can be removed."
+            data-pt="Mover a persistência de pedidos aprovados e o upload de documentos para um limite no servidor para remover gravações diretas do navegador."
           >
-            Plan production security hardening for Supabase RLS, private
-            storage access, signed URLs, document retention, and reviewer
-            access.
+            Move approved-order persistence and document upload behind a
+            server-side boundary so direct browser writes can be removed.
           </p>
         </article>
       </section>

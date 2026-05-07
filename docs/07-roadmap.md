@@ -861,7 +861,7 @@ Direct agency submission, payment, admin portal, EIN-only flow, and Registered A
 
 ## Phase 7: Production Hardening
 
-Status: Current phase. Awaiting first hardening slice.
+Status: Current phase. P7-T01 is complete. The next step is moving approved-order persistence behind a server-side security boundary.
 
 Goal: make the product safe to launch.
 
@@ -896,6 +896,87 @@ First Phase 7 task:
   - Document retention and reviewer access decisions are documented or explicitly marked as blockers.
   - First implementable Phase 7 security slice is defined.
   - `/docs/07-roadmap.md`, `/docs/09-build-status.md`, `/progress/index.html`, and `/docs/08-decisions-log.md` are updated if decisions changed.
+
+P7-T01 status:
+
+- Status: Complete.
+- Current Supabase access boundary audited.
+- Production RLS and storage policy requirements documented below.
+- Signed URL approach documented below.
+- Document retention and reviewer access remain production blockers until confirmed.
+- First implementable Phase 7 security slice defined as `P7-T02`.
+- No product code was changed in this planning task.
+
+P7-T01 audit findings:
+
+- Current app writes approved orders directly from the browser using `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
+- Current app writes to `orders`, `applicants`, `llcs`, `members`, `registered_agents`, `ein_details`, `generated_forms`, and `documents`.
+- Current app uploads passport and U.S. address proof files directly from the browser to the private `documents` storage bucket.
+- Current schema notes that RLS policies are not defined.
+- Phase 6 verification used RLS disabled on development tables and an anon upload policy for the private bucket.
+- This access model is acceptable for development verification only and is not production-ready.
+
+Production security requirements:
+
+- RLS must be enabled on all persisted order tables before production:
+  - `orders`.
+  - `applicants`.
+  - `llcs`.
+  - `members`.
+  - `registered_agents`.
+  - `ein_details`.
+  - `generated_forms`.
+  - `documents`.
+- Direct public `select`, `update`, and `delete` must be denied for all customer/order tables.
+- Direct public table `insert` must be removed before production; the browser must not write sensitive order data directly with the anon key.
+- Approved order persistence should move behind a server-side boundary that validates the payload and uses server-held Supabase credentials.
+- Order child records must only be written as part of the server-side approved-order persistence flow.
+- Internal AbreUSA review access must use a separate authenticated reviewer model or a controlled server-only operational process; it must not depend on public anon access.
+
+Storage policy requirements:
+
+- The `documents` bucket must remain private.
+- Raw storage paths and public URLs must never be exposed to customers or unauthenticated users.
+- Direct public uploads to the `documents` bucket must be removed before production.
+- Document upload should move behind the same server-side approved-order persistence boundary, or use short-lived scoped upload credentials if a later architecture explicitly requires direct browser upload.
+- Document objects should remain path-scoped by persisted order ID.
+- Document reads must be blocked by default and allowed only through controlled internal access.
+
+Signed URL approach:
+
+- Internal document access should use short-lived signed URLs generated server-side.
+- Signed URLs should be generated only after reviewer authorization is confirmed.
+- Signed URLs should be valid for minutes, not days.
+- Signed URLs should not be stored in the database.
+- The database should store only the private `storage_path`, document metadata, order ID, and audit-friendly timestamps.
+- Customer-facing confirmation and status screens must not show signed URLs, raw paths, or bucket details.
+
+Retention and reviewer access blockers:
+
+- Document retention period is still Decision Needed before production.
+- Required decision: whether passport and U.S. address proof files are deleted after AbreUSA review, after agency submission, after completion, or after a fixed retention window.
+- Reviewer access model is still Decision Needed before production.
+- Required decision: whether reviewers authenticate through Supabase Auth, a future admin portal, Vercel-protected internal routes, or a manual operational process outside the app.
+- Until these decisions are made, production launch remains blocked even if RLS and storage policies are implemented.
+
+First implementable Phase 7 security slice:
+
+- Task ID: `P7-T02`.
+- Title: Move approved-order persistence behind a server-side security boundary.
+- Scope:
+  - Create a server-only Supabase persistence path for approved orders and document uploads.
+  - Stop using the browser Supabase anon key for direct inserts into order tables.
+  - Stop using direct browser uploads to the `documents` private bucket.
+  - Keep the customer-facing flow unchanged.
+  - Keep admin UI, signed URL reviewer UI, automated email, payment, and agency submission out of scope.
+- Acceptance criteria:
+  - Browser code no longer inserts directly into order tables.
+  - Browser code no longer uploads directly to the `documents` bucket.
+  - Server-side persistence still creates the same approved order records and document rows.
+  - Existing Complete Package and Florida LLC submission flows still reach confirmation with a server-generated protocol.
+  - `npm run lint` passes.
+  - `npm run build` passes.
+  - Browser verification confirms an approved Complete Package order persists successfully with both required files attached.
 
 ## Phase 8: Post-MVP Expansion
 
