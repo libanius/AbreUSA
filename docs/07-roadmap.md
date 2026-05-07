@@ -2,9 +2,9 @@
 
 ## Current Phase
 
-Phase 6: Order Submission Workflow.
+Phase 7: Production Hardening.
 
-Phase 5 is complete. P6-T08 is complete. The next step is Phase 6 exit review and Phase 7 planning.
+Phase 6 is complete. The next step is the first Phase 7 production hardening slice.
 
 ## Phase 0: App Spine Confirmation
 
@@ -583,7 +583,7 @@ Phase 5 is complete. Customers can review captured local intake/document data, i
 
 ## Phase 6: Order Submission Workflow
 
-Status: Current phase. P6-T08 is complete. The next step is Phase 6 exit review and Phase 7 planning.
+Status: Complete. Phase 6 exit criteria met with remaining production risks moved to Phase 7.
 
 Goal: convert approved intake into an internal AbreUSA order.
 
@@ -834,7 +834,34 @@ Next Phase 6 task:
   - Remaining risks/blockers are clearly listed.
   - `/docs/07-roadmap.md`, `/docs/09-build-status.md`, and `/progress/index.html` are updated.
 
+P6-T09 status:
+
+- Status: Complete.
+- Phase 6 deliverables reviewed against exit criteria.
+- Decision: the MVP can move to Phase 7 production hardening.
+- No remaining Phase 6 implementation blockers.
+- Remaining production risks moved to Phase 7:
+  - Supabase table RLS policies.
+  - Supabase storage policies and signed URL access.
+  - Document retention period and reviewer access model.
+  - Legal/compliance copy review.
+  - Accessibility, mobile viewport, validation, and performance hardening.
+  - Production environment configuration.
+- No product code was changed in this planning task.
+
+## Phase 6 Exit Status
+
+Phase 6 is complete. Approved orders are saved and traceable through Supabase persistence and server-generated protocol numbers. Customers see a confirmation screen with protocol number, selected service, LLC name, review status, and next-step handoff/timeline copy.
+
+Implemented Phase 6 persistence and handoff surfaces include orders, LLCs, members, Registered Agent data, EIN details when applicable, generated form records, applicant contact data, document table rows, and private Supabase document uploads.
+
+Automated email remains deferred. MVP handoff uses the confirmation screen plus persisted applicant contact data for manual AbreUSA follow-up.
+
+Direct agency submission, payment, admin portal, EIN-only flow, and Registered Agent-only flow remain out of MVP or Post-MVP scope.
+
 ## Phase 7: Production Hardening
+
+Status: Current phase. Awaiting first hardening slice.
 
 Goal: make the product safe to launch.
 
@@ -851,6 +878,24 @@ Deliverables:
 Exit criteria:
 
 - Product is launch-ready for controlled users.
+
+First Phase 7 task:
+
+- Task ID: `P7-T01`.
+- Title: Production security hardening plan — Supabase RLS, storage access, retention, and reviewer model.
+- Scope:
+  - Audit current Supabase tables, private storage bucket, disabled RLS state, and anon upload policy.
+  - Define RLS policy requirements for customer/order data tables.
+  - Define storage policy requirements for uploaded passport and U.S. address proof files.
+  - Define signed URL strategy for internal document review access.
+  - Define document retention policy and reviewer access model, or mark unresolved items as production blockers.
+  - Keep new product features, payment, admin UI, agency submission, and email implementation out of scope.
+- Acceptance criteria:
+  - Supabase RLS and storage policy requirements are documented.
+  - Signed URL approach is documented.
+  - Document retention and reviewer access decisions are documented or explicitly marked as blockers.
+  - First implementable Phase 7 security slice is defined.
+  - `/docs/07-roadmap.md`, `/docs/09-build-status.md`, `/progress/index.html`, and `/docs/08-decisions-log.md` are updated if decisions changed.
 
 ## Phase 8: Post-MVP Expansion
 

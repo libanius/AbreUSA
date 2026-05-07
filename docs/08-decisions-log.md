@@ -265,6 +265,16 @@ Reason:
 
 The app already persists protocol number, applicant contact, order data, and document files. Automated transactional email requires sender/domain/provider decisions and operational copy approval. Deferring implementation avoids adding an unconfirmed delivery dependency while preserving the customer handoff through the confirmation screen.
 
+### 2026-05-07: Phase 6 Closed And Phase 7 Hardening Begins
+
+Decision:
+
+Close Phase 6 and move the project into Phase 7 production hardening, starting with Supabase security, document access, retention, and reviewer access planning.
+
+Reason:
+
+Approved orders are now persisted and traceable with server-generated protocol numbers. Applicant contact data and document files are persisted for manual AbreUSA follow-up, and the customer receives a clear confirmation screen and handoff timeline. Remaining risks are production hardening concerns rather than Phase 6 order submission blockers.
+
 ## Pending Confirmation Gates
 
 ### App Spine Confirmation

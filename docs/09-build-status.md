@@ -2,51 +2,53 @@
 
 ## Current Phase
 
-Phase 6: Order Submission Workflow.
+Phase 7: Production Hardening.
 
-P6-T08 is complete. Email notification and customer handoff are documented as a plan-only MVP handoff. The next step is Phase 6 exit review and Phase 7 planning.
+Phase 6 is complete. P6-T09 closed the order submission phase and moved the project into Phase 7 production hardening.
 
 ## Last Completed Task
-
-Task ID: `P6-T08`
-
-Title: Plan email notification and customer handoff.
-
-Result:
-
-- Decision: planning only. Automated email sending is deferred.
-- MVP handoff uses the confirmation screen plus persisted applicant contact data.
-- AbreUSA manual follow-up remains the default until a sender/provider is confirmed.
-- Customer notification contents documented: protocol number, service, LLC name, review status, no government submission yet, next steps, response window, and support channel.
-- Customer handoff/timeline copy requirements documented.
-- No email provider, Vercel email integration, Supabase trigger, or transactional email implementation was added.
-
-## Current Task
-
-None. P6-T08 is complete.
-
-## Next Task
 
 Task ID: `P6-T09`
 
 Title: Phase 6 exit review and Phase 7 planning.
 
+Result:
+
+- Phase 6 deliverables reviewed against exit criteria.
+- Decision: move to Phase 7 production hardening.
+- No remaining Phase 6 implementation blockers.
+- Remaining production risks moved to Phase 7: Supabase RLS, storage policies, signed URLs, document retention, reviewer access, legal/compliance copy, validation, accessibility, mobile, performance, and production environment configuration.
+- First Phase 7 hardening slice defined as P7-T01.
+- No product code changed.
+
+## Current Task
+
+None. P6-T09 is complete.
+
+## Next Task
+
+Task ID: `P7-T01`
+
+Title: Production security hardening plan — Supabase RLS, storage access, retention, and reviewer model.
+
 Status: Awaiting execution.
 
 Scope:
 
-- Review Phase 6 deliverables against exit criteria.
-- Decide whether the current MVP can move to Phase 7 hardening.
-- List remaining Phase 6 gaps, if any.
-- Define first Phase 7 hardening slice.
-- Keep new feature implementation out of scope.
+- Audit current Supabase tables, private storage bucket, disabled RLS state, and anon upload policy.
+- Define RLS policy requirements for customer/order data tables.
+- Define storage policy requirements for uploaded passport and U.S. address proof files.
+- Define signed URL strategy for internal document review access.
+- Define document retention policy and reviewer access model, or mark unresolved items as production blockers.
+- Keep new product features, payment, admin UI, agency submission, and email implementation out of scope.
 
 Acceptance criteria:
 
-- Phase 6 exit status is documented.
-- Phase 7 first task is documented.
-- Remaining risks/blockers are clearly listed.
-- `/docs/07-roadmap.md`, `/docs/09-build-status.md`, and `/progress/index.html` are updated after the task.
+- Supabase RLS and storage policy requirements are documented.
+- Signed URL approach is documented.
+- Document retention and reviewer access decisions are documented or explicitly marked as blockers.
+- First implementable Phase 7 security slice is defined.
+- `/docs/07-roadmap.md`, `/docs/09-build-status.md`, `/progress/index.html`, and `/docs/08-decisions-log.md` are updated if decisions changed.
 
 ## Completed Tasks
 
@@ -60,6 +62,7 @@ Acceptance criteria:
 - Phase 6 applicant contact step: P6-T06 closed.
 - Phase 6 document file upload: P6-T07 closed.
 - Phase 6 email/customer handoff planning: P6-T08 closed.
+- Phase 6 exit review and Phase 7 planning: P6-T09 closed.
 
 ## What Is Implemented
 
@@ -72,6 +75,7 @@ Acceptance criteria:
 - Document file upload to Supabase private storage.
 - `documents` table schema and storage bucket created in Supabase.
 - Customer handoff plan: confirmation screen plus manual AbreUSA follow-up using persisted applicant contact data.
+- Phase 6 exit criteria met and documented.
 - `lib/supabase.ts`, `lib/persist-order.ts`, `supabase/schema.sql`.
 - `/progress/index.html` stakeholder dashboard.
 
@@ -88,15 +92,15 @@ Acceptance criteria:
 
 Execute one task only:
 
-`P6-T09: Phase 6 exit review and Phase 7 planning`
+`P7-T01: Production security hardening plan — Supabase RLS, storage access, retention, and reviewer model`
 
 Deliverable:
 
-- Review Phase 6 deliverables against exit criteria.
-- Decide whether to move to Phase 7 hardening.
-- Document remaining Phase 6 gaps, if any.
-- Define the first Phase 7 hardening slice.
-- Update `/docs/07-roadmap.md`, `/docs/09-build-status.md`, and `/progress/index.html`.
+- Audit current Supabase tables, private storage bucket, disabled RLS state, and anon upload policy.
+- Define RLS and storage policy requirements.
+- Define signed URL strategy for internal document access.
+- Define document retention policy and reviewer access model, or mark blockers.
+- Update `/docs/07-roadmap.md`, `/docs/09-build-status.md`, `/progress/index.html`, and `/docs/08-decisions-log.md` if decisions changed.
 
 ## Blockers And Risks
 
