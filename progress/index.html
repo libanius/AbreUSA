@@ -268,12 +268,12 @@
           <span class="pill done" data-en="Current phase" data-pt="Fase atual">Current phase</span>
           <p class="phase" data-en="Phase 6: Order Submission Workflow" data-pt="Fase 6: Fluxo de envio do pedido">Phase 6: Order Submission Workflow</p>
           <p
-            data-en="The local confirmation and protocol shell is implemented and browser-verified. The next task is the Supabase persistence boundary."
-            data-pt="O shell local de confirmação e protocolo está implementado e verificado no navegador. A próxima tarefa é o limite de persistência no Supabase."
+            data-en="Document upload to Supabase private storage is implemented and verified. The next task is email notification and customer handoff planning."
+            data-pt="O upload de documentos para storage privado Supabase está implementado e verificado. A próxima tarefa é planejar notificação por e-mail e handoff do cliente."
           >
-            The local confirmation and protocol shell is implemented and
-            browser-verified. The next task is the Supabase persistence
-            boundary.
+            Document upload to Supabase private storage is implemented and
+            verified. The next task is email notification and customer handoff
+            planning.
           </p>
           <div class="progress-wrap" aria-label="Project progress">
             <div class="progress-label">
@@ -338,6 +338,7 @@
             <li data-en="P6-T04 Supabase client and order persistence implemented; all six tables verified in browser." data-pt="P6-T04 cliente Supabase e persistência de pedidos implementados; todas as seis tabelas verificadas no navegador.">P6-T04 Supabase client and order persistence implemented; all six tables verified in browser.</li>
             <li data-en="P6-T05 Production protocol generation implemented; server-side AUS-YYYY-NNNN via Postgres sequence verified in browser." data-pt="P6-T05 Geração de protocolo de produção implementada; AUS-YYYY-NNNN gerado pelo servidor via sequência Postgres verificada no navegador.">P6-T05 Production protocol generation implemented; server-side AUS-YYYY-NNNN via Postgres sequence verified in browser.</li>
             <li data-en="P6-T06 Applicant contact step added (name, email, phone); applicants table verified in Supabase with AUS-2026-0004." data-pt="P6-T06 Etapa de contato do solicitante adicionada (nome, e-mail, telefone); tabela applicants verificada no Supabase com AUS-2026-0004.">P6-T06 Applicant contact step added (name, email, phone); applicants table verified in Supabase with AUS-2026-0004.</li>
+            <li data-en="P6-T07 Document upload to Supabase private storage verified with AUS-2026-0005." data-pt="P6-T07 Upload de documentos para storage privado Supabase verificado com AUS-2026-0005.">P6-T07 Document upload to Supabase private storage verified with AUS-2026-0005.</li>
           </ul>
         </article>
 
@@ -357,7 +358,7 @@
             <li data-en="Registered Agent selection offers AbreUSA, self, or other; other reveals name and address fields in local state." data-pt="A seleção de Registered Agent oferece AbreUSA, próprio sócio ou outro; a opção outro exibe campos de nome e endereço em estado local.">Registered Agent selection offers AbreUSA, self, or other; other reveals name and address fields in local state.</li>
             <li data-en="EIN questions step captures reason, entity type, responsible party name and passport number, start date, and fiscal closing month in local state." data-pt="A etapa de perguntas do EIN captura motivo, tipo de entidade, nome e número de passaporte do responsável, data de início e mês fiscal em estado local.">EIN questions step captures reason, entity type, responsible party name and passport number, start date, and fiscal closing month in local state.</li>
             <li data-en="Registered Agent Continue routes to EIN questions for Complete Package and to documents for Florida LLC." data-pt="O botão Continuar do Registered Agent direciona para perguntas do EIN no Pacote Completo e para documentos no caminho LLC Flórida.">Registered Agent Continue routes to EIN questions for Complete Package and to documents for Florida LLC.</li>
-            <li data-en="Document collection captures passport and U.S. address proof as local file metadata only." data-pt="A coleta de documentos captura passaporte e comprovante de endereço nos EUA apenas como metadados locais de arquivo.">Document collection captures passport and U.S. address proof as local file metadata only.</li>
+            <li data-en="Document collection captures passport and U.S. address proof, then uploads files to private Supabase storage after approval." data-pt="A coleta de documentos captura passaporte e comprovante de endereço nos EUA, depois envia os arquivos para storage privado Supabase após a aprovação.">Document collection captures passport and U.S. address proof, then uploads files to private Supabase storage after approval.</li>
             <li data-en="Placeholder/manual extraction fields are visible and editable for customer review." data-pt="Campos de extração placeholder/manual estão visíveis e editáveis para revisão do cliente.">Placeholder/manual extraction fields are visible and editable for customer review.</li>
             <li data-en="Review screen maps local intake and document state into customer-facing sections." data-pt="A tela de revisão mapeia dados locais de intake e documentos para seções de revisão do cliente.">Review screen maps local intake and document state into customer-facing sections.</li>
             <li data-en="Florida Articles preview appears for both active service paths; IRS SS-4 preview appears only for Complete Package." data-pt="O preview de Articles da Flórida aparece para os dois caminhos ativos; o preview IRS SS-4 aparece apenas no Pacote Completo.">Florida Articles preview appears for both active service paths; IRS SS-4 preview appears only for Complete Package.</li>
@@ -368,29 +369,33 @@
             <li data-en="Supabase client and six-table persistence wired on confirmation; approved orders write to orders, llcs, members, registered_agents, ein_details, and generated_forms." data-pt="Cliente Supabase e persistência em seis tabelas conectados na confirmação; pedidos aprovados gravam nas tabelas orders, llcs, members, registered_agents, ein_details e generated_forms.">Supabase client and six-table persistence wired on confirmation; approved orders write to orders, llcs, members, registered_agents, ein_details, and generated_forms.</li>
             <li data-en="Protocol numbers generated server-side via Postgres sequence (AUS-YYYY-NNNN); no client-side collision risk." data-pt="Números de protocolo gerados no servidor via sequência Postgres (AUS-YYYY-NNNN); sem risco de colisão no cliente.">Protocol numbers generated server-side via Postgres sequence (AUS-YYYY-NNNN); no client-side collision risk.</li>
             <li data-en="Applicant contact step (name, email, phone) added as step 2 of 13; persisted to applicants table in Supabase." data-pt="Etapa de contato do solicitante (nome, e-mail, telefone) adicionada como etapa 2 de 13; persistida na tabela applicants no Supabase.">Applicant contact step (name, email, phone) added as step 2 of 13; persisted to applicants table in Supabase.</li>
-            <li data-en="No document file storage or payment yet." data-pt="Ainda não há armazenamento de arquivos de documentos ou pagamento.">No document file storage or payment yet.</li>
+            <li data-en="Document files upload to Supabase private storage and document rows are recorded for approved orders." data-pt="Arquivos de documentos são enviados para storage privado Supabase e linhas de documentos são registradas para pedidos aprovados.">Document files upload to Supabase private storage and document rows are recorded for approved orders.</li>
+            <li data-en="No email notification, payment, public document URLs, or production RLS hardening yet." data-pt="Ainda não há notificação por e-mail, pagamento, URLs públicas de documentos ou hardening RLS de produção.">No email notification, payment, public document URLs, or production RLS hardening yet.</li>
           </ul>
         </article>
 
         <article class="card task">
           <span class="pill done" data-en="Last completed" data-pt="Última concluída">Last completed</span>
-          <h2 data-en="P6-T06 — Applicant Contact" data-pt="P6-T06 — Contato do Solicitante">P6-T06 — Applicant Contact</h2>
+          <h2 data-en="P6-T07 — Document Upload" data-pt="P6-T07 — Upload de Documentos">P6-T07 — Document Upload</h2>
           <p
-            data-en="Applicant name, email, and phone now collected in step 2 and persisted to Supabase. AUS-2026-0004 verified in browser."
-            data-pt="Nome, e-mail e telefone do solicitante agora coletados na etapa 2 e persistidos no Supabase. AUS-2026-0004 verificado no navegador."
+            data-en="Passport and U.S. address proof files upload to the private documents bucket; document rows and private object existence verified with AUS-2026-0005."
+            data-pt="Passaporte e comprovante de endereço nos EUA são enviados para o bucket privado documents; linhas e objetos privados verificados com AUS-2026-0005."
           >
-            Applicant name, email, and phone now collected in step 2 and persisted to Supabase. AUS-2026-0004 verified in browser.
+            Passport and U.S. address proof files upload to the private
+            documents bucket; document rows and private object existence
+            verified with AUS-2026-0005.
           </p>
         </article>
 
         <article class="card next">
-          <span class="pill" data-en="In progress" data-pt="Em andamento">In progress</span>
-          <h2 data-en="P6-T07 — Document Upload" data-pt="P6-T07 — Upload de Documentos">P6-T07 — Document Upload</h2>
+          <span class="pill" data-en="Next task" data-pt="Próxima tarefa">Next task</span>
+          <h2 data-en="P6-T08 — Email Handoff" data-pt="P6-T08 — Handoff por E-mail">P6-T08 — Email Handoff</h2>
           <p
-            data-en="Code implemented and lint/build pass. Browser verification pending — attach both files and complete a full flow to confirm."
-            data-pt="Código implementado e lint/build passando. Verificação no navegador pendente — anexar ambos os arquivos e completar o fluxo."
+            data-en="Plan whether Phase 6 needs email implementation or only a documented customer notification and AbreUSA handoff process."
+            data-pt="Planejar se a Fase 6 precisa de implementação de e-mail ou apenas documentação de notificação do cliente e handoff para AbreUSA."
           >
-            Code implemented and lint/build pass. Browser verification pending — attach both files and complete a full flow to confirm.
+            Plan whether Phase 6 needs email implementation or only a
+            documented customer notification and AbreUSA handoff process.
           </p>
         </article>
       </section>

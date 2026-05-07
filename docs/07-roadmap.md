@@ -4,7 +4,7 @@
 
 Phase 6: Order Submission Workflow.
 
-Phase 5 is complete. Phase 5 exit criteria passed after browser verification for the local review, generated preview shells, and approval gate. The next step is Phase 6 planning.
+Phase 5 is complete. P6-T07 is complete. The next step is P6-T08 email notification and customer handoff planning.
 
 ## Phase 0: App Spine Confirmation
 
@@ -583,7 +583,7 @@ Phase 5 is complete. Customers can review captured local intake/document data, i
 
 ## Phase 6: Order Submission Workflow
 
-Status: Current phase. P6-T07 is in progress. Code is implemented and lint/build pass. Browser verification is pending.
+Status: Current phase. P6-T07 is complete. The next step is the email notification plan.
 
 Goal: convert approved intake into an internal AbreUSA order.
 
@@ -750,61 +750,32 @@ P6-T06 status:
 
 P6-T07 status:
 
-- Status: In progress. Code complete. Browser verification pending.
+- Status: Complete.
 - `documents` private storage bucket created in Supabase with anon upload policy.
 - `documents` table created in Supabase; RLS disabled for development.
 - `documentFiles` state added to hold actual `File` objects separate from serializable metadata.
 - `uploadAndRecordDocument` helper added to `persist-order.ts`: uploads to `documents/{orderId}/{type}.{ext}`, inserts row in `documents` table.
 - `persistOrder` updated to accept optional `files` parameter.
 - `npm run lint` passes. `npm run build` passes.
-- Resume: complete browser verification with both files attached; update three docs.
+- Browser verification passed with Complete Package flow and both files attached.
+- Supabase verification passed for `AUS-2026-0005`: `documents` table contains passport and U.S. address proof rows.
+- Private bucket object verification passed by same-path upload conflict: `passport.pdf` and `us_address_proof.pdf` already exist under the persisted order ID.
 
-Next Phase 6 tasks:
+Next Phase 6 task:
 
-- Task ID: `P6-T05`.
-- Title: Production protocol generation — collision-resistant counter via Postgres sequence.
+- Task ID: `P6-T08`.
+- Title: Plan email notification and customer handoff.
 - Scope:
-  - Add `order_protocol_seq` Postgres sequence to Supabase.
-  - Set `orders.protocol_number` default to server-side generated `AUS-YYYY-NNNN`.
-  - Remove client-side protocol generation from `buildLocalOrderPayload`.
-  - Update `persist-order.ts` to omit `protocol_number` from insert and return the server-generated value.
-  - Update `handleContinueToConfirmation` to use the returned protocol in the confirmation payload.
-  - Update `supabase/schema.sql` to document the sequence.
-  - Browser verification: second order receives `AUS-2026-0002`.
+  - Decide whether Phase 6 needs only an email notification plan or a first implementation.
+  - Define the minimum customer notification contents after approved order persistence.
+  - Define whether email sends from the app, Supabase, Vercel, or remains an AbreUSA manual operation for MVP.
+  - Keep payment, direct agency submission, admin portal, RLS hardening, signed document URLs, and retention policy out of scope unless the App Spine is updated.
 - Acceptance criteria:
-  - `npm run lint` passes. `npm run build` passes.
-  - Browser verification shows unique incrementing protocol per order.
-  - `/docs/07-roadmap.md`, `/docs/09-build-status.md`, and `/progress/index.html` updated.
+  - Email notification decision is documented.
+  - Customer handoff/timeline copy requirements are documented.
+  - Any implementation slice is explicitly scoped before code changes.
+  - `/docs/07-roadmap.md`, `/docs/09-build-status.md`, and `/progress/index.html` are updated after the task.
 
-- Task ID: `P6-T06`.
-- Title: Applicant contact step — collect name, email, phone; persist to applicants table.
-- Scope:
-  - Add `applicant_contact` FlowStep after `service`.
-  - Add `applicantContact` state: `{ name, email, phone }`.
-  - Add step UI with name, email, phone fields; gated on all three required.
-  - Add `applicants` table to Supabase and `supabase/schema.sql`.
-  - Add applicant insert to `persist-order.ts`.
-  - Add `applicantContact` to `LocalOrderPayload`.
-  - Browser verification: applicant row appears in Supabase after confirmation.
-- Acceptance criteria:
-  - `npm run lint` passes. `npm run build` passes.
-  - Browser verification shows applicant row in Supabase.
-  - `/docs/07-roadmap.md`, `/docs/09-build-status.md`, and `/progress/index.html` updated.
-
-- Task ID: `P6-T07`.
-- Title: Document file upload to Supabase private storage bucket.
-- Scope:
-  - Create `documents` private storage bucket in Supabase.
-  - Create `documents` table in Supabase and `supabase/schema.sql`.
-  - On confirmation, upload passport and address proof files to the bucket.
-  - Store storage paths in `documents` table rows.
-  - Add document inserts to `persist-order.ts`.
-  - Never expose raw file URLs; note signed URL requirement for Phase 7 reviewer access.
-  - Retention period and reviewer access model remain TBD Phase 7 blockers.
-- Acceptance criteria:
-  - `npm run lint` passes. `npm run build` passes.
-  - Browser verification shows document rows in Supabase and files in private bucket.
-  - `/docs/07-roadmap.md`, `/docs/09-build-status.md`, and `/progress/index.html` updated.
 ## Phase 7: Production Hardening
 
 Goal: make the product safe to launch.
