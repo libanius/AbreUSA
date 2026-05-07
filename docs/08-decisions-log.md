@@ -213,6 +213,48 @@ Reason:
 
 The local order payload shape is verified by P6-T02. A Supabase project does not yet exist and no credentials are available. Document storage requires resolved retention and access policies. Applicant contact fields are not in the current flow.
 
+### 2026-05-07: Production Protocol Generation Via Postgres Sequence
+
+Decision:
+
+Replace client-side protocol generation with a server-side Postgres sequence.
+
+Format: `AUS-YYYY-NNNN` where NNNN is a globally incrementing zero-padded counter.
+
+Implementation: `order_protocol_seq` sequence in Supabase; `orders.protocol_number` default uses `nextval`. Client sends no `protocol_number`; Supabase generates and returns it.
+
+Reason:
+
+Client-side counter hardcoded to `0001` guarantees collision on the second order.
+
+### 2026-05-07: Applicant Contact Fields Added To Intake Flow
+
+Decision:
+
+Add a new intake step after service selection to collect applicant name, email, and phone.
+
+New step ID: `applicant_contact`. New state: `applicantContact: { name, email, phone }`.
+
+Persisted to a new `applicants` table in Supabase.
+
+Reason:
+
+Email and phone are required for AbreUSA to contact the customer about order status. This unblocks the applicants table.
+
+### 2026-05-07: Document File Upload To Supabase Private Bucket
+
+Decision:
+
+Upload passport and address proof files to a Supabase private storage bucket named `documents`.
+
+Store file paths in a new `documents` table. Never expose raw URLs; use signed URLs for internal access.
+
+Document retention period and reviewer access model remain unresolved; these are Phase 7 blockers, not implementation blockers for the upload itself.
+
+Reason:
+
+Files are currently captured only as local metadata. Uploading to private storage makes them available for AbreUSA internal review.
+
 ## Pending Confirmation Gates
 
 ### App Spine Confirmation

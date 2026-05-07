@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { persistOrder } from "@/lib/persist-order";
 
 import {
   ConfirmationShell,
@@ -20,6 +21,7 @@ import { cn } from "@/lib/utils";
 type ServiceId = "complete" | "florida_llc";
 type FlowStep =
   | "service"
+  | "applicant_contact"
   | "llc_name"
   | "business_activity"
   | "member_count"
@@ -48,6 +50,12 @@ type ServiceOption = {
   title: string;
   description: string;
   price: string;
+};
+
+type ApplicantContactDraft = {
+  name: string;
+  email: string;
+  phone: string;
 };
 
 type BusinessActivityOption = {
@@ -134,6 +142,11 @@ type LocalOrderPayload = {
     status: "approved";
     approvedAt: string;
   };
+  applicant: {
+    name: string;
+    email: string;
+    phone: string;
+  };
   llc: {
     legalName: string;
     state: "FL";
@@ -189,6 +202,7 @@ const businessActivityOptions: BusinessActivityOption[] = [
 
 const progressItems = [
   "Serviço",
+  "Contato",
   "Empresa",
   "Atividade",
   "Sócios",
@@ -354,6 +368,11 @@ function StepFrame({
   documents,
   approvalConfirmed,
   approvedOrderPayload,
+  isPersisting,
+  applicantContact,
+  onChangeApplicantContact,
+  onContinueToLlcName,
+  onBackToApplicantContact,
   registeredAgent,
   onBackToBusinessActivity,
   onBackToBusinessAddress,
@@ -396,6 +415,11 @@ function StepFrame({
   customBusinessActivity: string;
   documents: DocumentCollectionDraft;
   approvalConfirmed: boolean;
+  isPersisting: boolean;
+  applicantContact: ApplicantContactDraft;
+  onChangeApplicantContact: (field: keyof ApplicantContactDraft, value: string) => void;
+  onContinueToLlcName: () => void;
+  onBackToApplicantContact: () => void;
   approvedOrderPayload: LocalOrderPayload | null;
   einQuestions: EinQuestionsDraft;
   llcName: string;
@@ -495,7 +519,7 @@ function StepFrame({
     return (
       <StepCard
         badge="Protocolo local"
-        eyebrow="Passo 12 · Confirmação"
+        eyebrow="Passo 13 · Confirmação"
         title="Pedido preparado para revisão"
       >
         <div className="grid gap-3">
@@ -556,7 +580,7 @@ function StepFrame({
     return (
       <StepCard
         badge="Aprovação local"
-        eyebrow="Passo 11 · Aprovação"
+        eyebrow="Passo 12 · Aprovação"
         title="Confirme a revisão do pedido"
       >
         <div className="grid gap-3">
@@ -604,7 +628,7 @@ function StepFrame({
         <StepNavigation
           backDisabled={false}
           backLabel="Voltar"
-          nextDisabled={!approvalConfirmed}
+          nextDisabled={!approvalConfirmed || isPersisting}
           nextLabel={
             approvalConfirmed
               ? "Continuar (próxima fase)"
@@ -645,7 +669,7 @@ function StepFrame({
     return (
       <StepCard
         badge="Preview local"
-        eyebrow="Passo 10 · Revisão"
+        eyebrow="Passo 11 · Revisão"
         title="Revise os dados e os previews"
       >
         <div className="grid gap-3">
@@ -814,7 +838,7 @@ function StepFrame({
     return (
       <StepCard
         badge="Rascunho local"
-        eyebrow="Passo 9 · Documentos"
+        eyebrow="Passo 10 · Documentos"
         title="Envie os documentos necessários"
       >
         <div className="grid gap-3">
@@ -1039,7 +1063,7 @@ function StepFrame({
     return (
       <StepCard
         badge="Rascunho local"
-        eyebrow="Passo 5 · Dados dos sócios"
+        eyebrow="Passo 6 · Dados dos sócios"
         title="Dados de cada sócio"
       >
         <div className="grid gap-3">
@@ -1149,7 +1173,7 @@ function StepFrame({
     return (
       <StepCard
         badge="Rascunho local"
-        eyebrow="Passo 8 · EIN / IRS SS-4"
+        eyebrow="Passo 9 · EIN / IRS SS-4"
         title="Informações para o EIN"
       >
         <div className="grid gap-3">
@@ -1359,7 +1383,7 @@ function StepFrame({
     return (
       <StepCard
         badge="Rascunho local"
-        eyebrow="Passo 7 · Registered Agent"
+        eyebrow="Passo 8 · Registered Agent"
         title="Quem será o Registered Agent?"
       >
         <div className="grid gap-3">
@@ -1524,7 +1548,7 @@ function StepFrame({
     return (
       <StepCard
         badge="Rascunho local"
-        eyebrow="Passo 6 · Endereço"
+        eyebrow="Passo 7 · Endereço"
         title="Endereço principal da empresa"
       >
         <div className="grid gap-3">
@@ -1623,7 +1647,7 @@ function StepFrame({
     return (
       <StepCard
         badge="Rascunho local"
-        eyebrow="Passo 4 · Sócios"
+        eyebrow="Passo 5 · Sócios"
         title="Quantos sócios terá a LLC?"
       >
         <div className="grid gap-3">
@@ -1707,7 +1731,7 @@ function StepFrame({
     return (
       <StepCard
         badge="Rascunho local"
-        eyebrow="Passo 3 · Atividade"
+        eyebrow="Passo 4 · Atividade"
         title="Qual é o ramo do negócio?"
       >
         <div className="grid gap-3">
@@ -1794,11 +1818,59 @@ function StepFrame({
     );
   }
 
+  if (activeStep === "applicant_contact") {
+    const isContactComplete =
+      applicantContact.name.trim().length > 0 &&
+      applicantContact.email.trim().includes("@") &&
+      applicantContact.phone.trim().length >= 8;
+    return (
+      <StepCard
+        badge="Seus dados"
+        eyebrow="Passo 2 · Contato"
+        title="Como podemos entrar em contato com você?"
+      >
+        <FieldGroup title="Dados de contato">
+          <FieldShell label="Nome completo">
+            <Input
+              value={applicantContact.name}
+              onChange={(e) => onChangeApplicantContact("name", e.target.value)}
+              placeholder="Seu nome completo"
+            />
+          </FieldShell>
+          <FieldShell label="E-mail">
+            <Input
+              type="email"
+              value={applicantContact.email}
+              onChange={(e) => onChangeApplicantContact("email", e.target.value)}
+              placeholder="seu@email.com"
+            />
+          </FieldShell>
+          <FieldShell label="Telefone (com código do país)">
+            <Input
+              type="tel"
+              value={applicantContact.phone}
+              onChange={(e) => onChangeApplicantContact("phone", e.target.value)}
+              placeholder="+55 11 99999-9999"
+            />
+          </FieldShell>
+        </FieldGroup>
+        <StepNavigation
+          backDisabled={false}
+          backLabel="Voltar"
+          nextDisabled={!isContactComplete}
+          nextLabel={isContactComplete ? "Continuar" : "Preencher dados"}
+          onBack={onResetService}
+          onNext={isContactComplete ? onContinueToLlcName : undefined}
+        />
+      </StepCard>
+    );
+  }
+
   if (selectedService) {
     return (
       <StepCard
         badge="Rascunho local"
-        eyebrow="Passo 2 · Empresa"
+        eyebrow="Passo 3 · Empresa"
         title="Qual será o nome da LLC?"
       >
         <div className="grid gap-3">
@@ -1864,7 +1936,7 @@ function StepFrame({
           nextDisabled={!hasValidSuffix}
           nextLabel={hasValidSuffix ? "Continuar" : "Validar nome"}
           onNext={onContinueToBusinessActivity}
-          onBack={onResetService}
+          onBack={onBackToApplicantContact}
         />
       </StepCard>
     );
@@ -1955,32 +2027,37 @@ export function GuidedIntakeShell() {
     emptyDocumentCollection,
   );
   const [approvalConfirmed, setApprovalConfirmed] = useState(false);
+  const [isPersisting, setIsPersisting] = useState(false);
+  const [applicantContact, setApplicantContact] = useState<ApplicantContactDraft>({ name: "", email: "", phone: "" });
+  const [documentFiles, setDocumentFiles] = useState<{ passport: File | null; addressProof: File | null }>({ passport: null, addressProof: null });
   const [approvedOrderPayload, setApprovedOrderPayload] =
     useState<LocalOrderPayload | null>(null);
   const currentStep =
     activeStep === "confirmation"
-      ? 12
+      ? 13
       : activeStep === "approval"
-      ? 11
+      ? 12
       : activeStep === "review"
-      ? 10
+      ? 11
       : activeStep === "documents"
-      ? 9
+      ? 10
       : activeStep === "ein_questions"
-      ? 8
+      ? 9
       : activeStep === "registered_agent"
-      ? 7
+      ? 8
       : activeStep === "business_address"
-      ? 6
+      ? 7
       : activeStep === "member_data"
-      ? 5
+      ? 6
       : activeStep === "member_count"
-      ? 4
+      ? 5
       : activeStep === "business_activity"
+      ? 4
+      : activeStep === "applicant_contact"
+      ? 2
+      : selectedService
         ? 3
-        : selectedService
-          ? 2
-          : 1;
+        : 1;
   const currentLabel =
     activeStep === "confirmation"
       ? "Confirmação"
@@ -2002,13 +2079,15 @@ export function GuidedIntakeShell() {
       ? "Sócios"
       : activeStep === "business_activity"
       ? "Atividade"
+      : activeStep === "applicant_contact"
+      ? "Contato"
       : selectedService
         ? "Empresa"
         : "Serviço";
 
   function handleSelectService(service: ServiceId) {
     setSelectedService(service);
-    setActiveStep("llc_name");
+    setActiveStep("applicant_contact");
   }
 
   function handleResetService() {
@@ -2021,6 +2100,8 @@ export function GuidedIntakeShell() {
     setMemberData([{ fullName: "", address: "", ownershipPercentage: "100" }]);
     setBusinessAddress({ street: "", city: "", state: "FL", zip: "" });
     setRegisteredAgent({ choice: null, name: "", address: "", city: "", state: "FL", zip: "" });
+    setApplicantContact({ name: "", email: "", phone: "" });
+    setDocumentFiles({ passport: null, addressProof: null });
     setEinQuestions({
       reasonForApplying: null,
       entityType: null,
@@ -2036,7 +2117,7 @@ export function GuidedIntakeShell() {
 
   function buildLocalOrderPayload(): LocalOrderPayload {
     const approvedAt = new Date();
-    const protocolNumber = `AUS-${approvedAt.getFullYear()}-0001`;
+    const protocolNumber = "AUS-YYYY-XXXX";
     const businessActivityLabel =
       businessActivity === "other"
         ? customBusinessActivity.trim()
@@ -2064,6 +2145,11 @@ export function GuidedIntakeShell() {
         status: "approved",
         approvedAt: approvedAt.toISOString(),
       },
+      applicant: {
+        name: applicantContact.name.trim(),
+        email: applicantContact.email.trim(),
+        phone: applicantContact.phone.trim(),
+      },
       llc: {
         legalName: llcName.trim(),
         state: "FL",
@@ -2087,8 +2173,22 @@ export function GuidedIntakeShell() {
     };
   }
 
-  function handleContinueToConfirmation() {
-    setApprovedOrderPayload(buildLocalOrderPayload());
+  async function handleContinueToConfirmation() {
+    const payload = buildLocalOrderPayload();
+    setIsPersisting(true);
+    let protocolNumber = payload.order.protocolNumber;
+    try {
+      const result = await persistOrder(payload, documentFiles);
+      protocolNumber = result.protocolNumber;
+    } catch (err) {
+      console.error("Supabase persist failed:", err);
+    } finally {
+      setIsPersisting(false);
+    }
+    setApprovedOrderPayload({
+      ...payload,
+      order: { ...payload.order, protocolNumber },
+    });
     setActiveStep("confirmation");
   }
 
@@ -2159,6 +2259,7 @@ export function GuidedIntakeShell() {
           }
         : null,
     }));
+    setDocumentFiles((current) => ({ ...current, [kind]: file }));
   }
 
   function handleChangeDocumentExtraction(
@@ -2179,13 +2280,20 @@ export function GuidedIntakeShell() {
       <ProgressHeader
         currentStep={currentStep}
         label={currentLabel}
-        totalSteps={12}
+        totalSteps={13}
       />
       <main className="mx-auto flex w-full max-w-6xl flex-1 px-4 py-8 sm:px-6 lg:px-8">
         <div className="grid w-full gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
           <StepFrame
             activeStep={activeStep}
             approvalConfirmed={approvalConfirmed}
+            isPersisting={isPersisting}
+            applicantContact={applicantContact}
+            onChangeApplicantContact={(field, value) =>
+              setApplicantContact((prev) => ({ ...prev, [field]: value }))
+            }
+            onContinueToLlcName={() => setActiveStep("llc_name")}
+            onBackToApplicantContact={() => setActiveStep("applicant_contact")}
             approvedOrderPayload={approvedOrderPayload}
             businessActivity={businessActivity}
             businessAddress={businessAddress}

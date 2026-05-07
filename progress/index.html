@@ -181,7 +181,7 @@
         background: linear-gradient(90deg, var(--green), var(--blue));
         border-radius: inherit;
         height: 100%;
-        width: 75%;
+        width: 85%;
       }
 
       ul {
@@ -335,6 +335,9 @@
             <li data-en="P6-T01 order submission workflow architecture planned." data-pt="P6-T01 arquitetura do fluxo de envio do pedido planejada.">P6-T01 order submission workflow architecture planned.</li>
             <li data-en="P6-T02 local confirmation and internal order payload shell implemented." data-pt="P6-T02 shell local de confirmação e payload interno do pedido implementado.">P6-T02 local confirmation and internal order payload shell implemented.</li>
             <li data-en="P6-T03 Supabase persistence boundary documented; schema.sql and .env.local.example created." data-pt="P6-T03 limite de persistência Supabase documentado; schema.sql e .env.local.example criados.">P6-T03 Supabase persistence boundary documented; schema.sql and .env.local.example created.</li>
+            <li data-en="P6-T04 Supabase client and order persistence implemented; all six tables verified in browser." data-pt="P6-T04 cliente Supabase e persistência de pedidos implementados; todas as seis tabelas verificadas no navegador.">P6-T04 Supabase client and order persistence implemented; all six tables verified in browser.</li>
+            <li data-en="P6-T05 Production protocol generation implemented; server-side AUS-YYYY-NNNN via Postgres sequence verified in browser." data-pt="P6-T05 Geração de protocolo de produção implementada; AUS-YYYY-NNNN gerado pelo servidor via sequência Postgres verificada no navegador.">P6-T05 Production protocol generation implemented; server-side AUS-YYYY-NNNN via Postgres sequence verified in browser.</li>
+            <li data-en="P6-T06 Applicant contact step added (name, email, phone); applicants table verified in Supabase with AUS-2026-0004." data-pt="P6-T06 Etapa de contato do solicitante adicionada (nome, e-mail, telefone); tabela applicants verificada no Supabase com AUS-2026-0004.">P6-T06 Applicant contact step added (name, email, phone); applicants table verified in Supabase with AUS-2026-0004.</li>
           </ul>
         </article>
 
@@ -362,31 +365,32 @@
             <li data-en="Phase 6 payload boundaries and protocol/status assumptions are documented." data-pt="Os limites de payload da Fase 6 e as premissas de protocolo/status estão documentados.">Phase 6 payload boundaries and protocol/status assumptions are documented.</li>
             <li data-en="Confirmation screen displays a local protocol placeholder and AbreUSA review timeline." data-pt="A tela de confirmação exibe um protocolo local placeholder e a linha do tempo de revisão da AbreUSA.">Confirmation screen displays a local protocol placeholder and AbreUSA review timeline.</li>
             <li data-en="Internal order payload is built locally; EIN data appears only for Complete Package." data-pt="O payload interno do pedido é montado localmente; dados de EIN aparecem apenas no Pacote Completo.">Internal order payload is built locally; EIN data appears only for Complete Package.</li>
-            <li data-en="Supabase schema SQL for orders, llcs, members, registered_agents, ein_details, and generated_forms tables is defined in supabase/schema.sql." data-pt="O schema SQL do Supabase para as tabelas orders, llcs, members, registered_agents, ein_details e generated_forms está definido em supabase/schema.sql.">Supabase schema SQL for orders, llcs, members, registered_agents, ein_details, and generated_forms tables is defined in supabase/schema.sql.</li>
-            <li data-en="No Supabase client, persistence, real submission workflow, production protocol generation, or payment yet." data-pt="Ainda não há cliente Supabase, persistência, fluxo real de envio, geração de protocolo de produção ou pagamento.">No Supabase client, persistence, real submission workflow, production protocol generation, or payment yet.</li>
+            <li data-en="Supabase client and six-table persistence wired on confirmation; approved orders write to orders, llcs, members, registered_agents, ein_details, and generated_forms." data-pt="Cliente Supabase e persistência em seis tabelas conectados na confirmação; pedidos aprovados gravam nas tabelas orders, llcs, members, registered_agents, ein_details e generated_forms.">Supabase client and six-table persistence wired on confirmation; approved orders write to orders, llcs, members, registered_agents, ein_details, and generated_forms.</li>
+            <li data-en="Protocol numbers generated server-side via Postgres sequence (AUS-YYYY-NNNN); no client-side collision risk." data-pt="Números de protocolo gerados no servidor via sequência Postgres (AUS-YYYY-NNNN); sem risco de colisão no cliente.">Protocol numbers generated server-side via Postgres sequence (AUS-YYYY-NNNN); no client-side collision risk.</li>
+            <li data-en="Applicant contact step (name, email, phone) added as step 2 of 13; persisted to applicants table in Supabase." data-pt="Etapa de contato do solicitante (nome, e-mail, telefone) adicionada como etapa 2 de 13; persistida na tabela applicants no Supabase.">Applicant contact step (name, email, phone) added as step 2 of 13; persisted to applicants table in Supabase.</li>
+            <li data-en="No document file storage or payment yet." data-pt="Ainda não há armazenamento de arquivos de documentos ou pagamento.">No document file storage or payment yet.</li>
           </ul>
         </article>
 
         <article class="card task">
           <span class="pill done" data-en="Last completed" data-pt="Última concluída">Last completed</span>
-          <h2 data-en="P6-T03 — Supabase Boundary" data-pt="P6-T03 — Limite Supabase">P6-T03 — Supabase Boundary</h2>
+          <h2 data-en="P6-T06 — Applicant Contact" data-pt="P6-T06 — Contato do Solicitante">P6-T06 — Applicant Contact</h2>
           <p
-            data-en="Persistence boundary documented for approved orders. Schema SQL and env template created. Document storage and applicant contact explicitly blocked pending decisions."
-            data-pt="Limite de persistência documentado para pedidos aprovados. Schema SQL e template de env criados. Armazenamento de documentos e contato do solicitante explicitamente bloqueados aguardando decisões."
+            data-en="Applicant name, email, and phone now collected in step 2 and persisted to Supabase. AUS-2026-0004 verified in browser."
+            data-pt="Nome, e-mail e telefone do solicitante agora coletados na etapa 2 e persistidos no Supabase. AUS-2026-0004 verificado no navegador."
           >
-            Persistence boundary documented for approved orders. Schema SQL and env template created. Document storage and applicant contact explicitly blocked pending decisions.
+            Applicant name, email, and phone now collected in step 2 and persisted to Supabase. AUS-2026-0004 verified in browser.
           </p>
         </article>
 
         <article class="card next">
-          <span class="pill" data-en="Next task" data-pt="Próxima tarefa">Next task</span>
-          <h2 data-en="P6-T04 Supabase Client" data-pt="P6-T04 Cliente Supabase">P6-T04 Supabase Client</h2>
+          <span class="pill" data-en="In progress" data-pt="Em andamento">In progress</span>
+          <h2 data-en="P6-T07 — Document Upload" data-pt="P6-T07 — Upload de Documentos">P6-T07 — Document Upload</h2>
           <p
-            data-en="Set up Supabase client and wire order persistence on confirmation. Requires user to create a Supabase project and provide credentials."
-            data-pt="Configurar o cliente Supabase e conectar a persistência do pedido na confirmação. Requer que o usuário crie um projeto Supabase e forneça credenciais."
+            data-en="Code implemented and lint/build pass. Browser verification pending — attach both files and complete a full flow to confirm."
+            data-pt="Código implementado e lint/build passando. Verificação no navegador pendente — anexar ambos os arquivos e completar o fluxo."
           >
-            Set up Supabase client and wire order persistence on confirmation.
-            Requires user to create a Supabase project and provide credentials.
+            Code implemented and lint/build pass. Browser verification pending — attach both files and complete a full flow to confirm.
           </p>
         </article>
       </section>

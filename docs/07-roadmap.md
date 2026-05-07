@@ -583,7 +583,7 @@ Phase 5 is complete. Customers can review captured local intake/document data, i
 
 ## Phase 6: Order Submission Workflow
 
-Status: Current phase. P6-T03 is complete. The next step is P6-T04: Supabase client setup and order persistence implementation.
+Status: Current phase. P6-T07 is in progress. Code is implemented and lint/build pass. Browser verification is pending.
 
 Goal: convert approved intake into an internal AbreUSA order.
 
@@ -718,26 +718,92 @@ P6-T03 status:
 - Document file storage explicitly blocked: retention period and reviewer access model unresolved.
 - Deliverables: `supabase/schema.sql` and `.env.local.example` created.
 
-Next Phase 6 task:
+P6-T04 status:
 
-- Task ID: `P6-T04`.
-- Title: Set up Supabase client and wire order persistence on confirmation.
-- Prerequisites (user must complete before task begins):
-  - Create a Supabase project.
-  - Add `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` to `.env.local`.
-  - Apply `supabase/schema.sql` in the Supabase SQL editor.
+- Status: Complete.
+- `@supabase/supabase-js` installed.
+- `lib/supabase.ts` and `lib/persist-order.ts` created.
+- Persistence call wired in `handleContinueToConfirmation`.
+- `isPersisting` loading state added; approval button disabled during write.
+- Browser verification passed: Complete Package flow persisted all six tables.
+- RLS disabled on all tables for development; must be configured in Phase 7.
+- `npm run lint` passes. `npm run build` passes.
+
+P6-T05 status:
+
+- Status: Complete.
+- `order_protocol_seq` Postgres sequence created in Supabase.
+- `orders.protocol_number` default set to server-generated `AUS-YYYY-NNNN`.
+- Client-side protocol generation removed; `persist-order.ts` returns server value.
+- Browser verification passed: `AUS-2026-0003` generated with no client input.
+- `npm run lint` passes. `npm run build` passes.
+
+P6-T06 status:
+
+- Status: Complete.
+- `applicant_contact` FlowStep added after service selection; 13-step flow.
+- `applicantContact` state, step UI, and `ApplicantContactDraft` type added.
+- `applicants` table created in Supabase; RLS disabled for development.
+- `persist-order.ts` updated with applicant insert.
+- Browser verification passed: `AUS-2026-0004` with applicant row confirmed.
+- `npm run lint` passes. `npm run build` passes.
+
+P6-T07 status:
+
+- Status: In progress. Code complete. Browser verification pending.
+- `documents` private storage bucket created in Supabase with anon upload policy.
+- `documents` table created in Supabase; RLS disabled for development.
+- `documentFiles` state added to hold actual `File` objects separate from serializable metadata.
+- `uploadAndRecordDocument` helper added to `persist-order.ts`: uploads to `documents/{orderId}/{type}.{ext}`, inserts row in `documents` table.
+- `persistOrder` updated to accept optional `files` parameter.
+- `npm run lint` passes. `npm run build` passes.
+- Resume: complete browser verification with both files attached; update three docs.
+
+Next Phase 6 tasks:
+
+- Task ID: `P6-T05`.
+- Title: Production protocol generation — collision-resistant counter via Postgres sequence.
 - Scope:
-  - Install `@supabase/supabase-js`.
-  - Create `lib/supabase.ts` with the Supabase client.
-  - Create `lib/persist-order.ts` with an insert function for order, llc, members, registered_agent, ein_details, and generated_forms rows.
-  - Wire the persist call in `handleContinueToConfirmation` before `setActiveStep("confirmation")`.
-  - Verify with browser that a complete intake path creates rows in Supabase.
-  - Keep document file uploads, applicant contact fields, and real agency submission out of scope.
+  - Add `order_protocol_seq` Postgres sequence to Supabase.
+  - Set `orders.protocol_number` default to server-side generated `AUS-YYYY-NNNN`.
+  - Remove client-side protocol generation from `buildLocalOrderPayload`.
+  - Update `persist-order.ts` to omit `protocol_number` from insert and return the server-generated value.
+  - Update `handleContinueToConfirmation` to use the returned protocol in the confirmation payload.
+  - Update `supabase/schema.sql` to document the sequence.
+  - Browser verification: second order receives `AUS-2026-0002`.
 - Acceptance criteria:
-  - `npm run lint` passes.
-  - `npm run build` passes.
-  - Browser verification shows order rows persisted in Supabase after confirmation.
-  - No document file storage, no RLS policies, no applicant contact fields introduced.
+  - `npm run lint` passes. `npm run build` passes.
+  - Browser verification shows unique incrementing protocol per order.
+  - `/docs/07-roadmap.md`, `/docs/09-build-status.md`, and `/progress/index.html` updated.
+
+- Task ID: `P6-T06`.
+- Title: Applicant contact step — collect name, email, phone; persist to applicants table.
+- Scope:
+  - Add `applicant_contact` FlowStep after `service`.
+  - Add `applicantContact` state: `{ name, email, phone }`.
+  - Add step UI with name, email, phone fields; gated on all three required.
+  - Add `applicants` table to Supabase and `supabase/schema.sql`.
+  - Add applicant insert to `persist-order.ts`.
+  - Add `applicantContact` to `LocalOrderPayload`.
+  - Browser verification: applicant row appears in Supabase after confirmation.
+- Acceptance criteria:
+  - `npm run lint` passes. `npm run build` passes.
+  - Browser verification shows applicant row in Supabase.
+  - `/docs/07-roadmap.md`, `/docs/09-build-status.md`, and `/progress/index.html` updated.
+
+- Task ID: `P6-T07`.
+- Title: Document file upload to Supabase private storage bucket.
+- Scope:
+  - Create `documents` private storage bucket in Supabase.
+  - Create `documents` table in Supabase and `supabase/schema.sql`.
+  - On confirmation, upload passport and address proof files to the bucket.
+  - Store storage paths in `documents` table rows.
+  - Add document inserts to `persist-order.ts`.
+  - Never expose raw file URLs; note signed URL requirement for Phase 7 reviewer access.
+  - Retention period and reviewer access model remain TBD Phase 7 blockers.
+- Acceptance criteria:
+  - `npm run lint` passes. `npm run build` passes.
+  - Browser verification shows document rows in Supabase and files in private bucket.
   - `/docs/07-roadmap.md`, `/docs/09-build-status.md`, and `/progress/index.html` updated.
 ## Phase 7: Production Hardening
 

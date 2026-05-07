@@ -2,15 +2,20 @@
 -- Minimum persistence boundary for approved orders.
 --
 -- Blocked tables (not included):
---   applicants  — email and phone are not in the intake flow; decision required before adding.
---   documents   — private file storage requires retention period and reviewer access decisions.
+--   (all tables now implemented; retention period and reviewer access model remain Phase 7 decisions)
 --
 -- RLS policies are not defined here; configure before production deployment.
 -- Apply in the Supabase SQL editor before running P6-T04.
 
+-- Collision-resistant protocol counter (run this before creating the orders table,
+-- or alter the column default if orders already exists).
+create sequence if not exists order_protocol_seq start 1;
+
 create table if not exists orders (
   id               uuid        primary key default gen_random_uuid(),
-  protocol_number  text        not null unique,
+  protocol_number  text        not null unique
+                               default ('AUS-' || to_char(now(), 'YYYY') || '-'
+                                        || lpad(nextval('order_protocol_seq')::text, 4, '0')),
   service_type     text        not null check (service_type in ('complete_llc_ein', 'florida_llc')),
   status           text        not null default 'approved' check (
                                  status in (
@@ -78,4 +83,23 @@ create table if not exists generated_forms (
   form_type         text        not null check (form_type in ('florida_articles_of_organization', 'irs_ss4')),
   customer_approved boolean     not null default false,
   generated_at      timestamptz not null default now()
+);
+
+create table if not exists applicants (
+  id         uuid        primary key default gen_random_uuid(),
+  order_id   uuid        not null references orders(id) on delete cascade,
+  name       text        not null,
+  email      text        not null,
+  phone      text        not null,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists documents (
+  id             uuid        primary key default gen_random_uuid(),
+  order_id       uuid        not null references orders(id) on delete cascade,
+  document_type  text        not null check (document_type in ('passport', 'us_address_proof')),
+  file_name      text        not null,
+  mime_type      text        not null,
+  storage_path   text        not null,
+  created_at     timestamptz not null default now()
 );
