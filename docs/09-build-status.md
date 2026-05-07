@@ -4,53 +4,51 @@
 
 Phase 7: Production Hardening.
 
-Phase 6 is complete. P7-T02 is complete. The next task is production Supabase credential and RLS/storage lockdown planning.
+Phase 6 is complete. P7-T03 is complete. The next task is enforcing the production Supabase service-role credential and adding the lockdown SQL artifact.
 
 ## Last Completed Task
-
-Task ID: `P7-T02`
-
-Title: Move approved-order persistence behind a server-side security boundary.
-
-Result:
-
-- Added `/api/orders` route handler for approved-order persistence and file upload.
-- Moved Supabase table inserts and private document uploads into server-side helpers.
-- Browser `persistOrder` now posts a multipart payload to `/api/orders`.
-- Removed the unused browser Supabase client file.
-- Customer-facing flow remains unchanged.
-- Verification passed with Complete Package order `AUS-2026-0006` and both required files attached.
-- `npm run lint` passes.
-- `npm run build` passes.
-
-## Current Task
-
-None. P7-T02 is complete.
-
-## Next Task
 
 Task ID: `P7-T03`
 
 Title: Plan production Supabase service-role credentials and RLS/storage lockdown SQL.
 
+Result:
+
+- Production Supabase credential requirement documented.
+- Required production credential: server-only `SUPABASE_SERVICE_ROLE_KEY`.
+- Development fallback to anon key is documented as local-only and must be removed before production lockdown.
+- RLS lockdown SQL plan documented for all order tables.
+- Storage lockdown SQL/policy plan documented for the private `documents` bucket.
+- Remaining blockers before applying policies are explicit.
+- No product code changed.
+
+## Current Task
+
+None. P7-T03 is complete.
+
+## Next Task
+
+Task ID: `P7-T04`
+
+Title: Enforce production Supabase service-role credential and add lockdown SQL artifact.
+
 Status: Awaiting execution.
 
 Scope:
 
-- Decide the production server credential requirement for Supabase writes.
-- Remove the development fallback to the anon key from the production plan.
-- Draft SQL for enabling RLS on all order tables.
-- Draft SQL for denying public table reads, updates, deletes, and direct inserts.
-- Draft storage policy changes that remove direct public uploads and block document reads by default.
+- Remove server-side fallback to `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
+- Require `SUPABASE_SERVICE_ROLE_KEY` for server-side persistence.
+- Add a Supabase SQL artifact for RLS/table grants and storage lockdown.
 - Keep customer auth, reviewer UI, signed URL implementation, payment, email, and agency submission out of scope.
 
 Acceptance criteria:
 
-- Production Supabase credential requirement is documented.
-- RLS lockdown SQL plan is documented.
-- Storage lockdown SQL/policy plan is documented.
-- Remaining blockers for applying the policies are explicit.
-- `/docs/07-roadmap.md`, `/docs/09-build-status.md`, `/progress/index.html`, and `/docs/08-decisions-log.md` are updated if decisions changed.
+- Server persistence fails closed when `SUPABASE_SERVICE_ROLE_KEY` is missing.
+- Server persistence works when `SUPABASE_SERVICE_ROLE_KEY` is present.
+- Lockdown SQL artifact exists and covers all order tables and the `documents` bucket.
+- `npm run lint` passes.
+- `npm run build` passes.
+- Browser verification confirms an approved Complete Package order still persists through `/api/orders` when service-role credentials are configured.
 
 ## Completed Tasks
 
@@ -67,6 +65,7 @@ Acceptance criteria:
 - Phase 6 exit review and Phase 7 planning: P6-T09 closed.
 - Phase 7 production security hardening plan: P7-T01 closed.
 - Phase 7 server-side persistence boundary: P7-T02 closed.
+- Phase 7 production credential and RLS/storage lockdown plan: P7-T03 closed.
 
 ## What Is Implemented
 
@@ -84,6 +83,8 @@ Acceptance criteria:
 - Server-side approved-order persistence route: `/api/orders`.
 - Server-side Supabase persistence helpers for order rows and private document uploads.
 - Browser persistence wrapper that posts to `/api/orders` instead of writing directly to Supabase.
+- Production service-role credential requirement documented.
+- RLS and storage lockdown SQL plan documented.
 - `lib/persist-order.ts`, `lib/persist-order-server.ts`, `lib/supabase-server.ts`, `supabase/schema.sql`.
 - `/progress/index.html` stakeholder dashboard.
 
@@ -94,21 +95,21 @@ Acceptance criteria:
 - RLS policies on all Supabase tables and storage (required before production).
 - Document retention period and reviewer access model (Phase 7 blockers).
 - Signed URLs for internal document access (Phase 7).
-- Production service-role credential requirement and RLS/storage lockdown SQL plan (next task).
+- Production service-role credential enforcement and lockdown SQL artifact (next task).
 - GitHub Pages must still be enabled in GitHub settings after the repo is pushed.
 
 ## Exact Next Step To Resume
 
 Execute one task only:
 
-`P7-T03: Plan production Supabase service-role credentials and RLS/storage lockdown SQL`
+`P7-T04: Enforce production Supabase service-role credential and add lockdown SQL artifact`
 
 Deliverable:
 
-- Document the required production Supabase server credential.
-- Draft RLS lockdown SQL for all order tables.
-- Draft storage lockdown policy changes for the private `documents` bucket.
-- List blockers before applying the lockdown.
+- Remove server-side anon-key fallback.
+- Require `SUPABASE_SERVICE_ROLE_KEY` for server persistence.
+- Add lockdown SQL artifact covering order tables and the private `documents` bucket.
+- Run lint, build, and browser verification with service-role credentials configured.
 
 ## Blockers And Risks
 
@@ -116,6 +117,6 @@ Deliverable:
 - RLS must be configured on all tables and storage before production deployment.
 - Document retention period and reviewer access model unresolved (Phase 7).
 - Raw file URLs must never be exposed publicly; signed URLs required for reviewer access (Phase 7).
-- Development server path can fall back to anon credentials; production must use server-only credentials before RLS lockdown.
+- Development server path currently can fall back to anon credentials; P7-T04 must remove that fallback before RLS lockdown.
 - Default PATH does not include Node/npm; use `PATH=/usr/local/opt/node@22/bin:$PATH`.
 - GitHub Pages still needs to be enabled in GitHub settings after pushing.

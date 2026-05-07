@@ -861,7 +861,7 @@ Direct agency submission, payment, admin portal, EIN-only flow, and Registered A
 
 ## Phase 7: Production Hardening
 
-Status: Current phase. P7-T02 is complete. The next step is production Supabase credential and RLS/storage lockdown planning.
+Status: Current phase. P7-T03 is complete. The next step is implementing the production Supabase credential requirement and adding the lockdown SQL artifact.
 
 Goal: make the product safe to launch.
 
@@ -1012,6 +1012,104 @@ Next Phase 7 task:
   - Storage lockdown SQL/policy plan is documented.
   - Remaining blockers for applying the policies are explicit.
   - `/docs/07-roadmap.md`, `/docs/09-build-status.md`, `/progress/index.html`, and `/docs/08-decisions-log.md` are updated if decisions changed.
+
+P7-T03 status:
+
+- Status: Complete.
+- Production Supabase credential requirement documented below.
+- RLS lockdown SQL plan documented below.
+- Storage lockdown SQL/policy plan documented below.
+- Blockers before applying production policies documented below.
+- No product code was changed in this planning task.
+
+Production Supabase credential requirement:
+
+- Production writes must use a server-only Supabase credential.
+- Required env var: `SUPABASE_SERVICE_ROLE_KEY`.
+- Required env var: `SUPABASE_URL` or `NEXT_PUBLIC_SUPABASE_URL`.
+- `SUPABASE_SERVICE_ROLE_KEY` must never be exposed to browser code, committed to git, shown in customer UI, or prefixed with `NEXT_PUBLIC_`.
+- The current development fallback from server code to `NEXT_PUBLIC_SUPABASE_ANON_KEY` is allowed only for local development verification before lockdown.
+- Before production RLS/storage lockdown is applied, the server persistence path must fail closed if `SUPABASE_SERVICE_ROLE_KEY` is missing.
+
+RLS lockdown SQL plan:
+
+```sql
+alter table public.orders enable row level security;
+alter table public.applicants enable row level security;
+alter table public.llcs enable row level security;
+alter table public.members enable row level security;
+alter table public.registered_agents enable row level security;
+alter table public.ein_details enable row level security;
+alter table public.generated_forms enable row level security;
+alter table public.documents enable row level security;
+
+revoke all on public.orders from anon, authenticated;
+revoke all on public.applicants from anon, authenticated;
+revoke all on public.llcs from anon, authenticated;
+revoke all on public.members from anon, authenticated;
+revoke all on public.registered_agents from anon, authenticated;
+revoke all on public.ein_details from anon, authenticated;
+revoke all on public.generated_forms from anon, authenticated;
+revoke all on public.documents from anon, authenticated;
+```
+
+RLS policy direction:
+
+- Do not add anon policies for order tables in the MVP.
+- Do not add authenticated customer policies until customer auth exists.
+- Server-side writes should use `SUPABASE_SERVICE_ROLE_KEY`, which bypasses RLS for trusted server mutations.
+- Internal reviewer reads remain blocked until reviewer authentication/access model is confirmed.
+
+Storage lockdown SQL/policy plan:
+
+```sql
+-- Remove existing development upload/read policies on storage.objects for the documents bucket.
+-- Exact policy names must be confirmed in Supabase before applying.
+drop policy if exists "Allow anon document uploads" on storage.objects;
+drop policy if exists "Allow document uploads" on storage.objects;
+drop policy if exists "Allow document reads" on storage.objects;
+
+-- Keep the documents bucket private.
+update storage.buckets
+set public = false
+where id = 'documents';
+
+-- Do not create anon upload/read policies for the documents bucket.
+-- Server-side uploads use the service-role credential.
+```
+
+Storage policy direction:
+
+- The `documents` bucket remains private.
+- Browser direct uploads are not allowed in production.
+- Browser direct reads are not allowed in production.
+- Internal document access must be implemented later through server-generated signed URLs after reviewer authorization is defined.
+
+Blockers before applying production lockdown:
+
+- Confirm `SUPABASE_SERVICE_ROLE_KEY` is available in the production runtime environment.
+- Remove the server-side development fallback to `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
+- Confirm actual storage policy names in the Supabase project before running `drop policy`.
+- Confirm whether existing development/test rows and files should remain in the production project before enabling lockdown.
+- Document retention period remains Decision Needed before production launch.
+- Reviewer access model remains Decision Needed before internal document access can be implemented.
+
+Next Phase 7 task:
+
+- Task ID: `P7-T04`.
+- Title: Enforce production Supabase service-role credential and add lockdown SQL artifact.
+- Scope:
+  - Remove server-side fallback to `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
+  - Require `SUPABASE_SERVICE_ROLE_KEY` for server-side persistence.
+  - Add a Supabase SQL artifact for RLS/table grants and storage lockdown.
+  - Keep customer auth, reviewer UI, signed URL implementation, payment, email, and agency submission out of scope.
+- Acceptance criteria:
+  - Server persistence fails closed when `SUPABASE_SERVICE_ROLE_KEY` is missing.
+  - Server persistence works when `SUPABASE_SERVICE_ROLE_KEY` is present.
+  - Lockdown SQL artifact exists and covers all order tables and the `documents` bucket.
+  - `npm run lint` passes.
+  - `npm run build` passes.
+  - Browser verification confirms an approved Complete Package order still persists through `/api/orders` when service-role credentials are configured.
 
 ## Phase 8: Post-MVP Expansion
 

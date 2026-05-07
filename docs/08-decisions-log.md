@@ -285,6 +285,16 @@ Reason:
 
 The current Phase 6 implementation was acceptable for development verification but depends on public client-side Supabase writes. Production RLS and storage hardening require a server-controlled write path so public table access can be denied and private document access can be controlled through server-side authorization and short-lived signed URLs.
 
+### 2026-05-07: Production Supabase Writes Require Service Role
+
+Decision:
+
+Production approved-order persistence and document upload must use a server-only Supabase service-role credential. The production server path must fail closed when `SUPABASE_SERVICE_ROLE_KEY` is missing.
+
+Reason:
+
+RLS and storage lockdown will deny public anon table writes and direct bucket uploads. The server route needs a trusted credential to perform approved-order inserts and private document uploads after payload validation. The service-role key must remain server-only and must never be exposed with a `NEXT_PUBLIC_` prefix.
+
 ## Pending Confirmation Gates
 
 ### App Spine Confirmation
