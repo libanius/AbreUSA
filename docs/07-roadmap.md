@@ -583,7 +583,7 @@ Phase 5 is complete. Customers can review captured local intake/document data, i
 
 ## Phase 6: Order Submission Workflow
 
-Status: Current phase. Awaiting Phase 6 planning.
+Status: Current phase. P6-T02 is complete. The next step is the Supabase persistence boundary task.
 
 Goal: convert approved intake into an internal AbreUSA order.
 
@@ -612,6 +612,114 @@ Next Phase 6 task:
   - Confirm whether Supabase persistence starts in this phase or remains deferred.
   - Keep payment, real agency submission, and real email delivery out of scope unless the App Spine is updated.
   - Add acceptance criteria before Phase 6 product code begins.
+
+P6-T01 status:
+
+- Complete.
+- First Phase 6 implementation slice defined below.
+- Order payload boundaries documented below.
+- Protocol and status lifecycle assumptions documented below.
+- Persistence decision documented below.
+- Payment, real agency submission, and real email delivery remain out of scope unless the App Spine is updated.
+- No product code was changed in this planning task.
+
+First Phase 6 implementation slice:
+
+- Task ID: `P6-T02`.
+- Title: Implement local submission confirmation and internal order payload shell.
+- Scope:
+  - Add a non-submitting confirmation step after local approval.
+  - Convert the approved local intake state into a structured internal order payload object in client state.
+  - Generate and display a local protocol placeholder using the documented protocol format.
+  - Show a customer-facing next-step timeline that says AbreUSA will review the order before any government submission.
+  - Show local order status as `approved` or `internal_review` only; do not show `submitted` until a real submission workflow exists.
+  - Keep Supabase persistence, private document storage, reviewer portal, real agency submission, email delivery, and payment out of this slice.
+- Out of scope:
+  - Supabase writes.
+  - Database schema migrations.
+  - Private file storage.
+  - Internal admin/reviewer UI.
+  - Email sending.
+  - Sunbiz or IRS submission.
+  - Payment.
+  - Real protocol collision checks.
+- Acceptance criteria:
+  - Complete Package path can continue from approval to a confirmation/protocol shell after checkbox confirmation.
+  - Florida LLC path can continue from approval to a confirmation/protocol shell after checkbox confirmation.
+  - Confirmation screen displays a protocol placeholder, selected service, LLC name, and clear next-step timeline.
+  - Internal order payload includes only reviewed local data from the active service path.
+  - EIN payload fields appear only for Complete Package.
+  - Confirmation language states AbreUSA must review before any government submission.
+  - No backend calls, persistence, storage, real email, payment, or agency submission are introduced.
+  - `npm run lint` passes.
+  - `npm run build` passes.
+  - Browser verification covers Complete Package and Florida LLC paths through confirmation.
+
+P6-T02 status:
+
+- Complete.
+- Non-submitting confirmation step added after local approval.
+- Approved local intake state converts into a structured internal order payload object in client state.
+- Local protocol placeholder is generated with the `AUS-YYYY-XXXX` shell format.
+- Confirmation screen shows selected service, LLC name, local approved status, protocol, and AbreUSA review timeline.
+- EIN payload fields appear only for Complete Package.
+- Confirmation language states AbreUSA must review before any government submission.
+- No backend calls, persistence, storage, real email, payment, or agency submission were introduced.
+- `npm run lint` passes.
+- `npm run build` passes.
+- Browser verification passed for Complete Package and Florida LLC paths through confirmation.
+
+Order payload boundaries:
+
+- Include:
+  - `order.serviceType` for `complete_llc_ein` or `florida_llc`.
+  - `order.status` starting as `approved` locally, then moving to `internal_review` only when persistence/reviewer handoff is implemented.
+  - `order.approvedAt` from the local approval action.
+  - `llc` values from the captured LLC name, business activity, member count, principal Florida address, and management context.
+  - `members` values from the captured member list.
+  - `registeredAgent` values from the selected Registered Agent option.
+  - `einDetails` only when the selected service is Complete Package.
+  - `documents` metadata and reviewed extraction fields, not raw public file URLs.
+  - `generatedForms` metadata for the local preview types shown to the customer.
+- Exclude:
+  - Payment status.
+  - Public document URLs.
+  - Reviewer assignment.
+  - Government filing identifiers.
+  - Sunbiz or IRS submission timestamps.
+  - Email delivery status.
+  - EIN-only or Registered Agent-only branch data.
+
+Protocol and status lifecycle assumptions:
+
+- Protocol format for the local shell: `AUS-YYYY-XXXX`.
+- `YYYY` uses the current calendar year.
+- `XXXX` is a local placeholder sequence for the shell only and is not collision-resistant.
+- Production protocol generation must become deterministic and collision-resistant before persisted orders launch.
+- Status lifecycle for Phase 6 planning:
+  - `approved`: customer confirmed the reviewed data locally.
+  - `internal_review`: AbreUSA has received or can review the internal order.
+  - `submitted`: reserved for AbreUSA action after review and must not be set by the local customer flow.
+  - `completed` and `blocked`: reserved for post-submission operational status.
+
+Persistence decision:
+
+- Supabase persistence remains planned for Phase 6 but does not start in `P6-T02`.
+- `P6-T02` will establish the local order payload and confirmation shell first.
+- Supabase writes should start only after the payload shape, document security boundaries, and required applicant contact fields are confirmed.
+- Private document storage and reviewer access remain blocked by the existing document retention and access-control decisions.
+
+Next Phase 6 task:
+
+- Task ID: `P6-T03`.
+- Title: Plan or implement Supabase persistence boundary, depending on decisions available after P6-T02.
+- Scope:
+  - Review the verified local order payload shell from P6-T02.
+  - Decide the minimum Supabase persistence boundary for approved orders.
+  - Confirm whether applicant email and phone must be collected before persistence.
+  - Confirm document storage/security requirements that block or shape persistence.
+  - Decide whether P6-T03 is implementation or additional planning based on unresolved document retention and reviewer access decisions.
+  - Keep real agency submission, payment, and real email delivery out of scope unless the App Spine is updated.
 
 ## Phase 7: Production Hardening
 

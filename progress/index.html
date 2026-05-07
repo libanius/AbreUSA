@@ -268,12 +268,12 @@
           <span class="pill done" data-en="Current phase" data-pt="Fase atual">Current phase</span>
           <p class="phase" data-en="Phase 6: Order Submission Workflow" data-pt="Fase 6: Fluxo de envio do pedido">Phase 6: Order Submission Workflow</p>
           <p
-            data-en="Phase 5 is complete: local review, generated preview shells, and the non-submitting approval gate are implemented and browser-verified. The next task is Phase 6 planning."
-            data-pt="A Fase 5 está concluída: revisão local, shells de preview gerado e gate de aprovação sem envio estão implementados e verificados no navegador. A próxima tarefa é o planejamento da Fase 6."
+            data-en="The local confirmation and protocol shell is implemented and browser-verified. The next task is the Supabase persistence boundary."
+            data-pt="O shell local de confirmação e protocolo está implementado e verificado no navegador. A próxima tarefa é o limite de persistência no Supabase."
           >
-            Phase 5 is complete: local review, generated preview shells, and
-            the non-submitting approval gate are implemented and
-            browser-verified. The next task is Phase 6 planning.
+            The local confirmation and protocol shell is implemented and
+            browser-verified. The next task is the Supabase persistence
+            boundary.
           </p>
           <div class="progress-wrap" aria-label="Project progress">
             <div class="progress-label">
@@ -288,7 +288,7 @@
 
         <aside class="card metric">
           <span class="pill" data-en="Last updated" data-pt="Última atualização">Last updated</span>
-          <p class="phase" data-en="May 6, 2026" data-pt="6 de maio de 2026">May 6, 2026</p>
+          <p class="phase" data-en="May 7, 2026" data-pt="7 de maio de 2026">May 7, 2026</p>
           <p
             class="updated"
             data-en="Source of truth: /docs App Spine and current build status."
@@ -332,6 +332,8 @@
             <li data-en="P5-T02 local review screen and generated preview shells implemented." data-pt="P5-T02 tela local de revisão e shells de preview gerado implementados.">P5-T02 local review screen and generated preview shells implemented.</li>
             <li data-en="P5-T03 local approval gate implemented and browser-verified." data-pt="P5-T03 gate local de aprovação implementado e verificado no navegador.">P5-T03 local approval gate implemented and browser-verified.</li>
             <li data-en="Phase 5 complete." data-pt="Fase 5 concluída.">Phase 5 complete.</li>
+            <li data-en="P6-T01 order submission workflow architecture planned." data-pt="P6-T01 arquitetura do fluxo de envio do pedido planejada.">P6-T01 order submission workflow architecture planned.</li>
+            <li data-en="P6-T02 local confirmation and internal order payload shell implemented." data-pt="P6-T02 shell local de confirmação e payload interno do pedido implementado.">P6-T02 local confirmation and internal order payload shell implemented.</li>
           </ul>
         </article>
 
@@ -356,32 +358,34 @@
             <li data-en="Review screen maps local intake and document state into customer-facing sections." data-pt="A tela de revisão mapeia dados locais de intake e documentos para seções de revisão do cliente.">Review screen maps local intake and document state into customer-facing sections.</li>
             <li data-en="Florida Articles preview appears for both active service paths; IRS SS-4 preview appears only for Complete Package." data-pt="O preview de Articles da Flórida aparece para os dois caminhos ativos; o preview IRS SS-4 aparece apenas no Pacote Completo.">Florida Articles preview appears for both active service paths; IRS SS-4 preview appears only for Complete Package.</li>
             <li data-en="Local approval gate requires explicit confirmation and states nothing is submitted yet." data-pt="O gate local de aprovação exige confirmação explícita e informa que nada foi enviado ainda.">Local approval gate requires explicit confirmation and states nothing is submitted yet.</li>
-            <li data-en="No Supabase, persistence, submission workflow, protocol generation, or payment yet." data-pt="Ainda não há Supabase, persistência, fluxo de envio, geração de protocolo ou pagamento.">No Supabase, persistence, submission workflow, protocol generation, or payment yet.</li>
+            <li data-en="Phase 6 payload boundaries and protocol/status assumptions are documented." data-pt="Os limites de payload da Fase 6 e as premissas de protocolo/status estão documentados.">Phase 6 payload boundaries and protocol/status assumptions are documented.</li>
+            <li data-en="Confirmation screen displays a local protocol placeholder and AbreUSA review timeline." data-pt="A tela de confirmação exibe um protocolo local placeholder e a linha do tempo de revisão da AbreUSA.">Confirmation screen displays a local protocol placeholder and AbreUSA review timeline.</li>
+            <li data-en="Internal order payload is built locally; EIN data appears only for Complete Package." data-pt="O payload interno do pedido é montado localmente; dados de EIN aparecem apenas no Pacote Completo.">Internal order payload is built locally; EIN data appears only for Complete Package.</li>
+            <li data-en="No Supabase, persistence, real submission workflow, production protocol generation, or payment yet." data-pt="Ainda não há Supabase, persistência, fluxo real de envio, geração de protocolo de produção ou pagamento.">No Supabase, persistence, real submission workflow, production protocol generation, or payment yet.</li>
           </ul>
         </article>
 
         <article class="card task">
           <span class="pill done" data-en="Last completed" data-pt="Última concluída">Last completed</span>
-          <h2 data-en="P5-T03 — Local Approval Gate" data-pt="P5-T03 — Gate local de aprovação">P5-T03 — Local Approval Gate</h2>
+          <h2 data-en="P6-T02 — Confirmation Shell" data-pt="P6-T02 — Shell de confirmação">P6-T02 — Confirmation Shell</h2>
           <p
-            data-en="Complete Package and Florida LLC paths reach the local approval gate; confirmation is required before continue is enabled and nothing is submitted yet."
-            data-pt="Os caminhos Pacote Completo e LLC Flórida chegam ao gate local de aprovação; a confirmação é obrigatória antes de habilitar continuar e nada é enviado ainda."
+            data-en="Complete Package and Florida LLC paths now reach a local confirmation/protocol shell with a reviewed internal order payload."
+            data-pt="Os caminhos Pacote Completo e LLC Flórida agora chegam a um shell local de confirmação/protocolo com payload interno revisado do pedido."
           >
-            Complete Package and Florida LLC paths reach the local approval
-            gate; confirmation is required before continue is enabled and
-            nothing is submitted yet.
+            Complete Package and Florida LLC paths now reach a local
+            confirmation/protocol shell with a reviewed internal order payload.
           </p>
         </article>
 
         <article class="card next">
           <span class="pill" data-en="Next task" data-pt="Próxima tarefa">Next task</span>
-          <h2 data-en="P6-T01 Submission Planning" data-pt="P6-T01 Planejamento de envio">P6-T01 Submission Planning</h2>
+          <h2 data-en="P6-T03 Supabase Boundary" data-pt="P6-T03 Limite Supabase">P6-T03 Supabase Boundary</h2>
           <p
-            data-en="Plan the order submission workflow: order payload boundaries, protocol/status lifecycle, and persistence decision."
-            data-pt="Planejar o fluxo de envio do pedido: limites do payload, ciclo de protocolo/status e decisão de persistência."
+            data-en="Review the verified local order payload and decide the minimum Supabase persistence boundary for approved orders."
+            data-pt="Revisar o payload local verificado e decidir o limite mínimo de persistência Supabase para pedidos aprovados."
           >
-            Plan the order submission workflow: order payload boundaries,
-            protocol/status lifecycle, and persistence decision.
+            Review the verified local order payload and decide the minimum
+            Supabase persistence boundary for approved orders.
           </p>
         </article>
       </section>

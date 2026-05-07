@@ -162,6 +162,26 @@ Reason:
 
 The MVP can prioritize the guided completion flow before adding resumable drafts.
 
+### 2026-05-07: Phase 6 Starts With Local Order Payload Shell
+
+Decision:
+
+Implement the first Phase 6 slice as a local confirmation/protocol shell that converts approved intake state into an internal order payload before Supabase writes begin.
+
+Reason:
+
+The approved local flow needs a clear order payload boundary, protocol/status language, and customer confirmation behavior before introducing persistence, private document storage, reviewer access, or operational submission workflows.
+
+### 2026-05-07: Supabase Persistence Deferred Until After P6-T02
+
+Decision:
+
+Supabase persistence remains planned for Phase 6 but will not start in `P6-T02`.
+
+Reason:
+
+Persisting approved orders safely requires confirmed payload shape, applicant contact requirements, private document storage boundaries, document retention policy, and reviewer access rules. `P6-T02` will verify the local payload and confirmation surface first.
+
 ## Pending Confirmation Gates
 
 ### App Spine Confirmation

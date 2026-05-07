@@ -3,10 +3,12 @@
 import { useMemo, useState } from "react";
 
 import {
+  ConfirmationShell,
   FieldGroup,
   FieldShell,
   FormPreviewShell,
   ProgressHeader,
+  ProtocolStatusShell,
   ReviewSummary,
   StatusMessage,
   StepCard,
@@ -27,7 +29,8 @@ type FlowStep =
   | "ein_questions"
   | "documents"
   | "review"
-  | "approval";
+  | "approval"
+  | "confirmation";
 type BusinessActivityId =
   | "tech"
   | "ecomm"
@@ -124,6 +127,38 @@ type DocumentCollectionDraft = {
   extraction: DocumentExtractionDraft;
 };
 
+type LocalOrderPayload = {
+  order: {
+    protocolNumber: string;
+    serviceType: "complete_llc_ein" | "florida_llc";
+    status: "approved";
+    approvedAt: string;
+  };
+  llc: {
+    legalName: string;
+    state: "FL";
+    businessActivityLabel: string;
+    principalStreet: string;
+    principalCity: string;
+    principalState: string;
+    principalZip: string;
+    managementType: "member_managed";
+    memberCount: number;
+  };
+  members: MemberDraft[];
+  registeredAgent: RegisteredAgentDraft;
+  einDetails?: EinQuestionsDraft;
+  documents: {
+    passport: DocumentFileDraft | null;
+    addressProof: DocumentFileDraft | null;
+    reviewedExtraction: DocumentExtractionDraft;
+  };
+  generatedForms: Array<{
+    formType: "florida_articles_of_organization" | "irs_ss4";
+    customerApproved: boolean;
+  }>;
+};
+
 const serviceOptions: ServiceOption[] = [
   {
     id: "complete",
@@ -164,6 +199,7 @@ const progressItems = [
   "Documentos",
   "Revisão",
   "Aprovação",
+  "Confirmação",
 ];
 const einReasonOptions: { id: EinReason; label: string; description: string }[] = [
   { id: "new_business", label: "Novo negócio", description: "Abertura de uma nova empresa nos EUA." },
@@ -317,6 +353,7 @@ function StepFrame({
   einQuestions,
   documents,
   approvalConfirmed,
+  approvedOrderPayload,
   registeredAgent,
   onBackToBusinessActivity,
   onBackToBusinessAddress,
@@ -326,6 +363,7 @@ function StepFrame({
   onBackToRegisteredAgent,
   onBackFromDocuments,
   onBackToDocuments,
+  onBackToApproval,
   onBackToReview,
   onChangeApprovalConfirmed,
   onChangeBusinessActivity,
@@ -343,6 +381,7 @@ function StepFrame({
   onContinueToEinQuestions,
   onContinueToDocuments,
   onContinueToApproval,
+  onContinueToConfirmation,
   onContinueToReview,
   onContinueToMemberData,
   onContinueToMemberCount,
@@ -357,6 +396,7 @@ function StepFrame({
   customBusinessActivity: string;
   documents: DocumentCollectionDraft;
   approvalConfirmed: boolean;
+  approvedOrderPayload: LocalOrderPayload | null;
   einQuestions: EinQuestionsDraft;
   llcName: string;
   memberCount: number;
@@ -370,6 +410,7 @@ function StepFrame({
   onBackToRegisteredAgent: () => void;
   onBackFromDocuments: () => void;
   onBackToDocuments: () => void;
+  onBackToApproval: () => void;
   onBackToReview: () => void;
   onChangeApprovalConfirmed: (confirmed: boolean) => void;
   onChangeBusinessActivity: (activity: BusinessActivityId) => void;
@@ -394,6 +435,7 @@ function StepFrame({
   onContinueToEinQuestions: () => void;
   onContinueToDocuments: () => void;
   onContinueToApproval: () => void;
+  onContinueToConfirmation: () => void;
   onContinueToReview: () => void;
   onContinueToMemberData: () => void;
   onContinueToMemberCount: () => void;
@@ -444,6 +486,71 @@ function StepFrame({
       : registeredAgent.choice === "other"
       ? registeredAgent.name.trim() || "Outro agente"
       : "Pendente";
+
+  if (activeStep === "confirmation") {
+    const payloadJson = approvedOrderPayload
+      ? JSON.stringify(approvedOrderPayload, null, 2)
+      : "{}";
+
+    return (
+      <StepCard
+        badge="Protocolo local"
+        eyebrow="Passo 12 · Confirmação"
+        title="Pedido preparado para revisão"
+      >
+        <div className="grid gap-3">
+          <ConfirmationShell
+            description="A AbreUSA deve revisar os dados antes de qualquer submissão para Sunbiz, IRS ou outro órgão externo."
+            title="Aprovação local registrada"
+          >
+            <ProtocolStatusShell
+              protocol={
+                approvedOrderPayload?.order.protocolNumber ?? "AUS-YYYY-XXXX"
+              }
+              status="Aprovado localmente"
+              timeline="Próxima etapa: revisão interna da AbreUSA. Este shell não envia documentos, não grava em banco de dados e não inicia protocolo governamental."
+            />
+          </ConfirmationShell>
+
+          <ReviewSummary
+            items={[
+              { label: "Serviço", value: selectedLabel ?? "Pendente" },
+              { label: "Nome LLC", value: trimmedLlcName || "Pendente" },
+              {
+                label: "Status local",
+                value: approvedOrderPayload?.order.status ?? "approved",
+              },
+              {
+                label: "Submissão oficial",
+                value: "Pendente de revisão AbreUSA",
+              },
+            ]}
+            title="Resumo da confirmação"
+          />
+
+          <FieldGroup title="Payload interno local">
+            <StatusMessage title="Sem persistência nesta etapa" tone="info">
+              <p>
+                Este payload é montado apenas no navegador para validar o
+                formato do pedido. Supabase, storage privado, e-mail e envio
+                oficial permanecem fora deste slice.
+              </p>
+            </StatusMessage>
+            <pre className="max-h-72 overflow-auto rounded-md border bg-card p-3 text-xs leading-5 text-card-foreground">
+              {payloadJson}
+            </pre>
+          </FieldGroup>
+        </div>
+        <StepNavigation
+          backDisabled={false}
+          backLabel="Voltar"
+          nextDisabled
+          nextLabel="Envio real (fase futura)"
+          onBack={onBackToApproval}
+        />
+      </StepCard>
+    );
+  }
 
   if (activeStep === "approval") {
     return (
@@ -504,6 +611,7 @@ function StepFrame({
               : "Confirmar revisão"
           }
           onBack={onBackToReview}
+          onNext={onContinueToConfirmation}
         />
       </StepCard>
     );
@@ -1847,8 +1955,12 @@ export function GuidedIntakeShell() {
     emptyDocumentCollection,
   );
   const [approvalConfirmed, setApprovalConfirmed] = useState(false);
+  const [approvedOrderPayload, setApprovedOrderPayload] =
+    useState<LocalOrderPayload | null>(null);
   const currentStep =
-    activeStep === "approval"
+    activeStep === "confirmation"
+      ? 12
+      : activeStep === "approval"
       ? 11
       : activeStep === "review"
       ? 10
@@ -1870,7 +1982,9 @@ export function GuidedIntakeShell() {
           ? 2
           : 1;
   const currentLabel =
-    activeStep === "approval"
+    activeStep === "confirmation"
+      ? "Confirmação"
+      : activeStep === "approval"
       ? "Aprovação"
       : activeStep === "review"
       ? "Revisão"
@@ -1917,6 +2031,65 @@ export function GuidedIntakeShell() {
     });
     setDocuments(emptyDocumentCollection);
     setApprovalConfirmed(false);
+    setApprovedOrderPayload(null);
+  }
+
+  function buildLocalOrderPayload(): LocalOrderPayload {
+    const approvedAt = new Date();
+    const protocolNumber = `AUS-${approvedAt.getFullYear()}-0001`;
+    const businessActivityLabel =
+      businessActivity === "other"
+        ? customBusinessActivity.trim()
+        : businessActivityOptions.find((activity) => activity.id === businessActivity)
+            ?.label ?? "";
+    const generatedForms: LocalOrderPayload["generatedForms"] = [
+      {
+        formType: "florida_articles_of_organization",
+        customerApproved: true,
+      },
+    ];
+
+    if (selectedService === "complete") {
+      generatedForms.push({
+        formType: "irs_ss4",
+        customerApproved: true,
+      });
+    }
+
+    return {
+      order: {
+        protocolNumber,
+        serviceType:
+          selectedService === "complete" ? "complete_llc_ein" : "florida_llc",
+        status: "approved",
+        approvedAt: approvedAt.toISOString(),
+      },
+      llc: {
+        legalName: llcName.trim(),
+        state: "FL",
+        businessActivityLabel,
+        principalStreet: businessAddress.street,
+        principalCity: businessAddress.city,
+        principalState: businessAddress.state,
+        principalZip: businessAddress.zip,
+        managementType: "member_managed",
+        memberCount,
+      },
+      members: memberData.slice(0, memberCount),
+      registeredAgent,
+      ...(selectedService === "complete" ? { einDetails: einQuestions } : {}),
+      documents: {
+        passport: documents.passport,
+        addressProof: documents.addressProof,
+        reviewedExtraction: documents.extraction,
+      },
+      generatedForms,
+    };
+  }
+
+  function handleContinueToConfirmation() {
+    setApprovedOrderPayload(buildLocalOrderPayload());
+    setActiveStep("confirmation");
   }
 
   function handleChangeMemberCount(count: number) {
@@ -2006,13 +2179,14 @@ export function GuidedIntakeShell() {
       <ProgressHeader
         currentStep={currentStep}
         label={currentLabel}
-        totalSteps={11}
+        totalSteps={12}
       />
       <main className="mx-auto flex w-full max-w-6xl flex-1 px-4 py-8 sm:px-6 lg:px-8">
         <div className="grid w-full gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
           <StepFrame
             activeStep={activeStep}
             approvalConfirmed={approvalConfirmed}
+            approvedOrderPayload={approvedOrderPayload}
             businessActivity={businessActivity}
             businessAddress={businessAddress}
             customBusinessActivity={customBusinessActivity}
@@ -2029,6 +2203,7 @@ export function GuidedIntakeShell() {
             onBackToMemberData={() => setActiveStep("member_data")}
             onBackToRegisteredAgent={() => setActiveStep("registered_agent")}
             onBackToDocuments={() => setActiveStep("documents")}
+            onBackToApproval={() => setActiveStep("approval")}
             onBackToReview={() => setActiveStep("review")}
             onBackFromDocuments={() =>
               setActiveStep(
@@ -2049,6 +2224,7 @@ export function GuidedIntakeShell() {
             onContinueToBusinessActivity={() => setActiveStep("business_activity")}
             onContinueToBusinessAddress={() => setActiveStep("business_address")}
             onContinueToApproval={() => setActiveStep("approval")}
+            onContinueToConfirmation={handleContinueToConfirmation}
             onContinueToDocuments={() => setActiveStep("documents")}
             onContinueToEinQuestions={() => setActiveStep("ein_questions")}
             onContinueToReview={() => setActiveStep("review")}
