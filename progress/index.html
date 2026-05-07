@@ -334,6 +334,7 @@
             <li data-en="Phase 5 complete." data-pt="Fase 5 concluída.">Phase 5 complete.</li>
             <li data-en="P6-T01 order submission workflow architecture planned." data-pt="P6-T01 arquitetura do fluxo de envio do pedido planejada.">P6-T01 order submission workflow architecture planned.</li>
             <li data-en="P6-T02 local confirmation and internal order payload shell implemented." data-pt="P6-T02 shell local de confirmação e payload interno do pedido implementado.">P6-T02 local confirmation and internal order payload shell implemented.</li>
+            <li data-en="P6-T03 Supabase persistence boundary documented; schema.sql and .env.local.example created." data-pt="P6-T03 limite de persistência Supabase documentado; schema.sql e .env.local.example criados.">P6-T03 Supabase persistence boundary documented; schema.sql and .env.local.example created.</li>
           </ul>
         </article>
 
@@ -361,31 +362,31 @@
             <li data-en="Phase 6 payload boundaries and protocol/status assumptions are documented." data-pt="Os limites de payload da Fase 6 e as premissas de protocolo/status estão documentados.">Phase 6 payload boundaries and protocol/status assumptions are documented.</li>
             <li data-en="Confirmation screen displays a local protocol placeholder and AbreUSA review timeline." data-pt="A tela de confirmação exibe um protocolo local placeholder e a linha do tempo de revisão da AbreUSA.">Confirmation screen displays a local protocol placeholder and AbreUSA review timeline.</li>
             <li data-en="Internal order payload is built locally; EIN data appears only for Complete Package." data-pt="O payload interno do pedido é montado localmente; dados de EIN aparecem apenas no Pacote Completo.">Internal order payload is built locally; EIN data appears only for Complete Package.</li>
-            <li data-en="No Supabase, persistence, real submission workflow, production protocol generation, or payment yet." data-pt="Ainda não há Supabase, persistência, fluxo real de envio, geração de protocolo de produção ou pagamento.">No Supabase, persistence, real submission workflow, production protocol generation, or payment yet.</li>
+            <li data-en="Supabase schema SQL for orders, llcs, members, registered_agents, ein_details, and generated_forms tables is defined in supabase/schema.sql." data-pt="O schema SQL do Supabase para as tabelas orders, llcs, members, registered_agents, ein_details e generated_forms está definido em supabase/schema.sql.">Supabase schema SQL for orders, llcs, members, registered_agents, ein_details, and generated_forms tables is defined in supabase/schema.sql.</li>
+            <li data-en="No Supabase client, persistence, real submission workflow, production protocol generation, or payment yet." data-pt="Ainda não há cliente Supabase, persistência, fluxo real de envio, geração de protocolo de produção ou pagamento.">No Supabase client, persistence, real submission workflow, production protocol generation, or payment yet.</li>
           </ul>
         </article>
 
         <article class="card task">
           <span class="pill done" data-en="Last completed" data-pt="Última concluída">Last completed</span>
-          <h2 data-en="P6-T02 — Confirmation Shell" data-pt="P6-T02 — Shell de confirmação">P6-T02 — Confirmation Shell</h2>
+          <h2 data-en="P6-T03 — Supabase Boundary" data-pt="P6-T03 — Limite Supabase">P6-T03 — Supabase Boundary</h2>
           <p
-            data-en="Complete Package and Florida LLC paths now reach a local confirmation/protocol shell with a reviewed internal order payload."
-            data-pt="Os caminhos Pacote Completo e LLC Flórida agora chegam a um shell local de confirmação/protocolo com payload interno revisado do pedido."
+            data-en="Persistence boundary documented for approved orders. Schema SQL and env template created. Document storage and applicant contact explicitly blocked pending decisions."
+            data-pt="Limite de persistência documentado para pedidos aprovados. Schema SQL e template de env criados. Armazenamento de documentos e contato do solicitante explicitamente bloqueados aguardando decisões."
           >
-            Complete Package and Florida LLC paths now reach a local
-            confirmation/protocol shell with a reviewed internal order payload.
+            Persistence boundary documented for approved orders. Schema SQL and env template created. Document storage and applicant contact explicitly blocked pending decisions.
           </p>
         </article>
 
         <article class="card next">
           <span class="pill" data-en="Next task" data-pt="Próxima tarefa">Next task</span>
-          <h2 data-en="P6-T03 Supabase Boundary" data-pt="P6-T03 Limite Supabase">P6-T03 Supabase Boundary</h2>
+          <h2 data-en="P6-T04 Supabase Client" data-pt="P6-T04 Cliente Supabase">P6-T04 Supabase Client</h2>
           <p
-            data-en="Review the verified local order payload and decide the minimum Supabase persistence boundary for approved orders."
-            data-pt="Revisar o payload local verificado e decidir o limite mínimo de persistência Supabase para pedidos aprovados."
+            data-en="Set up Supabase client and wire order persistence on confirmation. Requires user to create a Supabase project and provide credentials."
+            data-pt="Configurar o cliente Supabase e conectar a persistência do pedido na confirmação. Requer que o usuário crie um projeto Supabase e forneça credenciais."
           >
-            Review the verified local order payload and decide the minimum
-            Supabase persistence boundary for approved orders.
+            Set up Supabase client and wire order persistence on confirmation.
+            Requires user to create a Supabase project and provide credentials.
           </p>
         </article>
       </section>

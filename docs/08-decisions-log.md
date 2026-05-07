@@ -182,6 +182,37 @@ Reason:
 
 Persisting approved orders safely requires confirmed payload shape, applicant contact requirements, private document storage boundaries, document retention policy, and reviewer access rules. `P6-T02` will verify the local payload and confirmation surface first.
 
+### 2026-05-07: P6-T03 Persistence Boundary Defined As Planning Only
+
+Decision:
+
+P6-T03 is a planning task. No Supabase implementation begins in this task.
+
+Minimum persistence boundary for approved orders — when implemented in P6-T04 — covers these tables:
+
+- `orders`: protocol number, service type, status, timestamps.
+- `llcs`: all LLC fields from the verified local payload.
+- `members`: all member fields from the verified local payload.
+- `registered_agents`: all Registered Agent fields.
+- `ein_details`: all EIN fields (Complete Package only).
+- `generated_forms`: form type and customer approval status.
+
+Explicitly blocked from this persistence boundary:
+
+- `applicants`: email and phone are not in the intake flow; a product decision is required before adding these fields.
+- `documents` and private storage bucket: document file storage requires resolved retention period and reviewer access model before production configuration.
+
+RLS policies are not defined yet; required before production deployment.
+
+Deliverables produced by P6-T03:
+
+- `supabase/schema.sql`: SQL for the six implementable tables with blocked-table comments.
+- `.env.local.example`: env var template for Supabase credentials.
+
+Reason:
+
+The local order payload shape is verified by P6-T02. A Supabase project does not yet exist and no credentials are available. Document storage requires resolved retention and access policies. Applicant contact fields are not in the current flow.
+
 ## Pending Confirmation Gates
 
 ### App Spine Confirmation

@@ -583,7 +583,7 @@ Phase 5 is complete. Customers can review captured local intake/document data, i
 
 ## Phase 6: Order Submission Workflow
 
-Status: Current phase. P6-T02 is complete. The next step is the Supabase persistence boundary task.
+Status: Current phase. P6-T03 is complete. The next step is P6-T04: Supabase client setup and order persistence implementation.
 
 Goal: convert approved intake into an internal AbreUSA order.
 
@@ -709,18 +709,36 @@ Persistence decision:
 - Supabase writes should start only after the payload shape, document security boundaries, and required applicant contact fields are confirmed.
 - Private document storage and reviewer access remain blocked by the existing document retention and access-control decisions.
 
+P6-T03 status:
+
+- Status: Complete.
+- Decision: Planning only. Supabase implementation deferred to P6-T04.
+- Persistence boundary for implementable tables documented.
+- Applicant email/phone explicitly blocked: not in intake flow; decision required before adding.
+- Document file storage explicitly blocked: retention period and reviewer access model unresolved.
+- Deliverables: `supabase/schema.sql` and `.env.local.example` created.
+
 Next Phase 6 task:
 
-- Task ID: `P6-T03`.
-- Title: Plan or implement Supabase persistence boundary, depending on decisions available after P6-T02.
+- Task ID: `P6-T04`.
+- Title: Set up Supabase client and wire order persistence on confirmation.
+- Prerequisites (user must complete before task begins):
+  - Create a Supabase project.
+  - Add `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` to `.env.local`.
+  - Apply `supabase/schema.sql` in the Supabase SQL editor.
 - Scope:
-  - Review the verified local order payload shell from P6-T02.
-  - Decide the minimum Supabase persistence boundary for approved orders.
-  - Confirm whether applicant email and phone must be collected before persistence.
-  - Confirm document storage/security requirements that block or shape persistence.
-  - Decide whether P6-T03 is implementation or additional planning based on unresolved document retention and reviewer access decisions.
-  - Keep real agency submission, payment, and real email delivery out of scope unless the App Spine is updated.
-
+  - Install `@supabase/supabase-js`.
+  - Create `lib/supabase.ts` with the Supabase client.
+  - Create `lib/persist-order.ts` with an insert function for order, llc, members, registered_agent, ein_details, and generated_forms rows.
+  - Wire the persist call in `handleContinueToConfirmation` before `setActiveStep("confirmation")`.
+  - Verify with browser that a complete intake path creates rows in Supabase.
+  - Keep document file uploads, applicant contact fields, and real agency submission out of scope.
+- Acceptance criteria:
+  - `npm run lint` passes.
+  - `npm run build` passes.
+  - Browser verification shows order rows persisted in Supabase after confirmation.
+  - No document file storage, no RLS policies, no applicant contact fields introduced.
+  - `/docs/07-roadmap.md`, `/docs/09-build-status.md`, and `/progress/index.html` updated.
 ## Phase 7: Production Hardening
 
 Goal: make the product safe to launch.
