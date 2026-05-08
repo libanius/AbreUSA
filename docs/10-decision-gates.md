@@ -88,7 +88,7 @@ Blocks:
 
 Category: UX, onboarding architecture, product strategy.
 
-Status: Open.
+Status: Proposed.
 
 Decision needed:
 
@@ -100,11 +100,17 @@ Blocks:
 - Conversational onboarding implementation.
 - Any major redesign of the intake experience.
 
+P8-T04 proposed direction:
+
+- Start with conversational assistance layered on top of the guided flow.
+- Do not replace the guided intake until compliance, UX, and data-capture risks are resolved.
+- Candidate first moments: service explanation, field help, document guidance, and review support.
+
 ### DG-006: AI-Guided Onboarding Scope
 
 Category: AI orchestration, compliance, onboarding architecture.
 
-Status: Open.
+Status: Proposed.
 
 Decision needed:
 
@@ -116,11 +122,17 @@ Blocks:
 - AI-guided onboarding layer.
 - Real AI extraction expansion.
 
+P8-T04 proposed direction:
+
+- AI may explain steps, check completeness, summarize review issues, and suggest non-final document extraction values.
+- AI must not provide autonomous legal/tax advice, final service recommendations, or unreviewed order submission.
+- All AI-generated field values must remain customer-reviewable before approval.
+
 ### DG-007: Progressive Onboarding And Resume Model
 
 Category: UX, persistence, account model.
 
-Status: Open.
+Status: Proposed.
 
 Decision needed:
 
@@ -133,11 +145,17 @@ Blocks:
 - Draft persistence.
 - Customer dashboard assumptions.
 
+P8-T04 proposed direction:
+
+- If implemented, save/resume should begin after applicant contact is captured.
+- Preferred options to evaluate: secure magic link or authenticated customer account.
+- Protocol lookup alone is not enough for resume access because orders contain sensitive data.
+
 ### DG-008: State-Based Onboarding Model
 
 Category: Architecture, onboarding orchestration, status lifecycle.
 
-Status: Open.
+Status: Proposed.
 
 Decision needed:
 
@@ -150,11 +168,17 @@ Blocks:
 - Status-triggered email automation.
 - Customer dashboard progress model.
 
+P8-T04 proposed direction:
+
+- Use a state model above the current step flow before adding conversational, AI-guided, progressive, or dashboard experiences.
+- Candidate states are documented in `/docs/04-user-flows.md` and `/docs/06-data-model.md`.
+- Keep order status separate from onboarding state, but define a clear mapping before implementation.
+
 ### DG-009: Onboarding Orchestration Architecture
 
 Category: Architecture, scalability, AI orchestration.
 
-Status: Open.
+Status: Proposed.
 
 Decision needed:
 
@@ -165,6 +189,12 @@ Blocks:
 
 - Onboarding orchestration layer.
 - Complex progressive or conversational flows.
+
+P8-T04 proposed direction:
+
+- Keep current component-local intake state for the existing guided flow.
+- Do not add a central workflow engine until progressive onboarding, customer resume, customer dashboard, or AI orchestration requires it.
+- Treat conversational and AI layers as consumers of structured onboarding state, not as the source of truth.
 
 ### DG-010: Production Deployment Environment
 

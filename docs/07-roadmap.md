@@ -1158,6 +1158,7 @@ Current Phase 8 status:
 - P8-T01 complete.
 - P8-T02 complete.
 - P8-T03 complete.
+- P8-T04 complete.
 
 ### P8-T01: Applicant Email Confirmation — Integration Structure
 
@@ -1321,6 +1322,38 @@ Next non-code task:
   - AI-guided onboarding scope options and guardrails are documented.
   - Progressive onboarding and resume decisions are captured as gates.
   - Roadmap, build status, decisions log, Decision Gates, and progress page are updated.
+
+P8-T04 status:
+
+- Status: Complete (2026-05-08).
+- Current guided 13-step intake mapped to candidate onboarding states in `/docs/04-user-flows.md`.
+- Candidate onboarding state values documented in `/docs/06-data-model.md`.
+- Platform-level onboarding orchestration strategy documented in `/docs/05-platform-strategy.md`.
+- Conversational onboarding, AI-guided onboarding, progressive onboarding, state-based onboarding, and orchestration Decision Gates reviewed.
+- DG-005 through DG-009 moved to `Proposed` with recommended direction.
+- No product feature code was changed.
+
+P8-T04 recommended architecture direction:
+
+- Keep the current guided 13-step flow as the canonical baseline.
+- Add state-based onboarding as a planning layer before conversational or AI-guided implementation.
+- Start conversational onboarding as assistance around the guided flow, not as a replacement.
+- Keep AI advisory, reviewable, and blocked from autonomous legal/tax advice or submission actions.
+- Defer central workflow/orchestration code until progressive onboarding, customer resume, dashboard, or AI orchestration requires it.
+
+Next non-code task:
+
+- Task ID: `P8-T05`.
+- Title: Resolve launch-blocking operational Decision Gates.
+- Scope:
+  - Decide document retention policy.
+  - Decide AbreUSA sender domain migration timing.
+  - Confirm production deployment environment, Vercel env vars, domain, and launch access model.
+  - Keep product feature code out of scope.
+- Acceptance criteria:
+  - DG-001, DG-002, and DG-010 are resolved, deferred with reason, or explicitly marked as blockers.
+  - Decisions log is updated for confirmed decisions.
+  - Build status and progress page are updated.
 
 Potential additions (post-P8-T02):
 

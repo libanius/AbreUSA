@@ -182,3 +182,47 @@ Format shown in prototype:
 
 Production protocol format should be deterministic and collision-resistant.
 
+## Onboarding State
+
+This model is a planning layer from P8-T04. It is not implemented as a database schema yet.
+
+Candidate state values:
+
+- service_discovery.
+- applicant_identity.
+- entity_profile.
+- ownership_structure.
+- principal_address.
+- registered_agent_selection.
+- tax_setup.
+- document_collection.
+- document_review.
+- customer_review.
+- form_preview.
+- customer_approval.
+- order_received.
+- internal_review.
+- missing_information.
+- agency_submission.
+- completed.
+- blocked.
+
+Potential future fields:
+
+- onboardingState.
+- currentStepId.
+- completedStates.
+- lastCustomerActionAt.
+- resumeTokenHash.
+- resumeExpiresAt.
+- customerCorrectionRequestedAt.
+- customerCorrectionReason.
+- aiAssistanceUsed.
+- aiSummary.
+
+Planning constraints:
+
+- Onboarding state is not the same as order status, but the two must map cleanly.
+- AI summaries or suggestions must not replace customer-reviewed structured data.
+- Resume tokens or customer accounts require a separate security decision before implementation.
+- Sensitive document data must remain governed by document retention and access-control decisions.

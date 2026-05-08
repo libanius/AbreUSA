@@ -5,42 +5,39 @@
 Phase 8: Post-MVP Expansion and strategic evolution.
 
 Phases 1–7 are complete. P8-T01 (Resend email) and P8-T02 (admin portal) are complete.
-P8-T03 (strategic evolution system synchronization) is complete.
+P8-T03 (strategic evolution system synchronization) and P8-T04 (onboarding architecture discovery) are complete.
 
 ## Last Completed Task
-
-Task ID: `P8-T03`
-
-Title: Strategic evolution system synchronization.
-
-Result:
-
-- `AGENTS.md` updated with Strategic Evolution Rules.
-- `/docs/START-HERE.md` created as the operating entry point.
-- `/docs/COMMANDS.md` updated with strategic evolution analysis, App Spine synchronization, and Decision Gate review prompts.
-- `/docs/10-decision-gates.md` created.
-- Roadmap updated with P8-T03 and a strategic onboarding evolution track.
-- Decisions log updated with the strategic evolution system and Decision Gates decisions.
-- Build status and progress page updated.
-- No product feature code was changed.
-
-## Current Task
-
-None. Awaiting confirmation for the next non-code task.
-
-## Next Task
 
 Task ID: `P8-T04`
 
 Title: Onboarding architecture discovery and Decision Gate review.
 
+Result:
+
+- Current guided 13-step intake mapped to candidate onboarding states.
+- `/docs/04-user-flows.md` updated with state-based onboarding, conversational onboarding, AI-guided onboarding, and progressive onboarding options.
+- `/docs/05-platform-strategy.md` updated with onboarding orchestration strategy.
+- `/docs/06-data-model.md` updated with candidate onboarding state values and future planning fields.
+- `/docs/10-decision-gates.md` reviewed; DG-005 through DG-009 moved to `Proposed`.
+- Decisions log updated with confirmed architecture direction: guided flow remains canonical; conversational and AI onboarding start as assistive layers.
+- No product feature code was changed.
+
+## Current Task
+
+None. Awaiting confirmation for the next task.
+
+## Next Task
+
+Task ID: `P8-T05`
+
+Title: Resolve launch-blocking operational Decision Gates.
+
 Scope:
 
-- Map the current 13-step guided intake to candidate onboarding states.
-- Identify where conversational onboarding could supplement or replace current guided steps.
-- Identify where AI-guided onboarding may be safe, useful, or risky.
-- Identify progressive onboarding and resume assumptions.
-- Review and update Decision Gates.
+- Decide document retention policy.
+- Decide AbreUSA sender domain migration timing.
+- Confirm production deployment environment, Vercel env vars, domain, and launch access model.
 - Do not write product feature code.
 
 ## Completed Tasks
@@ -67,6 +64,7 @@ Scope:
   - P8-T01: Resend email integration live. Confirmation email delivered to applicant after order approval. Verified with AUS-2026-0010.
   - P8-T02: Admin review portal live and verified.
   - P8-T03: Strategic evolution system synchronization complete.
+  - P8-T04: Onboarding architecture discovery and Decision Gate review complete.
 
 ## What Is Implemented
 
@@ -100,6 +98,12 @@ Scope:
   - `/docs/COMMANDS.md` includes strategic evolution, App Spine sync, and Decision Gate review prompts.
   - `/docs/10-decision-gates.md` tracks unresolved strategic, UX, architecture, onboarding, compliance, scalability, and AI-orchestration decisions.
 - Roadmap now supports onboarding orchestration evolution, conversational onboarding architecture, AI-guided onboarding layer, progressive onboarding systems, and state-based onboarding.
+- P8-T04 onboarding architecture discovery:
+  - Current 13-step guided flow remains the canonical baseline.
+  - Candidate onboarding states are documented.
+  - Conversational onboarding is proposed as an assistive layer first.
+  - AI-guided onboarding is proposed as advisory, customer-reviewable, and blocked from autonomous legal/tax advice or submission.
+  - Progressive onboarding and central orchestration remain unimplemented until Decision Gates are resolved.
 - Key files:
   - `lib/supabase-server.ts` — service-role Supabase client.
   - `lib/supabase-ssr.ts` — SSR auth client (route handlers, server components).
@@ -125,18 +129,18 @@ Scope:
 - Document retention period policy (Decision Needed).
 - Multi-state LLC formation (Post-MVP).
 - Operating Agreement generation (Post-MVP).
-- Conversational onboarding UI or chat experience.
-- AI-guided onboarding layer.
+- Conversational onboarding UI or chat experience; only assistive strategy is proposed.
+- AI-guided onboarding layer; only guardrails and scope options are proposed.
 - Progressive onboarding/draft resume system.
-- State-based onboarding orchestration layer.
+- State-based onboarding orchestration layer; candidate states are documented but not implemented.
 - Central state machine or workflow engine for onboarding.
 - Decision Gates are not resolved decisions; they are tracking controls for unresolved questions.
 
 ## Exact Next Step To Resume
 
-Execute `P8-T04: Onboarding architecture discovery and Decision Gate review`.
+Execute `P8-T05: Resolve launch-blocking operational Decision Gates`.
 
-Deliverable: map the existing 13-step guided flow to a candidate onboarding state model, document conversational and AI-guided onboarding options, update Decision Gates, and recommend sequencing. No product feature code.
+Deliverable: decide or explicitly defer document retention, AbreUSA sender domain migration, and production deployment environment requirements. No product feature code.
 
 ## Blockers And Risks
 
@@ -144,7 +148,7 @@ Deliverable: map the existing 13-step guided flow to a candidate onboarding stat
 - AbreUSA domain email migration is a Decision Needed item before long-term production use.
 - Document retention period is unresolved (Decision Needed).
 - EIN-only and Registered Agent-only flows remain deferred (Post-MVP).
-- New onboarding concepts can invalidate current UX assumptions; do not implement conversational, AI-guided, progressive, or state-based onboarding until Decision Gates are reviewed.
+- New onboarding concepts can invalidate current UX assumptions; DG-005 through DG-009 now have proposed direction but still need confirmation before implementation.
 - AI-guided onboarding introduces privacy, PII, passport-data, legal/tax guidance, and compliance risks.
 - Onboarding orchestration may require architecture changes before UI changes.
 - Admin portal has no rate limiting or brute-force protection on the login page (acceptable for MVP internal use).

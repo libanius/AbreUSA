@@ -105,6 +105,37 @@ Decision Needed:
 
 - Whether applicant email and phone become required before approval.
 
+## Onboarding Orchestration Strategy
+
+Status: P8-T04 architecture discovery complete. No orchestration code is implemented.
+
+Current baseline:
+
+- The customer intake remains a guided step flow.
+- Local client state drives in-progress intake before approval.
+- Approved orders persist through the server-side `/api/orders` boundary.
+- Internal review happens through the admin portal.
+
+Candidate future architecture:
+
+- Keep the guided flow as the canonical user-facing baseline until a Decision Gate changes it.
+- Add a state-based onboarding model above the step flow before adding conversational or AI-guided behavior.
+- Treat conversational onboarding as an assistance layer first, not as the system of record.
+- Treat AI-guided onboarding as advisory and reviewable unless a later Decision Gate explicitly expands scope.
+- Use persisted onboarding states only after progressive onboarding, customer resume, or customer dashboard requirements are confirmed.
+
+Recommended sequencing:
+
+1. Resolve the onboarding state model.
+2. Resolve progressive onboarding and resume assumptions.
+3. Decide whether conversational onboarding supplements or replaces parts of the guided flow.
+4. Define AI guardrails for PII, passport data, legal/tax guidance, and service recommendations.
+5. Only then implement orchestration, conversational UI, AI guidance, or draft persistence.
+
+Architecture constraint:
+
+- Do not introduce a central workflow engine, AI orchestration layer, or customer draft persistence until the related Decision Gates are resolved.
+
 ## Supabase Strategy
 
 Default backend platform from `AGENTS.md`: Supabase.

@@ -504,3 +504,23 @@ Create `/docs/10-decision-gates.md` to track unresolved strategic, UX, architect
 Reason:
 
 The existing decisions log records confirmed decisions, but the project also needs an explicit place for unresolved gates that should block or sequence implementation.
+
+### 2026-05-08: Guided Flow Remains Canonical Onboarding Baseline
+
+Decision:
+
+Keep the current guided 13-step intake as the canonical onboarding baseline while future conversational, AI-guided, progressive, and state-based onboarding concepts are evaluated.
+
+Reason:
+
+The existing guided flow already supports the working Complete Package and Florida LLC paths with customer review, generated previews, approval, persistence, email, and admin review. Replacing it with conversational or AI-led onboarding before resolving Decision Gates would risk invalidating compliance-sensitive review and data-capture assumptions.
+
+### 2026-05-08: Conversational And AI Onboarding Must Start As Assistive Layers
+
+Decision:
+
+Treat future conversational onboarding and AI-guided onboarding as assistive layers first, not as the source of truth or autonomous submission authority.
+
+Reason:
+
+The product handles sensitive identity documents, business formation data, tax-related inputs, and customer approval. AI and conversation can help explain, check, summarize, and suggest, but structured customer-reviewed data and explicit approval must remain authoritative until a later confirmed decision expands scope.
