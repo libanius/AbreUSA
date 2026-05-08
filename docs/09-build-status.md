@@ -5,39 +5,38 @@
 Phase 8: Post-MVP Expansion and strategic evolution.
 
 Phases 1–7 are complete. P8-T01 (Resend email) and P8-T02 (admin portal) are complete.
-P8-T03 (strategic evolution system synchronization) and P8-T04 (onboarding architecture discovery) are complete.
+P8-T03 (strategic evolution system synchronization), P8-T04 (onboarding architecture discovery), and P8-T05 (launch gate review) are complete.
 
 ## Last Completed Task
-
-Task ID: `P8-T04`
-
-Title: Onboarding architecture discovery and Decision Gate review.
-
-Result:
-
-- Current guided 13-step intake mapped to candidate onboarding states.
-- `/docs/04-user-flows.md` updated with state-based onboarding, conversational onboarding, AI-guided onboarding, and progressive onboarding options.
-- `/docs/05-platform-strategy.md` updated with onboarding orchestration strategy.
-- `/docs/06-data-model.md` updated with candidate onboarding state values and future planning fields.
-- `/docs/10-decision-gates.md` reviewed; DG-005 through DG-009 moved to `Proposed`.
-- Decisions log updated with confirmed architecture direction: guided flow remains canonical; conversational and AI onboarding start as assistive layers.
-- No product feature code was changed.
-
-## Current Task
-
-None. Awaiting confirmation for the next task.
-
-## Next Task
 
 Task ID: `P8-T05`
 
 Title: Resolve launch-blocking operational Decision Gates.
 
+Result:
+
+- DG-001 Document Retention Policy marked `Blocked`.
+- DG-002 AbreUSA Sender Domain marked `Proposed`.
+- DG-010 Production Deployment Environment marked `Blocked`.
+- `.env.example` sender comment aligned with current verified sender: `noreply@notifications.brightscalegroup.com`.
+- Decisions log updated: public production launch requires owner confirmation for retention, sender-domain strategy, and deployment environment.
+- No product feature code was changed.
+
+## Current Task
+
+None. Awaiting owner confirmation for launch gates.
+
+## Next Task
+
+Task ID: `P8-T06`
+
+Title: Owner confirmation for launch gates.
+
 Scope:
 
-- Decide document retention policy.
-- Decide AbreUSA sender domain migration timing.
-- Confirm production deployment environment, Vercel env vars, domain, and launch access model.
+- Confirm document retention window and deletion trigger.
+- Confirm whether controlled production may temporarily use `noreply@notifications.brightscalegroup.com`.
+- Confirm production domain, Vercel project, required environment variables, and launch access model.
 - Do not write product feature code.
 
 ## Completed Tasks
@@ -65,6 +64,7 @@ Scope:
   - P8-T02: Admin review portal live and verified.
   - P8-T03: Strategic evolution system synchronization complete.
   - P8-T04: Onboarding architecture discovery and Decision Gate review complete.
+  - P8-T05: Launch-blocking operational Decision Gates reviewed.
 
 ## What Is Implemented
 
@@ -104,6 +104,10 @@ Scope:
   - Conversational onboarding is proposed as an assistive layer first.
   - AI-guided onboarding is proposed as advisory, customer-reviewable, and blocked from autonomous legal/tax advice or submission.
   - Progressive onboarding and central orchestration remain unimplemented until Decision Gates are resolved.
+- P8-T05 launch gate review:
+  - Document retention is blocked pending owner/legal/operations confirmation.
+  - Current verified Brightscale sender is acceptable for development and controlled testing, but AbreUSA-branded sender remains proposed before broad public launch.
+  - Production deployment is blocked until Vercel project/domain/env vars/launch access are confirmed.
 - Key files:
   - `lib/supabase-server.ts` — service-role Supabase client.
   - `lib/supabase-ssr.ts` — SSR auth client (route handlers, server components).
@@ -138,15 +142,15 @@ Scope:
 
 ## Exact Next Step To Resume
 
-Execute `P8-T05: Resolve launch-blocking operational Decision Gates`.
+Execute `P8-T06: Owner confirmation for launch gates`.
 
-Deliverable: decide or explicitly defer document retention, AbreUSA sender domain migration, and production deployment environment requirements. No product feature code.
+Deliverable: confirm document retention, sender-domain timing, production domain/Vercel/env vars, and launch access model. No product feature code.
 
 ## Blockers And Risks
 
 - `RESEND_API_KEY` and `SUPABASE_SERVICE_ROLE_KEY` must be set in Vercel environment variables before production deployment.
 - AbreUSA domain email migration is a Decision Needed item before long-term production use.
-- Document retention period is unresolved (Decision Needed).
+- Document retention period is blocked pending owner/legal/operations confirmation.
 - EIN-only and Registered Agent-only flows remain deferred (Post-MVP).
 - New onboarding concepts can invalidate current UX assumptions; DG-005 through DG-009 now have proposed direction but still need confirmation before implementation.
 - AI-guided onboarding introduces privacy, PII, passport-data, legal/tax guidance, and compliance risks.

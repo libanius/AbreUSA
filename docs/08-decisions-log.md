@@ -524,3 +524,23 @@ Treat future conversational onboarding and AI-guided onboarding as assistive lay
 Reason:
 
 The product handles sensitive identity documents, business formation data, tax-related inputs, and customer approval. AI and conversation can help explain, check, summarize, and suggest, but structured customer-reviewed data and explicit approval must remain authoritative until a later confirmed decision expands scope.
+
+### 2026-05-08: Launch Gates Require Owner Confirmation Before Public Production
+
+Decision:
+
+Do not proceed to broad public production launch until document retention, sender-domain strategy, and production deployment environment are confirmed.
+
+Reason:
+
+The app stores sensitive passport and address proof files, sends transactional customer email, and depends on server-only Supabase credentials. These are operational launch decisions, not product feature code decisions.
+
+### 2026-05-08: Verified Brightscale Sender Remains Temporary
+
+Decision:
+
+Keep `noreply@notifications.brightscalegroup.com` as the temporary verified Resend sender for development, controlled testing, and internal validation.
+
+Reason:
+
+The sender is already verified and working. AbreUSA-branded email remains the desired long-term production direction, but migration requires domain/sender confirmation.

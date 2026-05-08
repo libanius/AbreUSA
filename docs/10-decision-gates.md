@@ -28,7 +28,7 @@ They prevent implementation from starting before the App Spine, roadmap, and ope
 
 Category: Compliance, privacy, operations.
 
-Status: Open.
+Status: Blocked.
 
 Decision needed:
 
@@ -40,11 +40,24 @@ Blocks:
 - Production compliance posture.
 - Long-term document storage policy.
 
+P8-T05 gate review:
+
+- Do not invent a retention period in implementation.
+- A production retention rule needs owner/legal/operations confirmation because uploaded documents include passport and U.S. address proof files.
+- Controlled testing can continue with private storage, RLS lockdown, and admin-only signed URL access, but production launch should not proceed until this gate is resolved or formally accepted as a business risk.
+
+Required confirmation:
+
+- Retention window.
+- Deletion trigger.
+- Who is responsible for deletion.
+- Whether retained files are needed for audit, filing support, refund/dispute handling, or compliance.
+
 ### DG-002: AbreUSA Sender Domain
 
 Category: Operations, brand, email.
 
-Status: Open.
+Status: Proposed.
 
 Decision needed:
 
@@ -53,6 +66,18 @@ Decision needed:
 Blocks:
 
 - Long-term production email branding.
+
+P8-T05 proposed direction:
+
+- Keep `noreply@notifications.brightscalegroup.com` for development, controlled testing, and internal validation because it is already verified in Resend.
+- Migrate to an AbreUSA-branded sender before broad public launch or customer-facing production marketing.
+- This is not a technical blocker for controlled launch, but it is a brand/operations blocker for long-term production.
+
+Required confirmation:
+
+- Final sender domain.
+- Sender address, such as `noreply@abreusa.com`.
+- Whether the first controlled production release may use the existing verified sender temporarily.
 
 ### DG-003: EIN-Only Flow Requirements
 
@@ -200,7 +225,7 @@ P8-T04 proposed direction:
 
 Category: Deployment, security, operations.
 
-Status: Open.
+Status: Blocked.
 
 Decision needed:
 
@@ -210,3 +235,18 @@ Decision needed:
 Blocks:
 
 - Production deployment.
+
+P8-T05 gate review:
+
+- Production deployment is blocked until the deployment target, domain, launch access model, and Vercel environment variables are confirmed.
+- Required env vars are documented in `.env.example`.
+- `SUPABASE_SERVICE_ROLE_KEY` must be set only server-side and never exposed with a `NEXT_PUBLIC_` prefix.
+
+Required confirmation:
+
+- Vercel project and production domain.
+- `NEXT_PUBLIC_SUPABASE_URL`.
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
+- `SUPABASE_SERVICE_ROLE_KEY`.
+- `RESEND_API_KEY`.
+- Launch access model: internal-only, password/protected preview, controlled users, or public production.

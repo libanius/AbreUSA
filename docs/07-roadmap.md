@@ -1159,6 +1159,7 @@ Current Phase 8 status:
 - P8-T02 complete.
 - P8-T03 complete.
 - P8-T04 complete.
+- P8-T05 complete.
 
 ### P8-T01: Applicant Email Confirmation — Integration Structure
 
@@ -1353,6 +1354,35 @@ Next non-code task:
 - Acceptance criteria:
   - DG-001, DG-002, and DG-010 are resolved, deferred with reason, or explicitly marked as blockers.
   - Decisions log is updated for confirmed decisions.
+  - Build status and progress page are updated.
+
+P8-T05 status:
+
+- Status: Complete (2026-05-08).
+- DG-001 Document Retention Policy marked `Blocked`.
+- DG-002 AbreUSA Sender Domain marked `Proposed`.
+- DG-010 Production Deployment Environment marked `Blocked`.
+- `.env.example` sender comment aligned with the current verified Resend sender.
+- No product feature code was changed.
+
+P8-T05 gate results:
+
+- Document retention remains a production blocker because the app stores passport and U.S. address proof files. The project should not invent a retention period without owner/legal/operations confirmation.
+- Current verified Resend sender can support development and controlled testing, but AbreUSA-branded sender migration should happen before broad public launch.
+- Production deployment is blocked until Vercel project/domain, launch access model, and production environment variables are confirmed.
+
+Next non-code task:
+
+- Task ID: `P8-T06`.
+- Title: Owner confirmation for launch gates.
+- Scope:
+  - Confirm document retention window and deletion trigger.
+  - Confirm whether controlled production may temporarily use `noreply@notifications.brightscalegroup.com`.
+  - Confirm production domain, Vercel project, required environment variables, and launch access model.
+  - Do not write product feature code.
+- Acceptance criteria:
+  - DG-001, DG-002, and DG-010 can move from `Blocked` or `Proposed` to `Confirmed` or intentionally `Deferred`.
+  - Decisions log records the confirmed launch decisions.
   - Build status and progress page are updated.
 
 Potential additions (post-P8-T02):
