@@ -1153,14 +1153,103 @@ P7-T05 completed 2026-05-07:
 
 ## Phase 8: Post-MVP Expansion
 
-Potential additions:
+Current Phase 8 status:
+
+- P8-T01 complete.
+- P8-T02 complete.
+
+### P8-T01: Applicant Email Confirmation — Integration Structure
+
+Task ID: `P8-T01`.
+
+Title: Prepare Resend email integration structure for applicant confirmation.
+
+Status: Complete (2026-05-07). Email delivery verified live with AUS-2026-0010.
+
+Scope:
+
+- Install the `resend` npm package.
+- Define `RESEND_API_KEY` environment variable (server-side only, never prefixed with `NEXT_PUBLIC_`).
+- Create `lib/resend.ts`: Resend client, returns `null` if `RESEND_API_KEY` is not set.
+- Create `lib/send-confirmation-email.ts`: fail-safe function that sends an order confirmation to the applicant email. Must catch all errors and never throw. Must skip silently if the Resend client is not configured.
+- Update `/api/orders/route.ts`: call `sendConfirmationEmail` after successful order persistence, fire-and-forget (do not await in a way that blocks the response, and do not surface email errors to the caller).
+- Temporary sender address: `contact@brightscalegroup.com`.
+- Email content: protocol number, service name, next-steps message (AbreUSA will follow up).
+- Do not require live `RESEND_API_KEY` to pass build or run the app.
+- Document the environment variable in a `.env.example` file (or update the existing example file).
+
+Out of scope:
+
+- Live email delivery (requires Resend account and verified sender domain).
+- Email templates with HTML styling.
+- Email tracking, open rates, or unsubscribe links.
+- Retry logic.
+- Customer-facing email preferences.
+- AbreUSA domain sender migration (Decision Needed — see decisions log).
+
+Acceptance criteria:
+
+- `npm run lint` passes.
+- `npm run build` passes.
+- App starts and complete order flow works without `RESEND_API_KEY` set.
+- `lib/resend.ts` and `lib/send-confirmation-email.ts` exist with correct fail-safe structure.
+- `/api/orders` calls `sendConfirmationEmail` after persistence and does not fail if email is skipped.
+- Environment variable is documented.
+- `/docs/07-roadmap.md`, `/docs/09-build-status.md`, and `/progress/index.html` are updated.
+
+### P8-T02: Admin Review Portal
+
+Task ID: `P8-T02`.
+
+Title: Admin review portal with Supabase Auth, order list, order detail, document signed URLs, and status updates.
+
+Status: Complete (2026-05-07).
+
+Scope:
+
+- Add Supabase Auth email/password login at `/admin/login`.
+- Protect all `/admin` routes: redirect to `/admin/login` if no active session.
+- `/admin` redirects to `/admin/orders`.
+- `/admin/orders`: table of all orders — protocol number, service type, applicant name, applicant email, status, submitted date. Newest first.
+- `/admin/orders/[id]`: full order detail — LLC info, members, registered agent, EIN details, applicant contact, document links.
+- Document access via Supabase signed URLs (60-minute expiry). Each document: open in new tab, download button.
+- Status dropdown on order detail. Admin updates status via server-side API route using SUPABASE_SERVICE_ROLE_KEY.
+- All data reads/writes through server-side API routes using SUPABASE_SERVICE_ROLE_KEY. Supabase Auth session used only to verify identity.
+- Admin user created manually in Supabase Auth dashboard.
+- Styling consistent with existing app (Tailwind, shadcn).
+
+Valid status values: draft, awaiting_documents, ready_for_review, customer_reviewing, approved, internal_review, submitted, completed, blocked.
+
+Out of scope:
+
+- Role-based access control.
+- Admin user management UI.
+- Pagination (low volume MVP).
+- Email actions from admin.
+- Audit log of status changes.
+
+Acceptance criteria:
+
+- Admin user created in Supabase Auth dashboard.
+- `/admin/login` authenticates via Supabase Auth.
+- Authenticated session redirects to `/admin/orders`.
+- Unauthenticated `/admin` access redirects to `/admin/login`.
+- `/admin/orders` lists all orders, newest first.
+- `/admin/orders/[id]` shows full order data and document links.
+- Signed URLs open documents in new browser tab.
+- Download button downloads the document file.
+- Status dropdown updates order status in database.
+- Logout clears session, redirects to `/admin/login`.
+- `npm run lint` passes.
+- `npm run build` passes.
+- Three docs updated.
+
+Potential additions (post-P8-T02):
 
 - Payment processing.
 - Customer dashboard.
 - Admin review portal.
 - Real AI OCR/document extraction.
-- Email/SMS updates.
 - Multi-state LLC formation.
 - Operating Agreement generation.
 - Bank account preparation checklist.
-- Bilingual Portuguese/English UI.

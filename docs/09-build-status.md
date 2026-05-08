@@ -2,9 +2,9 @@
 
 ## Current Phase
 
-Phase 7: Production Hardening.
+Phase 8: Post-MVP Expansion.
 
-Phase 6 is complete. P7-T05 is complete. Phase 7 production hardening is complete.
+Phase 7 is complete. P8-T01 is defined and ready to execute.
 
 ## Last Completed Task
 
@@ -26,11 +26,23 @@ Result:
 
 ## Current Task
 
-None. P7-T05 is complete. All Phase 7 tasks are complete.
+P8-T01 — Resend email live. Confirmation delivered with AUS-2026-0010.
 
 ## Next Task
 
-Phase 7 is complete. Awaiting Phase 8 planning or user direction.
+Task ID: `P8-T01`
+
+Title: Prepare Resend email integration structure for applicant confirmation.
+
+Status: Defined. Ready to execute.
+
+Scope:
+
+- `/admin/login` Supabase Auth login verified.
+- `/admin/orders` order list working.
+- `/admin/orders/[id]` full detail with documents and status dropdown verified.
+- Signed URLs working (open + download).
+- Status dropdown updates persisted via PATCH API route.
 
 Scope:
 
@@ -67,6 +79,8 @@ Acceptance criteria:
 - Phase 7 production credential and RLS/storage lockdown plan: P7-T03 closed.
 - Phase 7 service-role enforcement and lockdown SQL artifact: P7-T04 closed.
 - Phase 7 Supabase RLS/storage lockdown applied and verified: P7-T05 closed.
+- Phase 8 Resend email integration live and verified end-to-end: P8-T01 closed.
+- Phase 8 admin review portal live and verified: P8-T02 closed.
 
 ## What Is Implemented
 
@@ -90,11 +104,17 @@ Acceptance criteria:
 - Lockdown SQL artifact: `supabase/rls-storage-lockdown.sql`.
 - Service-role browser verification passed with `AUS-2026-0008`.
 - `lib/persist-order.ts`, `lib/persist-order-server.ts`, `lib/supabase-server.ts`, `supabase/schema.sql`.
+- Resend email integration structure: `lib/resend.ts`, `lib/send-confirmation-email.ts`.
+- `/api/orders` calls `sendConfirmationEmail` fire-and-forget after persistence.
+- `.env.example` documents all required environment variables.
+- Email is skipped silently when `RESEND_API_KEY` is not set.
 - `/progress/index.html` stakeholder dashboard.
 
 ## What Is NOT Implemented
 
-- Automated email notification implementation.
+- AbreUSA domain email migration (Decision Needed: move sender from notifications.brightscalegroup.com).
+- Admin user management UI (post-MVP).
+- Status change audit log (post-MVP).
 - EIN-only and Registered Agent-only flows (deferred, Post-MVP).
 - RLS policies on all Supabase tables and storage (required before production).
 - Document retention period and reviewer access model (Phase 7 blockers).
@@ -104,7 +124,18 @@ Acceptance criteria:
 
 ## Exact Next Step To Resume
 
-Phase 7 is complete. All production hardening tasks are done. Awaiting Phase 8 planning or user direction.
+Execute one task only:
+
+`P8-T02: Admin review portal`
+
+Deliverable:
+
+- Supabase Auth login at `/admin/login`.
+- Protected `/admin` routes with session check.
+- `/admin/orders` order list (newest first).
+- `/admin/orders/[id]` full order detail.
+- Signed URLs for document access (open in tab + download).
+- Status dropdown with server-side update.
 
 ## Blockers And Risks
 

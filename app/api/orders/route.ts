@@ -1,5 +1,6 @@
 import { persistOrderServer } from "@/lib/persist-order-server";
 import type { PersistOrderPayload } from "@/lib/order-persistence-types";
+import { sendConfirmationEmail } from "@/lib/send-confirmation-email";
 
 export const runtime = "nodejs";
 
@@ -29,6 +30,13 @@ export async function POST(request: Request) {
     const result = await persistOrderServer(payload, {
       passport: isFile(passport) ? passport : null,
       addressProof: isFile(addressProof) ? addressProof : null,
+    });
+
+    void sendConfirmationEmail({
+      to: payload.applicant.email,
+      applicantName: payload.applicant.name,
+      protocolNumber: result.protocolNumber,
+      serviceType: payload.order.serviceType,
     });
 
     return Response.json(result);

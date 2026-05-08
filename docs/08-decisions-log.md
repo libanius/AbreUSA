@@ -408,3 +408,79 @@ Decision Needed:
 
 - Retention period for uploaded passport and address proof files.
 - Whether documents are deleted after submission or completion.
+
+### 2026-05-07: Email Provider Selected — Resend
+
+Decision:
+
+Use Resend as the transactional email provider for applicant confirmation emails.
+
+Reason:
+
+Simplest integration path for Next.js. Free tier available. No SMTP configuration required. Official SDK for Node.js.
+
+Constraints:
+
+- `RESEND_API_KEY` is a server-side secret. Must never be exposed to the client (no `NEXT_PUBLIC_` prefix).
+- Email delivery is best-effort for MVP. Email failure must not block order persistence.
+- Integration structure must work (build, run, order flow) without `RESEND_API_KEY` configured.
+
+### 2026-05-07: Temporary Email Sender — contact@brightscalegroup.com
+
+Decision:
+
+Use `noreply@notifications.brightscalegroup.com` as the sender address. Domain `notifications.brightscalegroup.com` verified in Resend (sending enabled, 2026-05-07).
+
+Reason:
+
+Domain verified and live sending confirmed on 2026-05-07.
+
+Decision Needed:
+
+Migrate sender to an AbreUSA domain email (e.g. `noreply@abreusa.com`) once the domain is verified in Resend. Update `lib/send-confirmation-email.ts` at that time.
+
+### 2026-05-07: Email Failure Must Not Block Order Persistence
+
+Decision:
+
+Applicant confirmation email is fire-and-forget. Any Resend API error, missing key, or network failure must be caught silently. The order persistence result is returned to the client regardless of email outcome.
+
+Reason:
+
+Order data integrity is the primary MVP concern. Email is a convenience notification, not a transactional requirement.
+
+### 2026-05-07: Admin Portal Auth — Supabase Auth
+
+Decision:
+
+Use Supabase Auth email/password login to protect the admin portal.
+
+Reason:
+
+Already configured in the project. Provides a proper session model with logout support.
+
+Constraints:
+
+- Admin user created manually in Supabase Auth dashboard.
+- All admin data reads/writes use SUPABASE_SERVICE_ROLE_KEY server-side. Auth session verifies identity only.
+- Single admin role for MVP.
+
+### 2026-05-07: Admin Document Access — Supabase Signed URLs
+
+Decision:
+
+Generate 60-minute Supabase signed URLs server-side for admin document access. Open in new tab + download option.
+
+Reason:
+
+Storage bucket is private. Signed URLs are the correct Supabase mechanism for time-limited private file access.
+
+### 2026-05-07: Admin Order Status Updates
+
+Decision:
+
+Admin can update order status via a dropdown on the order detail page. Persisted via server-side API route.
+
+Valid values: draft, awaiting_documents, ready_for_review, customer_reviewing, approved, internal_review, submitted, completed, blocked.
+
+Decision Needed later: audit log of status changes, automated status-triggered emails.
