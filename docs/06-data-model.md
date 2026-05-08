@@ -146,6 +146,14 @@ Entity type values:
 - extractionStatus.
 - extractedFields.
 - reviewedByCustomer.
+- retentionCategory.
+- retentionEligibleAt.
+- retentionStatus.
+- deletionStatus.
+- deletedAt.
+- deletedBy.
+- deletionReason.
+- deletionAuditId.
 
 Document type values:
 
@@ -160,6 +168,29 @@ Extraction status values:
 - failed.
 - manually_corrected.
 
+Retention category values:
+
+- sensitive_upload.
+- generated_operational_file.
+- customer_metadata.
+
+Retention status values:
+
+- active.
+- eligible_for_deletion.
+- deletion_pending.
+- deleted.
+- retained_by_exception.
+
+Deletion status values:
+
+- not_applicable.
+- pending.
+- success.
+- failed.
+- skipped.
+- manually_deferred.
+
 ## Generated Forms
 
 - formId.
@@ -168,6 +199,9 @@ Extraction status values:
 - generatedAt.
 - generatedData.
 - customerApproved.
+- retentionCategory.
+- retentionEligibleAt.
+- retentionStatus.
 
 Form type values:
 
@@ -226,3 +260,92 @@ Planning constraints:
 - AI summaries or suggestions must not replace customer-reviewed structured data.
 - Resume tokens or customer accounts require a separate security decision before implementation.
 - Sensitive document data must remain governed by document retention and access-control decisions.
+
+## Audit Event
+
+This model is a P8-T08 planning layer. It is not implemented as a database schema yet.
+
+Purpose:
+
+- Preserve operational history for sensitive actions without retaining sensitive file contents indefinitely.
+
+Candidate fields:
+
+- auditEventId.
+- orderId.
+- documentId.
+- actorId.
+- actorEmail.
+- actorType.
+- eventType.
+- eventSource.
+- result.
+- reason.
+- metadata.
+- errorMessage.
+- createdAt.
+
+Actor type values:
+
+- admin.
+- system.
+- automation.
+
+Event source values:
+
+- admin_portal.
+- api_route.
+- vercel_cron.
+- manual_sop.
+
+Event type values:
+
+- document_signed_url_created.
+- document_open_intent.
+- document_download_intent.
+- document_marked_eligible_for_deletion.
+- document_deletion_attempted.
+- document_deleted.
+- document_deletion_failed.
+- order_status_updated.
+- admin_login.
+- admin_logout.
+
+Result values:
+
+- success.
+- failed.
+- skipped.
+- manually_deferred.
+
+Planning constraints:
+
+- Audit events should not store raw file contents.
+- Audit metadata may include storage bucket, path hash, document type, status transition, and non-sensitive operational context.
+- First implementation should prioritize retention/deletion events and order status update events.
+
+## Retention Implementation Planning
+
+This model is a P8-T08 planning layer. It is not implemented yet.
+
+Recommended first fields for existing `documents` records:
+
+- `retention_category`: default `sensitive_upload`.
+- `retention_eligible_at`: calculated from order completion or cancellation date plus 90 days.
+- `retention_status`: starts as `active`.
+- `deletion_status`: starts as `not_applicable` or `pending` when eligible.
+- `deleted_at`.
+- `deleted_by`.
+- `deletion_reason`.
+- `deletion_audit_id`.
+
+Recommended first audit table:
+
+- `audit_events`.
+
+First implementation should not physically delete files until:
+
+- Retention metadata exists.
+- Admin can see retention status.
+- Deletion audit events can be recorded.
+- Manual SOP or automation trigger is confirmed.

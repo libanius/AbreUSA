@@ -5,44 +5,44 @@
 Phase 8: Post-MVP Expansion and strategic evolution.
 
 Phases 1–7 are complete. P8-T01 (Resend email) and P8-T02 (admin portal) are complete.
-P8-T03 through P8-T07 are complete. P8-T07 defined retention automation and deletion workflow architecture.
+P8-T03 through P8-T08 are complete. P8-T08 defined retention metadata and audit-log implementation planning.
 
 ## Last Completed Task
-
-Task ID: `P8-T07`
-
-Title: Retention automation and deletion workflow architecture.
-
-Result:
-
-- DG-011 Document Retention Automation moved to `Proposed`.
-- DG-012 Deletion Workflow And Responsibility moved to `Proposed`.
-- DG-013 Reviewer Access Scopes moved to `Proposed`.
-- DG-014 Audit Logging Scope moved to `Proposed`.
-- Two-step retention workflow documented: mark sensitive uploads as `eligible_for_deletion`, then delete with audit record.
-- Manual admin SOP accepted for controlled launch if automation is not ready.
-- Vercel Cron identified as preferred future automation path when deployed on Vercel.
-- Single authenticated admin role remains sufficient for MVP controlled launch.
-- `/docs/11-product-memory.md`, `/docs/05-platform-strategy.md`, roadmap, decisions log, Decision Gates, build status, and progress page updated.
-- No product feature code was changed.
-
-## Current Task
-
-None. Awaiting confirmation for the next planning task.
-
-## Next Task
 
 Task ID: `P8-T08`
 
 Title: Retention metadata and audit-log implementation planning.
 
+Result:
+
+- Retention metadata model documented in `/docs/06-data-model.md` and `/docs/11-product-memory.md`.
+- Audit event model documented in `/docs/06-data-model.md`.
+- DG-011 Document Retention Automation moved to `Confirmed`.
+- DG-012 Deletion Workflow And Responsibility moved to `Confirmed`.
+- DG-014 Audit Logging Scope moved to `Confirmed`.
+- First implementation slice scoped as P8-T09.
+- Physical file deletion remains out of scope until metadata and audit foundations exist.
+- No product feature code was changed.
+
+## Current Task
+
+None. Awaiting confirmation for the first implementation slice.
+
+## Next Task
+
+Task ID: `P8-T09`
+
+Title: Implement retention metadata and audit event foundation.
+
 Scope:
 
-- Define database fields/tables needed for retention eligibility and deletion audit records.
-- Define admin visibility for retention status.
-- Define whether the first implementation is manual-only or includes Vercel Cron.
-- Keep file deletion implementation out of scope until the plan is confirmed.
-- Do not write product feature code.
+- Add database migration for document retention metadata.
+- Add `audit_events` table.
+- Update server/admin data reads to include retention status.
+- Show retention status in admin order detail.
+- Record audit event for admin order status updates if feasible in this slice.
+- Do not physically delete files.
+- Do not add Vercel Cron yet.
 
 ## Completed Tasks
 
@@ -72,6 +72,7 @@ Scope:
   - P8-T05: Launch-blocking operational Decision Gates reviewed.
   - P8-T06: Initial retention and customer data lifecycle policy confirmed.
   - P8-T07: Retention automation and deletion workflow architecture complete.
+  - P8-T08: Retention metadata and audit-log implementation planning complete.
 
 ## What Is Implemented
 
@@ -129,6 +130,11 @@ Scope:
   - Manual admin SOP is acceptable for controlled launch.
   - Vercel Cron is the preferred future automation path.
   - Single authenticated admin role remains the MVP reviewer access model.
+- P8-T08 retention metadata planning:
+  - Document retention fields are planned.
+  - `audit_events` operational table is planned.
+  - Admin retention status visibility is required before physical deletion.
+  - First implementation slice is scoped with no file deletion and no Vercel Cron.
 - Key files:
   - `lib/supabase-server.ts` — service-role Supabase client.
   - `lib/supabase-ssr.ts` — SSR auth client (route handlers, server components).
@@ -167,9 +173,9 @@ Scope:
 
 ## Exact Next Step To Resume
 
-Execute `P8-T08: Retention metadata and audit-log implementation planning`.
+Execute `P8-T09: Implement retention metadata and audit event foundation`.
 
-Deliverable: define the retention metadata model, deletion audit event model, and first implementation slice. No product feature code.
+Deliverable: add retention metadata and audit event foundation, show retention status in admin order detail, and verify existing order/admin flows. No physical file deletion.
 
 ## Blockers And Risks
 

@@ -1162,6 +1162,7 @@ Current Phase 8 status:
 - P8-T05 complete.
 - P8-T06 complete.
 - P8-T07 complete.
+- P8-T08 complete.
 
 ### P8-T01: Applicant Email Confirmation — Integration Structure
 
@@ -1456,6 +1457,44 @@ Recommended first implementation slice:
   - Audit event model is documented.
   - First code implementation slice is scoped.
   - Roadmap, build status, Decision Gates, and progress page are updated.
+
+P8-T08 status:
+
+- Status: Complete (2026-05-08).
+- Retention metadata fields documented in `/docs/06-data-model.md` and `/docs/11-product-memory.md`.
+- Audit event model documented in `/docs/06-data-model.md`.
+- DG-011 Document Retention Automation moved to `Confirmed`.
+- DG-012 Deletion Workflow And Responsibility moved to `Confirmed`.
+- DG-014 Audit Logging Scope moved to `Confirmed`.
+- Physical file deletion remains out of scope until metadata and audit foundations exist.
+- No product feature code was changed.
+
+P8-T08 planned metadata:
+
+- Add retention fields to document records: `retention_category`, `retention_eligible_at`, `retention_status`, `deletion_status`, `deleted_at`, `deleted_by`, `deletion_reason`, `deletion_audit_id`.
+- Add operational `audit_events` records for retention eligibility, deletion attempts/results, and order status updates.
+- Show retention status in the admin order detail before enabling actual deletion.
+
+First code implementation slice:
+
+- Task ID: `P8-T09`.
+- Title: Implement retention metadata and audit event foundation.
+- Scope:
+  - Add database migration for document retention metadata.
+  - Add `audit_events` table.
+  - Update server/admin data reads to include retention status.
+  - Show retention status in admin order detail.
+  - Record audit event for admin order status updates if feasible in this slice.
+  - Do not physically delete files.
+  - Do not add Vercel Cron yet.
+- Acceptance criteria:
+  - Database schema supports retention eligibility and audit events.
+  - Existing order persistence still works.
+  - Admin order detail shows retention status for documents.
+  - Status update audit event is recorded or explicitly deferred with reason.
+  - `npm run lint` passes.
+  - `npm run build` passes.
+  - Browser verification covers admin order detail.
 
 Potential additions (post-P8-T02):
 

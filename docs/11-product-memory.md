@@ -171,6 +171,41 @@ Deletion records should capture:
 
 Audit records should be operational metadata.
 
+## Retention Metadata Model
+
+Status: P8-T08 planning model. Not implemented.
+
+Recommended metadata for sensitive document records:
+
+- `retention_category`.
+- `retention_eligible_at`.
+- `retention_status`.
+- `deletion_status`.
+- `deleted_at`.
+- `deleted_by`.
+- `deletion_reason`.
+- `deletion_audit_id`.
+
+Recommended retention statuses:
+
+- `active`.
+- `eligible_for_deletion`.
+- `deletion_pending`.
+- `deleted`.
+- `retained_by_exception`.
+
+Recommended audit storage:
+
+- Add an `audit_events` operational table before implementing physical file deletion.
+- Use audit records for deletion attempts, successful deletions, failed deletions, manual deferrals, status updates, and sensitive document access events.
+
+First implementation boundary:
+
+- Add retention metadata and audit event structure first.
+- Show retention status in the admin order detail.
+- Do not physically delete files in the first slice.
+- Decide manual SOP vs Vercel Cron after metadata and audit records exist.
+
 ## Reviewer Access Scope
 
 Initial MVP controlled launch:

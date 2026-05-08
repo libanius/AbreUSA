@@ -608,3 +608,15 @@ Keep the single authenticated admin role for MVP controlled launch. Continue usi
 Reason:
 
 The current admin model is enough for controlled launch. Granular reviewer scopes would add complexity before the operational need is proven.
+
+### 2026-05-08: Retention Metadata And Audit Foundation Before Deletion
+
+Decision:
+
+Implement retention metadata and audit event foundations before any physical file deletion is implemented.
+
+The first implementation slice should add document retention metadata, add an operational `audit_events` model, surface retention status in admin order detail, and avoid deleting files.
+
+Reason:
+
+Physical deletion without metadata, admin visibility, and audit records would create operational ambiguity. The foundation should make deletion eligibility visible and auditable before enforcement begins.

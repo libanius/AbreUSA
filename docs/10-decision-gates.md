@@ -256,7 +256,7 @@ Required before deployment:
 
 Category: Operations, privacy, architecture.
 
-Status: Proposed.
+Status: Confirmed.
 
 Decision needed:
 
@@ -275,11 +275,17 @@ P8-T07 proposed direction:
 - Use Vercel Cron as the preferred future automation path if deployment is on Vercel; allow manual admin SOP first for controlled launch if cron is not ready.
 - Do not delete customer operational metadata when deleting sensitive files.
 
+P8-T08 confirmation:
+
+- First implementation should add retention metadata and audit event structure before any physical deletion.
+- File deletion remains out of scope for the first implementation slice.
+- Manual-only operation is acceptable for the first slice; Vercel Cron can be added after metadata/audit foundations exist.
+
 ### DG-012: Deletion Workflow And Responsibility
 
 Category: Operations, governance.
 
-Status: Proposed.
+Status: Confirmed.
 
 Decision needed:
 
@@ -297,6 +303,11 @@ P8-T07 proposed direction:
 - Deleted file metadata should remain in the operational record, but storage path access should no longer resolve to a retrievable file.
 - Deletion records should include document ID, order ID, file type, deletion reason, deleted timestamp, actor or automation source, and success/failure.
 - For MVP controlled launch, manual admin review is acceptable before automatic deletion is implemented.
+
+P8-T08 confirmation:
+
+- First implementation should preserve deletion responsibility as manual/admin-reviewed.
+- Metadata should support later automation without requiring immediate automatic deletion.
 
 ### DG-013: Reviewer Access Scopes
 
@@ -325,7 +336,7 @@ P8-T07 proposed direction:
 
 Category: Security, operations, compliance.
 
-Status: Proposed.
+Status: Confirmed.
 
 Decision needed:
 
@@ -342,6 +353,12 @@ P8-T07 proposed direction:
 - For the first implementation slice, prioritize status updates and document deletion audit records.
 - Store audit events as operational metadata, not customer-facing data.
 - Do not introduce enterprise compliance claims or heavy compliance tooling for MVP.
+
+P8-T08 confirmation:
+
+- First implementation should create an operational `audit_events` model.
+- Priority audit events: document retention eligibility, document deletion attempt/result, and order status update.
+- Signed URL generation and admin login/logout can follow after the first audit foundation exists.
 
 ### DG-015: Future Compliance Framework Needs
 
