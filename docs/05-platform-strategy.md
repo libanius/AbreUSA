@@ -202,6 +202,8 @@ Future implementation notes:
 - The current bucket structure may need a migration from the existing `documents` bucket to the recommended separated buckets.
 - Retention automation is not implemented yet.
 - Deletion workflow, audit logging, reviewer access scopes, and future compliance framework requirements are tracked as Decision Gates.
+- P8-T07 recommends a two-step deletion workflow: mark sensitive uploads as eligible for deletion, then delete with an audit record.
+- Vercel Cron is the preferred future automation path if production deployment runs on Vercel, while manual admin SOP remains acceptable for controlled launch.
 
 Decision Needed later:
 

@@ -133,3 +133,58 @@ Constraints:
 - Do not introduce legal claims about compliance certification.
 - Do not overengineer security architecture for MVP.
 - Focus on minimal responsible retention, operational clarity, risk reduction, and future customer lifecycle support.
+
+## Retention Automation Architecture
+
+Status: P8-T07 proposed architecture. Not implemented.
+
+Recommended workflow:
+
+1. Identify eligible sensitive uploads:
+   - A sensitive upload becomes eligible for deletion 90 days after order completion or cancellation.
+   - The file should be marked as `eligible_for_deletion` before physical deletion.
+2. Review or process eligible files:
+   - Controlled launch may use a manual admin SOP.
+   - Future automation may use Vercel Cron or another scheduled server process.
+3. Delete sensitive files:
+   - Remove the object from private storage.
+   - Keep non-sensitive metadata for operational history.
+   - Record deletion outcome.
+4. Preserve customer memory:
+   - Do not delete applicant profile, service history, company metadata, protocol history, status timeline, or operational notes as part of sensitive file deletion.
+
+## Deletion Audit Model
+
+Deletion records should capture:
+
+- Document ID.
+- Order ID.
+- Document type.
+- Storage bucket.
+- Storage path or path hash.
+- Eligibility timestamp.
+- Deleted timestamp.
+- Actor or automation source.
+- Deletion reason.
+- Result: success, failed, skipped, or manually deferred.
+- Error message when deletion fails.
+
+Audit records should be operational metadata.
+
+## Reviewer Access Scope
+
+Initial MVP controlled launch:
+
+- Single authenticated admin role.
+- Short-lived signed URLs generated server-side.
+- No public URLs.
+- No customer access to raw storage paths.
+
+Future reviewer scopes may include:
+
+- Owner/admin.
+- Internal reviewer.
+- Operations.
+- External accountant or tax reviewer.
+
+Do not add granular role complexity until operational volume or external reviewer access requires it.

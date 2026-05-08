@@ -256,7 +256,7 @@ Required before deployment:
 
 Category: Operations, privacy, architecture.
 
-Status: Open.
+Status: Proposed.
 
 Decision needed:
 
@@ -267,11 +267,19 @@ Blocks:
 
 - Automated enforcement of the 90-day sensitive upload retention policy.
 
+P8-T07 proposed direction:
+
+- Start with a two-step retention workflow before fully automatic deletion.
+- Step 1: scheduled or admin-triggered scan marks sensitive uploads as `eligible_for_deletion` after the 90-day retention window.
+- Step 2: admin review or scheduled deletion removes eligible files and records the result.
+- Use Vercel Cron as the preferred future automation path if deployment is on Vercel; allow manual admin SOP first for controlled launch if cron is not ready.
+- Do not delete customer operational metadata when deleting sensitive files.
+
 ### DG-012: Deletion Workflow And Responsibility
 
 Category: Operations, governance.
 
-Status: Open.
+Status: Proposed.
 
 Decision needed:
 
@@ -283,11 +291,18 @@ Blocks:
 
 - Operational deletion SOP.
 
+P8-T07 proposed direction:
+
+- AbreUSA operations owns deletion review.
+- Deleted file metadata should remain in the operational record, but storage path access should no longer resolve to a retrievable file.
+- Deletion records should include document ID, order ID, file type, deletion reason, deleted timestamp, actor or automation source, and success/failure.
+- For MVP controlled launch, manual admin review is acceptable before automatic deletion is implemented.
+
 ### DG-013: Reviewer Access Scopes
 
 Category: Security, admin, operations.
 
-Status: Open.
+Status: Proposed.
 
 Decision needed:
 
@@ -298,11 +313,19 @@ Blocks:
 
 - Role-based reviewer access.
 
+P8-T07 proposed direction:
+
+- Keep single admin role for MVP controlled launch.
+- Restrict document access to authenticated admins only.
+- Generate short-lived signed URLs server-side.
+- Do not add granular role-based access until order volume, team size, or external reviewers require it.
+- Future scopes may include owner/admin, reviewer, operations, and external accountant/tax reviewer.
+
 ### DG-014: Audit Logging Scope
 
 Category: Security, operations, compliance.
 
-Status: Open.
+Status: Proposed.
 
 Decision needed:
 
@@ -312,6 +335,13 @@ Decision needed:
 Blocks:
 
 - Admin audit log implementation.
+
+P8-T07 proposed direction:
+
+- Audit logging should cover document signed URL generation, document download/open action intent, document deletion, status updates, and admin login/logout.
+- For the first implementation slice, prioritize status updates and document deletion audit records.
+- Store audit events as operational metadata, not customer-facing data.
+- Do not introduce enterprise compliance claims or heavy compliance tooling for MVP.
 
 ### DG-015: Future Compliance Framework Needs
 

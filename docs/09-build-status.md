@@ -5,41 +5,43 @@
 Phase 8: Post-MVP Expansion and strategic evolution.
 
 Phases 1–7 are complete. P8-T01 (Resend email) and P8-T02 (admin portal) are complete.
-P8-T03 (strategic evolution system synchronization), P8-T04 (onboarding architecture discovery), P8-T05 (launch gate review), and P8-T06 (retention/customer data lifecycle policy) are complete.
+P8-T03 through P8-T07 are complete. P8-T07 defined retention automation and deletion workflow architecture.
 
 ## Last Completed Task
-
-Task ID: `P8-T06`
-
-Title: Owner confirmation for launch gates and customer data lifecycle policy.
-
-Result:
-
-- Initial Document Retention and Customer Data Lifecycle Policy introduced.
-- `/docs/11-product-memory.md` created.
-- DG-001 Document Retention Policy moved to `Confirmed`.
-- DG-002 AbreUSA Sender Domain moved to `Confirmed` for temporary use of `noreply@notifications.brightscalegroup.com`.
-- DG-010 Production Deployment Environment moved to `Proposed` for Vercel deployment using a temporary Vercel-provided URL if possible.
-- DG-011 through DG-015 added for retention automation, deletion workflows, reviewer access scopes, audit logging, and future compliance framework needs.
-- Requirements, platform strategy, decisions log, build status, Decision Gates, and progress page updated.
-- No product feature code was changed.
-
-## Current Task
-
-None. Awaiting confirmation for the next governance architecture task.
-
-## Next Task
 
 Task ID: `P8-T07`
 
 Title: Retention automation and deletion workflow architecture.
 
+Result:
+
+- DG-011 Document Retention Automation moved to `Proposed`.
+- DG-012 Deletion Workflow And Responsibility moved to `Proposed`.
+- DG-013 Reviewer Access Scopes moved to `Proposed`.
+- DG-014 Audit Logging Scope moved to `Proposed`.
+- Two-step retention workflow documented: mark sensitive uploads as `eligible_for_deletion`, then delete with audit record.
+- Manual admin SOP accepted for controlled launch if automation is not ready.
+- Vercel Cron identified as preferred future automation path when deployed on Vercel.
+- Single authenticated admin role remains sufficient for MVP controlled launch.
+- `/docs/11-product-memory.md`, `/docs/05-platform-strategy.md`, roadmap, decisions log, Decision Gates, build status, and progress page updated.
+- No product feature code was changed.
+
+## Current Task
+
+None. Awaiting confirmation for the next planning task.
+
+## Next Task
+
+Task ID: `P8-T08`
+
+Title: Retention metadata and audit-log implementation planning.
+
 Scope:
 
-- Define how the 90-day sensitive upload deletion policy will be enforced.
-- Decide whether deletion starts as manual admin SOP, Vercel Cron, Supabase scheduled job, or another scheduled workflow.
-- Define deletion audit requirements.
-- Define reviewer access scope requirements.
+- Define database fields/tables needed for retention eligibility and deletion audit records.
+- Define admin visibility for retention status.
+- Define whether the first implementation is manual-only or includes Vercel Cron.
+- Keep file deletion implementation out of scope until the plan is confirmed.
 - Do not write product feature code.
 
 ## Completed Tasks
@@ -69,6 +71,7 @@ Scope:
   - P8-T04: Onboarding architecture discovery and Decision Gate review complete.
   - P8-T05: Launch-blocking operational Decision Gates reviewed.
   - P8-T06: Initial retention and customer data lifecycle policy confirmed.
+  - P8-T07: Retention automation and deletion workflow architecture complete.
 
 ## What Is Implemented
 
@@ -119,6 +122,13 @@ Scope:
   - AbreUSA should not become a permanent storage vault for sensitive documents.
   - Long-term platform value is customer relationship, onboarding intelligence, operational history, and business lifecycle memory.
   - Temporary Vercel-provided URL is acceptable for initial controlled deployment if possible.
+- P8-T07 retention automation architecture:
+  - Sensitive uploads become eligible for deletion after the 90-day retention window.
+  - First mark uploads as `eligible_for_deletion`, then delete files with an audit record.
+  - Customer operational metadata is preserved after sensitive file deletion.
+  - Manual admin SOP is acceptable for controlled launch.
+  - Vercel Cron is the preferred future automation path.
+  - Single authenticated admin role remains the MVP reviewer access model.
 - Key files:
   - `lib/supabase-server.ts` — service-role Supabase client.
   - `lib/supabase-ssr.ts` — SSR auth client (route handlers, server components).
@@ -134,6 +144,7 @@ Scope:
 - AbreUSA-branded sender domain migration (temporary current sender is confirmed; branded sender remains a future improvement).
 - Vercel production deployment (temporary Vercel URL acceptable if possible; env vars not yet set in Vercel dashboard).
 - Retention automation and deletion workflows.
+- Retention metadata and deletion audit implementation.
 - Reviewer access scope refinement.
 - Audit logging for document access/deletion/status changes.
 - Payment processing (Post-MVP).
@@ -156,9 +167,9 @@ Scope:
 
 ## Exact Next Step To Resume
 
-Execute `P8-T07: Retention automation and deletion workflow architecture`.
+Execute `P8-T08: Retention metadata and audit-log implementation planning`.
 
-Deliverable: define how the 90-day sensitive upload retention policy will be enforced, how deletion is audited, and what reviewer access scopes are required. No product feature code.
+Deliverable: define the retention metadata model, deletion audit event model, and first implementation slice. No product feature code.
 
 ## Blockers And Risks
 

@@ -1161,6 +1161,7 @@ Current Phase 8 status:
 - P8-T04 complete.
 - P8-T05 complete.
 - P8-T06 complete.
+- P8-T07 complete.
 
 ### P8-T01: Applicant Email Confirmation — Integration Structure
 
@@ -1418,6 +1419,42 @@ Next governance task:
 - Acceptance criteria:
   - DG-011, DG-012, DG-013, and DG-014 are reviewed.
   - Recommended first implementation slice is documented.
+  - Roadmap, build status, Decision Gates, and progress page are updated.
+
+P8-T07 status:
+
+- Status: Complete (2026-05-08).
+- DG-011 Document Retention Automation moved to `Proposed`.
+- DG-012 Deletion Workflow And Responsibility moved to `Proposed`.
+- DG-013 Reviewer Access Scopes moved to `Proposed`.
+- DG-014 Audit Logging Scope moved to `Proposed`.
+- `/docs/11-product-memory.md` updated with retention automation architecture, deletion audit model, and reviewer access scope.
+- `/docs/05-platform-strategy.md` updated with retention automation architecture notes.
+- No product feature code was changed.
+
+P8-T07 recommended architecture:
+
+- Use a two-step workflow before fully automatic deletion.
+- First mark sensitive uploads as `eligible_for_deletion` after the 90-day window.
+- Then delete eligible files with an audit record.
+- Preserve customer operational metadata after sensitive file deletion.
+- Use manual admin SOP for controlled launch if needed.
+- Prefer Vercel Cron for future automated enforcement when deployment is on Vercel.
+- Keep single authenticated admin role for MVP controlled launch; add granular reviewer scopes later only if operational needs require it.
+
+Recommended first implementation slice:
+
+- Task ID: `P8-T08`.
+- Title: Retention metadata and audit-log implementation planning.
+- Scope:
+  - Define database fields/tables needed for retention eligibility and deletion audit records.
+  - Define admin visibility for retention status.
+  - Define whether the first implementation is manual-only or includes Vercel Cron.
+  - Keep file deletion implementation out of scope until the plan is confirmed.
+- Acceptance criteria:
+  - Retention metadata model is documented.
+  - Audit event model is documented.
+  - First code implementation slice is scoped.
   - Roadmap, build status, Decision Gates, and progress page are updated.
 
 Potential additions (post-P8-T02):

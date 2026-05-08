@@ -268,10 +268,10 @@
           <span class="pill done" data-en="Current phase" data-pt="Fase atual">Current phase</span>
           <p class="phase" data-en="Phase 8: Post-MVP Expansion and Strategic Evolution" data-pt="Fase 8: Expansão pós-MVP e evolução estratégica">Phase 8: Post-MVP Expansion and Strategic Evolution</p>
           <p
-            data-en="Phase 8 in progress. P8-T01 through P8-T06 are complete. Next step: retention automation and deletion workflow architecture."
-            data-pt="Fase 8 em andamento. P8-T01 até P8-T06 estão concluídas. Próximo passo: arquitetura de automação de retenção e workflow de deleção."
+            data-en="Phase 8 in progress. P8-T01 through P8-T07 are complete. Next step: retention metadata and audit-log implementation planning."
+            data-pt="Fase 8 em andamento. P8-T01 até P8-T07 estão concluídas. Próximo passo: planejamento de metadados de retenção e audit log."
           >
-            Phase 8 in progress. P8-T01 through P8-T06 are complete. Next step: retention automation and deletion workflow architecture.
+            Phase 8 in progress. P8-T01 through P8-T07 are complete. Next step: retention metadata and audit-log implementation planning.
           </p>
           <div class="progress-wrap" aria-label="Project progress">
             <div class="progress-label">
@@ -351,6 +351,7 @@
             <li data-en="P8-T04 Onboarding architecture discovery complete: candidate states documented and onboarding Decision Gates reviewed." data-pt="P8-T04 Descoberta da arquitetura de onboarding concluída: estados candidatos documentados e Decision Gates de onboarding revisados.">P8-T04 Onboarding architecture discovery complete: candidate states documented and onboarding Decision Gates reviewed.</li>
             <li data-en="P8-T05 Launch gates reviewed: document retention and production deployment blocked pending owner confirmation; AbreUSA sender migration proposed." data-pt="P8-T05 Gates de lançamento revisados: retenção de documentos e deploy de produção bloqueados até confirmação do owner; migração de email AbreUSA proposta.">P8-T05 Launch gates reviewed: document retention and production deployment blocked pending owner confirmation; AbreUSA sender migration proposed.</li>
             <li data-en="P8-T06 Retention and customer data lifecycle policy confirmed: 90-day sensitive upload retention, 1-year generated file retention, long-term customer operational memory." data-pt="P8-T06 Política de retenção e ciclo de vida de dados confirmada: retenção de 90 dias para uploads sensíveis, 1 ano para arquivos gerados e memória operacional do cliente de longo prazo.">P8-T06 Retention and customer data lifecycle policy confirmed: 90-day sensitive upload retention, 1-year generated file retention, long-term customer operational memory.</li>
+            <li data-en="P8-T07 Retention automation architecture complete: eligible-for-deletion workflow, deletion audit model, and reviewer access scope proposed." data-pt="P8-T07 Arquitetura de automação de retenção concluída: workflow eligible-for-deletion, modelo de auditoria de deleção e escopo de acesso de reviewer propostos.">P8-T07 Retention automation architecture complete: eligible-for-deletion workflow, deletion audit model, and reviewer access scope proposed.</li>
           </ul>
         </article>
 
@@ -394,29 +395,30 @@
             <li data-en="Current guided 13-step flow remains the canonical baseline; conversational and AI onboarding are proposed as assistive layers first." data-pt="O fluxo guiado atual de 13 etapas continua como base canônica; onboarding conversacional e IA são propostos primeiro como camadas assistivas.">Current guided 13-step flow remains the canonical baseline; conversational and AI onboarding are proposed as assistive layers first.</li>
             <li data-en="Retention philosophy confirmed: AbreUSA should keep customer lifecycle memory, not indefinite sensitive document storage." data-pt="Filosofia de retenção confirmada: AbreUSA deve manter memória do ciclo de vida do cliente, não armazenamento indefinido de documentos sensíveis.">Retention philosophy confirmed: AbreUSA should keep customer lifecycle memory, not indefinite sensitive document storage.</li>
             <li data-en="Temporary current sender is confirmed; temporary Vercel-provided URL is acceptable for controlled deployment if possible." data-pt="O remetente atual temporário está confirmado; URL temporária fornecida pela Vercel é aceitável para deploy controlado se possível.">Temporary current sender is confirmed; temporary Vercel-provided URL is acceptable for controlled deployment if possible.</li>
+            <li data-en="Retention automation direction: mark sensitive uploads as eligible for deletion before deletion, then delete with audit record." data-pt="Direção de automação de retenção: marcar uploads sensíveis como elegíveis para deleção antes de deletar, depois deletar com registro de auditoria.">Retention automation direction: mark sensitive uploads as eligible for deletion before deletion, then delete with audit record.</li>
             <li data-en="Payment, customer dashboard, branded AbreUSA sender migration, retention automation, and onboarding evolution implementations remain not implemented." data-pt="Pagamento, dashboard do cliente, migração para remetente AbreUSA, automação de retenção e implementações de evolução de onboarding ainda não foram implementados.">Payment, customer dashboard, branded AbreUSA sender migration, retention automation, and onboarding evolution implementations remain not implemented.</li>
           </ul>
         </article>
 
         <article class="card task">
           <span class="pill done" data-en="Last completed" data-pt="Última concluída">Last completed</span>
-          <h2 data-en="P8-T06 — Retention Policy" data-pt="P8-T06 — Política de retenção">P8-T06 — Retention Policy</h2>
+          <h2 data-en="P8-T07 — Retention Workflow" data-pt="P8-T07 — Workflow de retenção">P8-T07 — Retention Workflow</h2>
           <p
-            data-en="Sensitive uploads retain for 90 days after completion/cancellation; generated files retain for 1 year; customer operational memory may be long term."
-            data-pt="Uploads sensíveis ficam por 90 dias após conclusão/cancelamento; arquivos gerados ficam por 1 ano; memória operacional do cliente pode ser de longo prazo."
+            data-en="Retention enforcement is planned as a two-step workflow: mark eligible files, then delete with an audit record while preserving customer operational memory."
+            data-pt="A retenção foi planejada como workflow em duas etapas: marcar arquivos elegíveis, depois deletar com auditoria preservando a memória operacional do cliente."
           >
-            Sensitive uploads retain for 90 days after completion/cancellation; generated files retain for 1 year; customer operational memory may be long term.
+            Retention enforcement is planned as a two-step workflow: mark eligible files, then delete with an audit record while preserving customer operational memory.
           </p>
         </article>
 
         <article class="card next">
           <span class="pill" data-en="Next task" data-pt="Próxima tarefa">Next task</span>
-          <h2 data-en="P8-T07 — Retention Automation" data-pt="P8-T07 — Automação de retenção">P8-T07 — Retention Automation</h2>
+          <h2 data-en="P8-T08 — Audit Planning" data-pt="P8-T08 — Planejamento de auditoria">P8-T08 — Audit Planning</h2>
           <p
-            data-en="Define how sensitive upload deletion is enforced, how deletion is audited, and which reviewer access scopes are needed."
-            data-pt="Definir como a deleção de uploads sensíveis será aplicada, como será auditada e quais escopos de acesso de reviewers são necessários."
+            data-en="Define retention metadata, deletion audit records, admin visibility, and the first implementation slice before writing deletion code."
+            data-pt="Definir metadados de retenção, registros de auditoria de deleção, visibilidade no admin e o primeiro recorte de implementação antes de código."
           >
-            Define how sensitive upload deletion is enforced, how deletion is audited, and which reviewer access scopes are needed.
+            Define retention metadata, deletion audit records, admin visibility, and the first implementation slice before writing deletion code.
           </p>
         </article>
       </section>

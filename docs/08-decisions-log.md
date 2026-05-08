@@ -583,3 +583,28 @@ Use the currently configured sender `noreply@notifications.brightscalegroup.com`
 Reason:
 
 This allows controlled operational validation without waiting for final brand-domain setup. Public or broader launch can still migrate to an AbreUSA-branded sender and custom domain later.
+
+### 2026-05-08: Retention Enforcement Starts With Two-Step Deletion Workflow
+
+Decision:
+
+Retention enforcement should start with a two-step workflow:
+
+1. Mark sensitive uploads as `eligible_for_deletion` after the 90-day retention window.
+2. Delete eligible files with an audit record.
+
+Manual admin SOP is acceptable for controlled launch if automation is not ready. Vercel Cron is the preferred future automation path if deployment runs on Vercel.
+
+Reason:
+
+This reduces risk compared with immediate fully automatic deletion, preserves operational visibility, and keeps customer operational memory separate from temporary sensitive storage.
+
+### 2026-05-08: MVP Reviewer Access Remains Single Admin Role
+
+Decision:
+
+Keep the single authenticated admin role for MVP controlled launch. Continue using short-lived signed URLs generated server-side for document access. Do not add granular reviewer roles until order volume, team size, or external reviewer access requires it.
+
+Reason:
+
+The current admin model is enough for controlled launch. Granular reviewer scopes would add complexity before the operational need is proven.
