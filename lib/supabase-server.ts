@@ -10,7 +10,10 @@ type AbreUsaDatabase = {
           status: string;
           approved_at: string;
         };
-        Update: never;
+        Update: {
+          status?: string;
+          updated_at?: string;
+        };
         Relationships: [];
       };
       applicants: {
@@ -99,6 +102,31 @@ type AbreUsaDatabase = {
           file_name: string;
           mime_type: string;
           storage_path: string;
+          retention_category?: string;
+          retention_status?: string;
+          deletion_status?: string;
+        };
+        Update: {
+          retention_eligible_at?: string;
+          retention_status?: string;
+          deletion_status?: string;
+        };
+        Relationships: [];
+      };
+      audit_events: {
+        Row: Record<string, unknown>;
+        Insert: {
+          order_id?: string | null;
+          document_id?: string | null;
+          actor_id?: string | null;
+          actor_email?: string | null;
+          actor_type: string;
+          event_type: string;
+          event_source: string;
+          result: string;
+          reason?: string | null;
+          metadata?: Record<string, unknown>;
+          error_message?: string | null;
         };
         Update: never;
         Relationships: [];

@@ -5,7 +5,7 @@
 Phase 8: Post-MVP Expansion and strategic evolution.
 
 Phases 1–7 are complete. P8-T01 (Resend email) and P8-T02 (admin portal) are complete.
-P8-T03 through P8-T08 are complete. P8-T08 defined retention metadata and audit-log implementation planning.
+P8-T03 through P8-T08 are complete. P8-T09 implementation is prepared locally and awaiting Supabase SQL application for runtime verification.
 
 ## Last Completed Task
 
@@ -26,23 +26,42 @@ Result:
 
 ## Current Task
 
-None. Awaiting confirmation for the first implementation slice.
-
-## Next Task
-
 Task ID: `P8-T09`
 
 Title: Implement retention metadata and audit event foundation.
 
+Status: Implementation prepared; blocked for runtime verification until `supabase/retention-audit-foundation.sql` is applied in Supabase.
+
+Prepared result:
+
+- `supabase/retention-audit-foundation.sql` created.
+- `supabase/schema.sql` updated with document retention metadata and `audit_events`.
+- `supabase/rls-storage-lockdown.sql` updated to lock down `audit_events`.
+- Server persistence initializes retention metadata for new document records.
+- Admin order detail displays retention status, deletion status, and eligibility date.
+- Admin status updates insert `audit_events`.
+- Moving an order to `completed` or `blocked` sets sensitive documents' `retention_eligible_at` to 90 days later.
+- No physical file deletion.
+- No Vercel Cron.
+- `npm run lint` passes.
+- `npm run build` passes.
+- Remote schema check shows migration not yet applied: `documents.retention_status` does not exist.
+
+## Next Task
+
+Task ID: `P8-T09V`
+
+Title: Apply retention SQL and verify admin retention metadata.
+
 Scope:
 
-- Add database migration for document retention metadata.
-- Add `audit_events` table.
-- Update server/admin data reads to include retention status.
-- Show retention status in admin order detail.
-- Record audit event for admin order status updates if feasible in this slice.
+- Apply `supabase/retention-audit-foundation.sql` in Supabase.
+- Verify documents expose retention metadata columns.
+- Verify `audit_events` exists.
+- Browser-verify admin order detail.
+- Verify admin status update records an audit event.
 - Do not physically delete files.
-- Do not add Vercel Cron yet.
+- Do not add Vercel Cron.
 
 ## Completed Tasks
 
@@ -150,7 +169,8 @@ Scope:
 - AbreUSA-branded sender domain migration (temporary current sender is confirmed; branded sender remains a future improvement).
 - Vercel production deployment (temporary Vercel URL acceptable if possible; env vars not yet set in Vercel dashboard).
 - Retention automation and deletion workflows.
-- Retention metadata and deletion audit implementation.
+- Runtime application of retention metadata SQL in Supabase.
+- Browser verification of retention metadata in admin order detail.
 - Reviewer access scope refinement.
 - Audit logging for document access/deletion/status changes.
 - Payment processing (Post-MVP).
@@ -173,15 +193,16 @@ Scope:
 
 ## Exact Next Step To Resume
 
-Execute `P8-T09: Implement retention metadata and audit event foundation`.
+Execute `P8-T09V: Apply retention SQL and verify admin retention metadata`.
 
-Deliverable: add retention metadata and audit event foundation, show retention status in admin order detail, and verify existing order/admin flows. No physical file deletion.
+Deliverable: apply `supabase/retention-audit-foundation.sql`, verify admin retention status display, and verify audit event insertion on admin status update. No physical file deletion.
 
 ## Blockers And Risks
 
 - `RESEND_API_KEY` and `SUPABASE_SERVICE_ROLE_KEY` must be set in Vercel environment variables before production deployment.
 - AbreUSA domain email migration is a Decision Needed item before long-term production use.
 - Document retention period is confirmed, but deletion automation is not implemented.
+- P8-T09 runtime verification is blocked until the Supabase SQL artifact is applied.
 - EIN-only and Registered Agent-only flows remain deferred (Post-MVP).
 - New onboarding concepts can invalidate current UX assumptions; DG-005 through DG-009 now have proposed direction but still need confirmation before implementation.
 - AI-guided onboarding introduces privacy, PII, passport-data, legal/tax guidance, and compliance risks.

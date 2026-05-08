@@ -20,6 +20,7 @@ alter table public.registered_agents enable row level security;
 alter table public.ein_details enable row level security;
 alter table public.generated_forms enable row level security;
 alter table public.documents enable row level security;
+alter table public.audit_events enable row level security;
 
 revoke all on public.orders from anon, authenticated;
 revoke all on public.applicants from anon, authenticated;
@@ -29,6 +30,7 @@ revoke all on public.registered_agents from anon, authenticated;
 revoke all on public.ein_details from anon, authenticated;
 revoke all on public.generated_forms from anon, authenticated;
 revoke all on public.documents from anon, authenticated;
+revoke all on public.audit_events from anon, authenticated;
 
 revoke all on sequence public.order_protocol_seq from anon, authenticated;
 

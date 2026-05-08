@@ -26,6 +26,27 @@ function Field({ label, value }: { label: string; value: string | number | null 
   );
 }
 
+function RetentionBadge({ status }: { status: string | null | undefined }) {
+  const color =
+    status === "deleted"
+      ? "bg-gray-200 text-gray-700"
+      : status === "eligible_for_deletion" || status === "deletion_pending"
+        ? "bg-yellow-100 text-yellow-800"
+        : status === "retained_by_exception"
+          ? "bg-purple-100 text-purple-800"
+          : "bg-green-100 text-green-800";
+
+  return (
+    <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-semibold ${color}`}>
+      {(status ?? "active").replace(/_/g, " ")}
+    </span>
+  );
+}
+
+function formatToken(value: unknown, fallback: string) {
+  return String(value ?? fallback).replace(/_/g, " ");
+}
+
 export default async function AdminOrderDetailPage({
   params,
 }: {
@@ -45,7 +66,7 @@ export default async function AdminOrderDetailPage({
       registered_agents(id, choice, name, address, city, state, zip),
       ein_details(id, reason_for_applying, entity_type, responsible_party_name, responsible_party_passport_number, start_date, fiscal_closing_month),
       generated_forms(id, form_type, customer_approved),
-      documents(id, document_type, file_name, mime_type, storage_path)
+      documents(id, document_type, file_name, mime_type, storage_path, retention_category, retention_eligible_at, retention_status, deletion_status, deleted_at)
     `)
     .eq("id", id)
     .single();
@@ -199,12 +220,31 @@ export default async function AdminOrderDetailPage({
         <Section title="Documents">
           <div className="space-y-3">
             {docsWithUrls.map(doc => (
-              <div key={doc.id as string} className="flex items-center justify-between gap-4 py-2 border-b border-gray-100 last:border-0">
-                <div>
-                  <p className="text-sm font-medium text-gray-900">
-                    {(doc.document_type as string).replace(/_/g, " ")}
-                  </p>
-                  <p className="text-xs text-gray-500">{doc.file_name as string}</p>
+              <div key={doc.id as string} className="grid gap-3 py-3 border-b border-gray-100 last:border-0 md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
+                <div className="min-w-0">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <p className="text-sm font-medium text-gray-900">
+                      {(doc.document_type as string).replace(/_/g, " ")}
+                    </p>
+                    <RetentionBadge status={doc.retention_status as string | null | undefined} />
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">{doc.file_name as string}</p>
+                  <div className="mt-2 grid gap-1 text-xs text-gray-500 sm:grid-cols-3">
+                    <span>
+                      Retention: {formatToken(doc.retention_category, "sensitive_upload")}
+                    </span>
+                    <span>
+                      Eligible: {doc.retention_eligible_at ? new Date(doc.retention_eligible_at as string).toLocaleDateString("en-US") : "not scheduled"}
+                    </span>
+                    <span>
+                      Deletion: {formatToken(doc.deletion_status, "not_applicable")}
+                    </span>
+                  </div>
+                  {doc.deleted_at ? (
+                    <p className="text-xs text-gray-500 mt-1">
+                      Deleted {new Date(doc.deleted_at as string).toLocaleDateString("en-US")}
+                    </p>
+                  ) : null}
                 </div>
                 <div className="flex gap-2 shrink-0">
                   {doc.viewUrl && (

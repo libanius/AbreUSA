@@ -1496,6 +1496,25 @@ First code implementation slice:
   - `npm run build` passes.
   - Browser verification covers admin order detail.
 
+P8-T09 status:
+
+- Status: Implementation prepared; runtime verification blocked until the Supabase SQL artifact is applied.
+- Added SQL artifact: `supabase/retention-audit-foundation.sql`.
+- Updated `supabase/schema.sql` with retention metadata and `audit_events`.
+- Updated `supabase/rls-storage-lockdown.sql` to include `audit_events` lockdown.
+- Updated server persistence to initialize document retention metadata.
+- Updated admin order status API to write `audit_events` for status updates.
+- Updated admin order status API to set document `retention_eligible_at` when an order moves to `completed` or `blocked`.
+- Updated admin order detail to show retention category, eligibility date, retention status, and deletion status.
+- `npm run lint` passes.
+- `npm run build` passes.
+- Remote Supabase check confirmed the migration is not yet applied: `documents.retention_status` does not exist.
+
+Blocking step:
+
+- Apply `supabase/retention-audit-foundation.sql` in the Supabase SQL Editor or through a SQL connection with DDL permission.
+- After the SQL is applied, rerun admin browser verification.
+
 Potential additions (post-P8-T02):
 
 - Payment processing.

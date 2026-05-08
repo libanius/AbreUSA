@@ -24,6 +24,9 @@ async function uploadAndRecordDocument(
     file_name: file.name,
     mime_type: file.type,
     storage_path: storagePath,
+    retention_category: "sensitive_upload",
+    retention_status: "active",
+    deletion_status: "not_applicable",
   });
   if (recordError) throw recordError;
 }
