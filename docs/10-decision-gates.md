@@ -28,56 +28,56 @@ They prevent implementation from starting before the App Spine, roadmap, and ope
 
 Category: Compliance, privacy, operations.
 
-Status: Blocked.
+Status: Confirmed.
 
-Decision needed:
+Decision:
 
-- How long passport and U.S. address proof files are retained.
-- Whether documents are deleted after review, agency submission, completion, or a fixed retention window.
+- Sensitive uploads are retained for 90 days after order completion or cancellation.
+- Generated operational files are retained for 1 year.
+- Customer operational metadata may be retained long-term.
+- AbreUSA should not act as a permanent vault for passports, IDs, proofs of address, or sensitive uploaded documents.
 
 Blocks:
 
 - Production compliance posture.
 - Long-term document storage policy.
 
-P8-T05 gate review:
+P8-T06 confirmation:
 
-- Do not invent a retention period in implementation.
-- A production retention rule needs owner/legal/operations confirmation because uploaded documents include passport and U.S. address proof files.
-- Controlled testing can continue with private storage, RLS lockdown, and admin-only signed URL access, but production launch should not proceed until this gate is resolved or formally accepted as a business risk.
+- Initial retention policy confirmed.
+- Implementation automation is not built yet.
+- Retention automation, deletion workflows, reviewer access scopes, audit logging, and future compliance framework needs remain separate gates.
 
-Required confirmation:
+Follow-up required:
 
-- Retention window.
-- Deletion trigger.
-- Who is responsible for deletion.
-- Whether retained files are needed for audit, filing support, refund/dispute handling, or compliance.
+- Implement deletion automation after architecture is approved.
+- Define operational responsibility for deletion before public production at scale.
 
 ### DG-002: AbreUSA Sender Domain
 
 Category: Operations, brand, email.
 
-Status: Proposed.
+Status: Confirmed.
 
-Decision needed:
+Decision:
 
-- When to migrate from `noreply@notifications.brightscalegroup.com` to an AbreUSA-branded sender domain.
+- Use `noreply@notifications.brightscalegroup.com` temporarily.
+- Migrate to an AbreUSA-branded sender later.
 
 Blocks:
 
 - Long-term production email branding.
 
-P8-T05 proposed direction:
+P8-T06 confirmation:
 
 - Keep `noreply@notifications.brightscalegroup.com` for development, controlled testing, and internal validation because it is already verified in Resend.
-- Migrate to an AbreUSA-branded sender before broad public launch or customer-facing production marketing.
-- This is not a technical blocker for controlled launch, but it is a brand/operations blocker for long-term production.
+- Temporary use of the current configured email is confirmed.
+- AbreUSA-branded sender migration remains a future operational improvement, not a blocker for controlled deployment.
 
-Required confirmation:
+Follow-up required:
 
 - Final sender domain.
 - Sender address, such as `noreply@abreusa.com`.
-- Whether the first controlled production release may use the existing verified sender temporarily.
 
 ### DG-003: EIN-Only Flow Requirements
 
@@ -225,28 +225,104 @@ P8-T04 proposed direction:
 
 Category: Deployment, security, operations.
 
-Status: Blocked.
+Status: Proposed.
 
-Decision needed:
+Decision:
 
-- Confirm all production Vercel environment variables are set.
-- Confirm deployment target, domain, and launch access model.
+- Use Vercel deployment if possible.
+- A temporary Vercel-provided address is acceptable for initial controlled deployment.
+- Production env vars still need to be configured before deploy works.
 
 Blocks:
 
 - Production deployment.
 
-P8-T05 gate review:
+P8-T06 confirmation:
 
-- Production deployment is blocked until the deployment target, domain, launch access model, and Vercel environment variables are confirmed.
+- Temporary Vercel URL is acceptable if Vercel provides one.
 - Required env vars are documented in `.env.example`.
 - `SUPABASE_SERVICE_ROLE_KEY` must be set only server-side and never exposed with a `NEXT_PUBLIC_` prefix.
 
-Required confirmation:
+Required before deployment:
 
-- Vercel project and production domain.
 - `NEXT_PUBLIC_SUPABASE_URL`.
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
 - `SUPABASE_SERVICE_ROLE_KEY`.
 - `RESEND_API_KEY`.
-- Launch access model: internal-only, password/protected preview, controlled users, or public production.
+- Confirm Vercel project link.
+- Confirm launch access model: internal-only, password/protected preview, controlled users, or public production.
+
+### DG-011: Document Retention Automation
+
+Category: Operations, privacy, architecture.
+
+Status: Open.
+
+Decision needed:
+
+- Whether deletion runs as a scheduled job, admin-triggered workflow, Supabase job, Vercel cron, or manual operational procedure first.
+- How deletion success/failure is recorded.
+
+Blocks:
+
+- Automated enforcement of the 90-day sensitive upload retention policy.
+
+### DG-012: Deletion Workflow And Responsibility
+
+Category: Operations, governance.
+
+Status: Open.
+
+Decision needed:
+
+- Who owns document deletion operations.
+- Whether deletion is automatic only, admin-reviewed, or manually confirmed before removal.
+- Whether deleted file metadata remains in the operational history after file removal.
+
+Blocks:
+
+- Operational deletion SOP.
+
+### DG-013: Reviewer Access Scopes
+
+Category: Security, admin, operations.
+
+Status: Open.
+
+Decision needed:
+
+- Whether all admins can access all documents or whether reviewer roles/scopes are needed.
+- Whether document access should be limited by order status, assignment, or time window.
+
+Blocks:
+
+- Role-based reviewer access.
+
+### DG-014: Audit Logging Scope
+
+Category: Security, operations, compliance.
+
+Status: Open.
+
+Decision needed:
+
+- Which actions need audit logging: document view, signed URL generation, download, status update, deletion, email send, and admin login.
+- Whether audit logging is required before controlled launch or only before scale.
+
+Blocks:
+
+- Admin audit log implementation.
+
+### DG-015: Future Compliance Framework Needs
+
+Category: Compliance, privacy, scalability.
+
+Status: Deferred.
+
+Decision needed:
+
+- Whether future scale requires a formal compliance framework, data processing agreement, customer data export/delete process, or legal hold process.
+
+Blocks:
+
+- Enterprise or regulated expansion.

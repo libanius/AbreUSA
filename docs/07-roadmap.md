@@ -1160,6 +1160,7 @@ Current Phase 8 status:
 - P8-T03 complete.
 - P8-T04 complete.
 - P8-T05 complete.
+- P8-T06 complete.
 
 ### P8-T01: Applicant Email Confirmation — Integration Structure
 
@@ -1384,6 +1385,40 @@ Next non-code task:
   - DG-001, DG-002, and DG-010 can move from `Blocked` or `Proposed` to `Confirmed` or intentionally `Deferred`.
   - Decisions log records the confirmed launch decisions.
   - Build status and progress page are updated.
+
+P8-T06 status:
+
+- Status: Complete (2026-05-08).
+- Initial Document Retention and Customer Data Lifecycle Policy introduced.
+- `/docs/11-product-memory.md` created.
+- DG-001 Document Retention Policy moved to `Confirmed`.
+- DG-002 AbreUSA Sender Domain moved to `Confirmed` for temporary use of `noreply@notifications.brightscalegroup.com`.
+- DG-010 Production Deployment Environment moved to `Proposed` for Vercel deployment using a temporary Vercel-provided URL if possible.
+- New governance gates added for retention automation, deletion workflows, reviewer access scopes, audit logging, and future compliance framework needs.
+- No product feature code was changed.
+
+P8-T06 confirmed policy:
+
+- Sensitive uploads: retain for 90 days after order completion or cancellation.
+- Generated operational files: retain for 1 year.
+- Customer operational metadata: long-term operational retention allowed.
+- AbreUSA should not become a permanent storage vault for passports, IDs, proofs of address, or sensitive uploaded documents.
+- Long-term value should come from customer relationship, onboarding intelligence, operational history, and business lifecycle memory.
+
+Next governance task:
+
+- Task ID: `P8-T07`.
+- Title: Retention automation and deletion workflow architecture.
+- Scope:
+  - Define how the 90-day sensitive upload deletion policy will be enforced.
+  - Decide whether deletion starts as manual admin SOP, Vercel Cron, Supabase scheduled job, or other scheduled workflow.
+  - Define deletion audit requirements.
+  - Define reviewer access scope requirements.
+  - Keep product feature code out of scope until architecture is confirmed.
+- Acceptance criteria:
+  - DG-011, DG-012, DG-013, and DG-014 are reviewed.
+  - Recommended first implementation slice is documented.
+  - Roadmap, build status, Decision Gates, and progress page are updated.
 
 Potential additions (post-P8-T02):
 

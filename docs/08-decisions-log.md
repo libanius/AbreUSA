@@ -544,3 +544,42 @@ Keep `noreply@notifications.brightscalegroup.com` as the temporary verified Rese
 Reason:
 
 The sender is already verified and working. AbreUSA-branded email remains the desired long-term production direction, but migration requires domain/sender confirmation.
+
+### 2026-05-08: Initial Document Retention And Customer Data Lifecycle Policy
+
+Decision:
+
+Adopt an initial retention and customer data lifecycle policy:
+
+- Sensitive uploads are retained for 90 days after order completion or cancellation.
+- Generated operational files are retained for 1 year.
+- Customer operational metadata may be retained long-term.
+- AbreUSA should not become a permanent storage vault for passports, IDs, proofs of address, or sensitive uploaded documents.
+
+Reason:
+
+The long-term asset of the platform should be customer relationship, onboarding intelligence, business lifecycle memory, and operational history, not indefinite storage of sensitive documents.
+
+### 2026-05-08: Separate Customer Memory From Sensitive Processing Storage
+
+Decision:
+
+Separate long-term customer memory from temporary sensitive processing storage.
+
+Long-term memory may include applicant profile, contact data, language preference, service history, company metadata, onboarding summaries, protocol history, status timeline, operational notes, and lifecycle relationship data.
+
+Temporary sensitive processing storage includes passports, IDs, proofs of address, and sensitive uploaded documents.
+
+Reason:
+
+This creates operational clarity, reduces sensitive-document retention risk, and supports future lifecycle services without turning AbreUSA into a permanent archive for identity documents.
+
+### 2026-05-08: Temporary Sender And Temporary Vercel URL Accepted For Controlled Launch
+
+Decision:
+
+Use the currently configured sender `noreply@notifications.brightscalegroup.com` temporarily. A Vercel-provided temporary deployment URL is acceptable for initial controlled deployment if Vercel provides one.
+
+Reason:
+
+This allows controlled operational validation without waiting for final brand-domain setup. Public or broader launch can still migrate to an AbreUSA-branded sender and custom domain later.

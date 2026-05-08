@@ -78,7 +78,52 @@ MVP behavior:
 - AI extraction must be reviewable and correctable by the customer.
 - Sensitive documents must be handled with secure upload, storage, access control, and retention rules before production.
 - Generated forms must not be labeled as submitted until the customer approves and AbreUSA processes them.
-- Document retention and reviewer access rules are Decision Needed before production.
+- AbreUSA must not position itself as a permanent secure archive for passports, IDs, proofs of address, or other sensitive uploads.
+- Customer-facing positioning should explain that documents are used for onboarding and operational processing and may be removed after the process is completed.
+- Sensitive uploads should follow the initial retention policy unless a later compliance or operational decision changes it.
+
+## Document Retention And Customer Data Lifecycle Requirements
+
+Strategic principle:
+
+- Separate long-term customer memory from temporary sensitive processing storage.
+- The long-term asset of the platform is the customer relationship, onboarding intelligence, business lifecycle memory, and operational history.
+- The platform should not retain sensitive uploads indefinitely by default.
+
+Long-term customer memory may include:
+
+- Applicant profile.
+- Name.
+- Email.
+- Phone or WhatsApp.
+- Country.
+- Language preference.
+- Service history.
+- Company metadata.
+- Onboarding summaries.
+- Protocol history.
+- Status timeline.
+- Operational notes.
+- Lifecycle relationship data.
+
+Sensitive temporary storage includes:
+
+- Passports.
+- IDs.
+- Proofs of address.
+- Sensitive uploaded documents.
+
+Initial retention policy:
+
+- Sensitive uploads: retain for 90 days after order completion or cancellation.
+- Generated operational files, such as protocol previews, generated summaries, and operational PDFs: retain for 1 year.
+- Customer operational metadata: long-term operational retention allowed.
+
+Governance constraints:
+
+- Do not introduce enterprise compliance complexity yet.
+- Do not make claims about compliance certification.
+- Focus on minimal responsible retention, operational clarity, risk reduction, and future customer lifecycle support.
 
 ## MVP Deferrals
 

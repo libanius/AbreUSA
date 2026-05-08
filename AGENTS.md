@@ -37,6 +37,7 @@ You MUST read before any implementation:
 * /docs/08-decisions-log.md
 * /docs/09-build-status.md
 * /docs/10-decision-gates.md
+* /docs/11-product-memory.md
 
 ---
 

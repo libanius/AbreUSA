@@ -174,13 +174,67 @@ Planned requirements:
 - Restrict document access to the owning customer session and authorized AbreUSA reviewers.
 - Store extraction results separately from original files.
 - Allow customer correction of extracted fields.
-- Define retention before production launch.
+- Separate long-term customer memory from temporary sensitive processing storage.
+- Do not treat AbreUSA as a permanent vault for sensitive identity documents.
 
-Decision Needed:
+Confirmed initial retention direction:
 
-- Retention period for uploaded documents.
-- Internal reviewer access model.
-- Whether documents are deleted after submission/completion.
+- Sensitive uploads are retained for 90 days after order completion or cancellation.
+- Generated operational files are retained for 1 year.
+- Customer operational metadata may be retained long-term for customer relationship, service history, operational follow-up, and business lifecycle support.
+
+Recommended private Supabase Storage buckets:
+
+- `private-documents` for sensitive temporary uploads.
+- `generated-previews` for generated operational previews and files.
+- `internal-summaries` for internal onboarding summaries and operational outputs.
+
+Storage access rules:
+
+- No permanent public URLs.
+- Use signed URLs only.
+- Signed URLs must be short-lived.
+- Authenticated admin access only.
+- Raw storage paths and bucket internals must not be exposed to customers.
+
+Future implementation notes:
+
+- The current bucket structure may need a migration from the existing `documents` bucket to the recommended separated buckets.
+- Retention automation is not implemented yet.
+- Deletion workflow, audit logging, reviewer access scopes, and future compliance framework requirements are tracked as Decision Gates.
+
+Decision Needed later:
+
+- Exact automation design for deletion workflows.
+- Audit log depth for document access and deletion.
+- Whether future compliance requirements require longer retention, legal hold, or customer data export/delete workflows.
+
+## Customer Data Lifecycle Strategy
+
+The long-term strategic value of AbreUSA is not indefinite storage of passports or sensitive uploads.
+
+Long-term platform value should come from:
+
+- Customer lifecycle relationship.
+- Business operational support.
+- Future services.
+- Onboarding intelligence.
+- Operational history.
+
+Potential future services supported by long-term customer memory:
+
+- Annual reports.
+- Renewals.
+- Bookkeeping.
+- Banking guidance.
+- Tax coordination.
+- Compliance reminders.
+
+Architecture principle:
+
+- Long-term customer memory should store relationship and operational context.
+- Temporary sensitive processing storage should store only what is needed to complete onboarding and operational processing.
+- Sensitive uploads should be deleted according to the retention policy unless a later confirmed policy requires a hold or extension.
 
 ## AI Extraction Strategy
 
