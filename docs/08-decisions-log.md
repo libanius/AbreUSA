@@ -484,3 +484,23 @@ Admin can update order status via a dropdown on the order detail page. Persisted
 Valid values: draft, awaiting_documents, ready_for_review, customer_reviewing, approved, internal_review, submitted, completed, blocked.
 
 Decision Needed later: audit log of status changes, automated status-triggered emails.
+
+### 2026-05-08: Strategic Evolution System Added
+
+Decision:
+
+Strategic product evolution must be handled through impact analysis, App Spine synchronization, Decision Gates, roadmap sequencing, and user confirmation before implementation.
+
+Reason:
+
+The product may evolve through strategic conversations, especially around onboarding philosophy, conversational onboarding, AI-guided onboarding, progressive onboarding, state-based onboarding, and onboarding orchestration. These ideas can invalidate existing UX and architecture assumptions, so documentation and operational architecture must evolve before product feature code.
+
+### 2026-05-08: Decision Gates Added As Operational Control
+
+Decision:
+
+Create `/docs/10-decision-gates.md` to track unresolved strategic, UX, architecture, onboarding, compliance, scalability, and AI-orchestration decisions.
+
+Reason:
+
+The existing decisions log records confirmed decisions, but the project also needs an explicit place for unresolved gates that should block or sequence implementation.

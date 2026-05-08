@@ -26,6 +26,7 @@ All product context is stored in:
 
 You MUST read before any implementation:
 
+* /docs/START-HERE.md
 * /docs/01-product-vision.md
 * /docs/02-mvp-scope.md
 * /docs/03-requirements.md
@@ -35,6 +36,7 @@ You MUST read before any implementation:
 * /docs/07-roadmap.md
 * /docs/08-decisions-log.md
 * /docs/09-build-status.md
+* /docs/10-decision-gates.md
 
 ---
 
@@ -101,6 +103,32 @@ No change goes directly to code.
 Always follow:
 
 Idea → Decision → Spec Update → Roadmap Update → Execution
+
+---
+
+## Strategic Evolution Rules
+
+Products evolve through strategic conversations, not only implementation tasks.
+
+The agent must understand:
+
+* Products evolve through strategic conversations
+* Major ideas may impact architecture
+* Onboarding philosophy may evolve
+* UX assumptions may become invalid
+* Architecture must evolve before implementation
+
+The agent must:
+
+* Analyze strategic, UX, architecture, onboarding, compliance, scalability, and AI-orchestration impact before coding
+* Recommend App Spine updates first when a strategic idea changes product direction
+* Create or update Decision Gates for unresolved decisions
+* Recommend sequencing before execution
+* Wait for confirmation before execution
+
+Strategic evolution flow:
+
+Strategic Conversation → Impact Analysis → App Spine Update → Decision Gate Update → Roadmap Sequencing → User Confirmation → Execution
 
 ---
 

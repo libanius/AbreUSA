@@ -2,9 +2,9 @@
 
 ## Current Phase
 
-Phase 7: Production Hardening.
+Phase 8: Post-MVP Expansion and strategic evolution.
 
-Phase 6 is complete. The next step is the first Phase 7 production hardening slice.
+Phases 1-7 are complete. P8-T01 and P8-T02 are complete. P8-T03 is the documentation-only strategic evolution synchronization layer.
 
 ## Phase 0: App Spine Confirmation
 
@@ -1157,6 +1157,7 @@ Current Phase 8 status:
 
 - P8-T01 complete.
 - P8-T02 complete.
+- P8-T03 complete.
 
 ### P8-T01: Applicant Email Confirmation — Integration Structure
 
@@ -1244,11 +1245,87 @@ Acceptance criteria:
 - `npm run build` passes.
 - Three docs updated.
 
+### P8-T03: Strategic Evolution System Synchronization
+
+Task ID: `P8-T03`.
+
+Title: Synchronize App Spine with strategic evolution and onboarding architecture evolution.
+
+Status: Complete (2026-05-08).
+
+Scope:
+
+- Add strategic evolution rules to `AGENTS.md`.
+- Create `/docs/START-HERE.md` as the operating entry point.
+- Add commands for strategic evolution analysis, App Spine synchronization, and Decision Gate review.
+- Create `/docs/10-decision-gates.md`.
+- Update roadmap, decisions log, build status, and progress page.
+- Support future strategic product evolution, onboarding architecture evolution, conversational onboarding systems, AI-guided onboarding, progressive onboarding UX, state-based onboarding, and onboarding orchestration concepts.
+
+Out of scope:
+
+- Product feature code.
+- Conversational onboarding UI.
+- AI-guided onboarding implementation.
+- State machine or workflow implementation.
+- Draft persistence.
+- Customer dashboard changes.
+
+Acceptance criteria:
+
+- `AGENTS.md` includes Strategic Evolution Rules.
+- `START-HERE.md` explains that strategic conversations may require App Spine updates before coding.
+- `COMMANDS.md` includes strategic evolution, App Spine sync, and Decision Gate review prompts.
+- `10-decision-gates.md` exists and tracks unresolved strategic, UX, architecture, onboarding, compliance, scalability, and AI-orchestration decisions.
+- Roadmap supports onboarding orchestration evolution, conversational onboarding architecture, AI-guided onboarding layer, progressive onboarding systems, and state-based onboarding model.
+- Build status reflects strategic evolution synchronization and conversational onboarding direction.
+
+Result:
+
+- Strategic evolution is now treated as an operational architecture layer before implementation.
+- Major onboarding and AI direction changes must go through impact analysis, App Spine updates, Decision Gates, sequencing, and confirmation.
+- No product feature code was changed.
+
+## Strategic Onboarding Evolution Track
+
+Status: Active planning track. No product feature code has started.
+
+Purpose:
+
+- Govern future onboarding changes before implementation.
+- Keep strategic product evolution separate from feature execution.
+- Make onboarding architecture decisions explicit before conversational, AI-guided, progressive, or state-based systems are built.
+
+Supported evolution areas:
+
+- Onboarding orchestration evolution.
+- Conversational onboarding architecture.
+- AI-guided onboarding layer.
+- Progressive onboarding systems.
+- State-based onboarding model.
+
+Next non-code task:
+
+- Task ID: `P8-T04`.
+- Title: Onboarding architecture discovery and Decision Gate review.
+- Scope:
+  - Map the current 13-step guided intake to a candidate onboarding state model.
+  - Identify where conversational onboarding could supplement or replace current guided steps.
+  - Identify where AI guidance may be safe, useful, or risky.
+  - Identify progressive onboarding and resume assumptions.
+  - Review and update relevant Decision Gates.
+  - Do not write product feature code.
+- Acceptance criteria:
+  - Current guided flow is mapped to candidate onboarding states.
+  - Conversational onboarding options are documented.
+  - AI-guided onboarding scope options and guardrails are documented.
+  - Progressive onboarding and resume decisions are captured as gates.
+  - Roadmap, build status, decisions log, Decision Gates, and progress page are updated.
+
 Potential additions (post-P8-T02):
 
 - Payment processing.
 - Customer dashboard.
-- Admin review portal.
 - Real AI OCR/document extraction.
 - Multi-state LLC formation.
 - Operating Agreement generation.
