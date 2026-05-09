@@ -183,7 +183,6 @@ Candidates:
 
 - AbreUSA-branded sender domain migration (temporary current sender is confirmed; branded sender remains a future improvement).
 - Vercel production deployment (temporary Vercel URL acceptable if possible; env vars not yet set in Vercel dashboard).
-- ~~Manual physical file deletion workflow.~~ (Implemented in P8-T11)
 - Vercel Cron retention automation.
 - Reviewer access scope refinement beyond the single authenticated admin MVP model.
 - Audit logging for document access/login/logout/email events beyond current order status and planned deletion events.
@@ -207,17 +206,21 @@ Candidates:
 
 ## Exact Next Step To Resume
 
-Execute `P8-T11: Manual retention deletion workflow foundation`.
+Open a new planning session to confirm P8-T12.
 
-Deliverable: implement the first server-side manual/admin deletion path for eligible sensitive uploads only, with audit attempt/result records and no Vercel Cron.
+P8-T11 is fully implemented and the build is clean. The next task must be determined from the following candidates:
+
+- Vercel Cron automated retention scan (DG-017 deferred; requires manual deletion to be verified in production first).
+- Production deployment: set `RESEND_API_KEY` and `SUPABASE_SERVICE_ROLE_KEY` in Vercel dashboard, then deploy.
+- AbreUSA-branded sender domain migration (Decision Needed before long-term production use).
+- Additional audit event types: admin login/logout, signed URL creation, document open/download intent.
 
 ## Blockers And Risks
 
 - `RESEND_API_KEY` and `SUPABASE_SERVICE_ROLE_KEY` must be set in Vercel environment variables before production deployment.
 - AbreUSA domain email migration is a Decision Needed item before long-term production use.
-- Document retention period is confirmed, but physical deletion is not implemented.
-- Physical deletion remains intentionally unimplemented.
-- Automated retention Cron remains deferred until manual deletion is verified.
+- Manual physical deletion is implemented (P8-T11). In-browser verification against a real eligible document is recommended before enabling for production use.
+- Automated retention Cron (Vercel Cron) remains deferred until manual deletion is verified in production.
 - EIN-only and Registered Agent-only flows remain deferred (Post-MVP).
 - New onboarding concepts can invalidate current UX assumptions; DG-005 through DG-009 now have proposed direction but still need confirmation before implementation.
 - AI-guided onboarding introduces privacy, PII, passport-data, legal/tax guidance, and compliance risks.
