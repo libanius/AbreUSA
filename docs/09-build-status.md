@@ -5,7 +5,7 @@
 Phase 8: Post-MVP Expansion and strategic evolution.
 
 Phases 1–7 are complete. P8-T01 (Resend email) and P8-T02 (admin portal) are complete.
-P8-T03 through P8-T08 are complete. P8-T09 implementation is prepared locally and awaiting Supabase SQL application for runtime verification.
+P8-T03 through P8-T08 are complete. P8-T09 implementation is complete with partial runtime verification; authenticated admin verification is pending.
 
 ## Last Completed Task
 
@@ -30,11 +30,12 @@ Task ID: `P8-T09`
 
 Title: Implement retention metadata and audit event foundation.
 
-Status: Implementation prepared; blocked for runtime verification until `supabase/retention-audit-foundation.sql` is applied in Supabase.
+Status: Implementation complete with partial runtime verification.
 
 Prepared result:
 
 - `supabase/retention-audit-foundation.sql` created.
+- Supabase migration file created: `supabase/migrations/20260508195000_retention_audit_foundation.sql`.
 - `supabase/schema.sql` updated with document retention metadata and `audit_events`.
 - `supabase/rls-storage-lockdown.sql` updated to lock down `audit_events`.
 - Server persistence initializes retention metadata for new document records.
@@ -45,21 +46,26 @@ Prepared result:
 - No Vercel Cron.
 - `npm run lint` passes.
 - `npm run build` passes.
-- Remote schema check shows migration not yet applied: `documents.retention_status` does not exist.
+- Supabase SQL artifact was applied manually in Supabase SQL Editor.
+- Remote schema check confirms `documents` retention metadata columns exist.
+- Remote schema check confirms `audit_events` exists.
+- Dev server verification confirms unauthenticated `/admin/orders` redirects to `/admin/login`.
+- Dev server verification confirms unauthenticated admin PATCH returns `Unauthorized`.
+- Authenticated admin order detail/status audit verification remains pending because no admin credentials/session are available in the local context.
+- Supabase CLI is installed, but remote project operations require `supabase login` / `SUPABASE_ACCESS_TOKEN`; `supabase status` also requires Docker for local status.
 
 ## Next Task
 
 Task ID: `P8-T09V`
 
-Title: Apply retention SQL and verify admin retention metadata.
+Title: Authenticated admin retention metadata verification.
 
 Scope:
 
-- Apply `supabase/retention-audit-foundation.sql` in Supabase.
-- Verify documents expose retention metadata columns.
-- Verify `audit_events` exists.
-- Browser-verify admin order detail.
-- Verify admin status update records an audit event.
+- Log in as an admin.
+- Browser-verify admin order detail shows retention metadata.
+- Update an order status as admin.
+- Verify the status update records an `audit_events` row.
 - Do not physically delete files.
 - Do not add Vercel Cron.
 
@@ -169,8 +175,8 @@ Scope:
 - AbreUSA-branded sender domain migration (temporary current sender is confirmed; branded sender remains a future improvement).
 - Vercel production deployment (temporary Vercel URL acceptable if possible; env vars not yet set in Vercel dashboard).
 - Retention automation and deletion workflows.
-- Runtime application of retention metadata SQL in Supabase.
-- Browser verification of retention metadata in admin order detail.
+- Authenticated browser verification of retention metadata in admin order detail.
+- Authenticated status-update audit event verification.
 - Reviewer access scope refinement.
 - Audit logging for document access/deletion/status changes.
 - Payment processing (Post-MVP).
@@ -193,16 +199,16 @@ Scope:
 
 ## Exact Next Step To Resume
 
-Execute `P8-T09V: Apply retention SQL and verify admin retention metadata`.
+Execute `P8-T09V: Authenticated admin retention metadata verification`.
 
-Deliverable: apply `supabase/retention-audit-foundation.sql`, verify admin retention status display, and verify audit event insertion on admin status update. No physical file deletion.
+Deliverable: log in as admin, verify retention status display, update status, and confirm audit event insertion. No physical file deletion.
 
 ## Blockers And Risks
 
 - `RESEND_API_KEY` and `SUPABASE_SERVICE_ROLE_KEY` must be set in Vercel environment variables before production deployment.
 - AbreUSA domain email migration is a Decision Needed item before long-term production use.
 - Document retention period is confirmed, but deletion automation is not implemented.
-- P8-T09 runtime verification is blocked until the Supabase SQL artifact is applied.
+- P8-T09 authenticated admin verification is pending until admin credentials/session are available.
 - EIN-only and Registered Agent-only flows remain deferred (Post-MVP).
 - New onboarding concepts can invalidate current UX assumptions; DG-005 through DG-009 now have proposed direction but still need confirmation before implementation.
 - AI-guided onboarding introduces privacy, PII, passport-data, legal/tax guidance, and compliance risks.

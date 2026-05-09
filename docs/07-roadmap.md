@@ -1498,8 +1498,9 @@ First code implementation slice:
 
 P8-T09 status:
 
-- Status: Implementation prepared; runtime verification blocked until the Supabase SQL artifact is applied.
+- Status: Implementation complete with partial runtime verification. Authenticated admin verification remains pending.
 - Added SQL artifact: `supabase/retention-audit-foundation.sql`.
+- Added Supabase migration file: `supabase/migrations/20260508195000_retention_audit_foundation.sql`.
 - Updated `supabase/schema.sql` with retention metadata and `audit_events`.
 - Updated `supabase/rls-storage-lockdown.sql` to include `audit_events` lockdown.
 - Updated server persistence to initialize document retention metadata.
@@ -1508,12 +1509,16 @@ P8-T09 status:
 - Updated admin order detail to show retention category, eligibility date, retention status, and deletion status.
 - `npm run lint` passes.
 - `npm run build` passes.
-- Remote Supabase check confirmed the migration is not yet applied: `documents.retention_status` does not exist.
+- Supabase SQL artifact applied manually in Supabase SQL Editor.
+- Remote Supabase check confirms `documents.retention_status`, `documents.retention_eligible_at`, `documents.deletion_status`, and `audit_events` exist.
+- Dev server verification confirms unauthenticated `/admin/orders` redirects to `/admin/login`.
+- Dev server verification confirms unauthenticated admin status PATCH returns `Unauthorized`.
 
-Blocking step:
+Pending verification:
 
-- Apply `supabase/retention-audit-foundation.sql` in the Supabase SQL Editor or through a SQL connection with DDL permission.
-- After the SQL is applied, rerun admin browser verification.
+- Authenticated admin order detail browser verification.
+- Authenticated admin status update audit-event insertion.
+- Requires admin credentials or an existing authenticated admin session.
 
 Potential additions (post-P8-T02):
 

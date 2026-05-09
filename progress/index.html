@@ -268,10 +268,10 @@
           <span class="pill done" data-en="Current phase" data-pt="Fase atual">Current phase</span>
           <p class="phase" data-en="Phase 8: Post-MVP Expansion and Strategic Evolution" data-pt="Fase 8: Expansão pós-MVP e evolução estratégica">Phase 8: Post-MVP Expansion and Strategic Evolution</p>
           <p
-            data-en="Phase 8 in progress. P8-T09 implementation is prepared locally. Next step: apply the retention SQL in Supabase and verify admin retention metadata."
-            data-pt="Fase 8 em andamento. A implementação P8-T09 está preparada localmente. Próximo passo: aplicar o SQL de retenção no Supabase e verificar metadados no admin."
+            data-en="Phase 8 in progress. P8-T09 is implemented with remote schema verification. Next step: authenticated admin retention metadata verification."
+            data-pt="Fase 8 em andamento. P8-T09 está implementado com verificação remota do schema. Próximo passo: verificação autenticada dos metadados de retenção no admin."
           >
-            Phase 8 in progress. P8-T09 implementation is prepared locally. Next step: apply the retention SQL in Supabase and verify admin retention metadata.
+            Phase 8 in progress. P8-T09 is implemented with remote schema verification. Next step: authenticated admin retention metadata verification.
           </p>
           <div class="progress-wrap" aria-label="Project progress">
             <div class="progress-label">
@@ -353,7 +353,7 @@
             <li data-en="P8-T06 Retention and customer data lifecycle policy confirmed: 90-day sensitive upload retention, 1-year generated file retention, long-term customer operational memory." data-pt="P8-T06 Política de retenção e ciclo de vida de dados confirmada: retenção de 90 dias para uploads sensíveis, 1 ano para arquivos gerados e memória operacional do cliente de longo prazo.">P8-T06 Retention and customer data lifecycle policy confirmed: 90-day sensitive upload retention, 1-year generated file retention, long-term customer operational memory.</li>
             <li data-en="P8-T07 Retention automation architecture complete: eligible-for-deletion workflow, deletion audit model, and reviewer access scope proposed." data-pt="P8-T07 Arquitetura de automação de retenção concluída: workflow eligible-for-deletion, modelo de auditoria de deleção e escopo de acesso de reviewer propostos.">P8-T07 Retention automation architecture complete: eligible-for-deletion workflow, deletion audit model, and reviewer access scope proposed.</li>
             <li data-en="P8-T08 Retention metadata and audit-log implementation planning complete." data-pt="P8-T08 Planejamento de implementação de metadados de retenção e audit log concluído.">P8-T08 Retention metadata and audit-log implementation planning complete.</li>
-            <li data-en="P8-T09 implementation prepared locally: retention SQL artifact, audit_events model, admin retention status display, and status-update audit path." data-pt="P8-T09 implementação preparada localmente: artefato SQL de retenção, modelo audit_events, exibição de status de retenção no admin e auditoria de atualização de status.">P8-T09 implementation prepared locally: retention SQL artifact, audit_events model, admin retention status display, and status-update audit path.</li>
+            <li data-en="P8-T09 implemented: retention SQL applied, remote schema verified, admin retention UI compiled, unauthenticated admin routes still protected." data-pt="P8-T09 implementado: SQL de retenção aplicado, schema remoto verificado, UI de retenção no admin compilada, rotas admin sem autenticação seguem protegidas.">P8-T09 implemented: retention SQL applied, remote schema verified, admin retention UI compiled, unauthenticated admin routes still protected.</li>
           </ul>
         </article>
 
@@ -399,30 +399,30 @@
             <li data-en="Temporary current sender is confirmed; temporary Vercel-provided URL is acceptable for controlled deployment if possible." data-pt="O remetente atual temporário está confirmado; URL temporária fornecida pela Vercel é aceitável para deploy controlado se possível.">Temporary current sender is confirmed; temporary Vercel-provided URL is acceptable for controlled deployment if possible.</li>
             <li data-en="Retention automation direction: mark sensitive uploads as eligible for deletion before deletion, then delete with audit record." data-pt="Direção de automação de retenção: marcar uploads sensíveis como elegíveis para deleção antes de deletar, depois deletar com registro de auditoria.">Retention automation direction: mark sensitive uploads as eligible for deletion before deletion, then delete with audit record.</li>
             <li data-en="Retention metadata and audit event models are planned; physical deletion remains out of scope for the first implementation slice." data-pt="Modelos de metadados de retenção e eventos de auditoria estão planejados; deleção física fica fora do primeiro recorte de implementação.">Retention metadata and audit event models are planned; physical deletion remains out of scope for the first implementation slice.</li>
-            <li data-en="P8-T09 is blocked for runtime verification until supabase/retention-audit-foundation.sql is applied in Supabase." data-pt="P8-T09 está bloqueado para verificação runtime até aplicar supabase/retention-audit-foundation.sql no Supabase.">P8-T09 is blocked for runtime verification until supabase/retention-audit-foundation.sql is applied in Supabase.</li>
+            <li data-en="Authenticated admin retention display and status-update audit event verification remain pending until admin login is available." data-pt="A verificação autenticada da exibição de retenção no admin e do audit event de atualização de status segue pendente até login admin estar disponível.">Authenticated admin retention display and status-update audit event verification remain pending until admin login is available.</li>
             <li data-en="Payment, customer dashboard, branded AbreUSA sender migration, retention automation, and onboarding evolution implementations remain not implemented." data-pt="Pagamento, dashboard do cliente, migração para remetente AbreUSA, automação de retenção e implementações de evolução de onboarding ainda não foram implementados.">Payment, customer dashboard, branded AbreUSA sender migration, retention automation, and onboarding evolution implementations remain not implemented.</li>
           </ul>
         </article>
 
         <article class="card task">
           <span class="pill done" data-en="Last completed" data-pt="Última concluída">Last completed</span>
-          <h2 data-en="P8-T09 — Local Foundation" data-pt="P8-T09 — Base local">P8-T09 — Local Foundation</h2>
+          <h2 data-en="P8-T09 — Metadata Foundation" data-pt="P8-T09 — Base de metadados">P8-T09 — Metadata Foundation</h2>
           <p
-            data-en="Retention metadata and audit event foundation is implemented locally and passes lint/build. Runtime verification waits for Supabase SQL application."
-            data-pt="A base de metadados de retenção e eventos de auditoria está implementada localmente e passa lint/build. A verificação runtime aguarda aplicar o SQL no Supabase."
+            data-en="Retention metadata and audit event foundation is implemented, schema-verified remotely, and protected unauthenticated admin routes remain enforced."
+            data-pt="A base de metadados de retenção e eventos de auditoria está implementada, verificada no schema remoto, e as rotas admin protegidas seguem exigindo autenticação."
           >
-            Retention metadata and audit event foundation is implemented locally and passes lint/build. Runtime verification waits for Supabase SQL application.
+            Retention metadata and audit event foundation is implemented, schema-verified remotely, and protected unauthenticated admin routes remain enforced.
           </p>
         </article>
 
         <article class="card next">
           <span class="pill" data-en="Next task" data-pt="Próxima tarefa">Next task</span>
-          <h2 data-en="P8-T09V — Apply SQL" data-pt="P8-T09V — Aplicar SQL">P8-T09V — Apply SQL</h2>
+          <h2 data-en="P8-T09V — Admin Verify" data-pt="P8-T09V — Verificar admin">P8-T09V — Admin Verify</h2>
           <p
-            data-en="Apply supabase/retention-audit-foundation.sql, then verify admin order detail and status-update audit events."
-            data-pt="Aplicar supabase/retention-audit-foundation.sql, depois verificar detalhe admin e eventos de auditoria de atualização de status."
+            data-en="Log in as admin, verify retention metadata on order detail, update status, and confirm audit_events insertion."
+            data-pt="Entrar como admin, verificar metadados de retenção no detalhe do pedido, atualizar status e confirmar inserção em audit_events."
           >
-            Apply supabase/retention-audit-foundation.sql, then verify admin order detail and status-update audit events.
+            Log in as admin, verify retention metadata on order detail, update status, and confirm audit_events insertion.
           </p>
         </article>
       </section>
