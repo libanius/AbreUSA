@@ -5,72 +5,61 @@
 Phase 8: Post-MVP Expansion and strategic evolution.
 
 Phases 1–7 are complete. P8-T01 (Resend email) and P8-T02 (admin portal) are complete.
-P8-T03 through P8-T09V are complete. Retention metadata and audit event foundation is implemented and verified.
+P8-T03 through P8-T10 are complete. Retention metadata, audit event foundation, and first deletion workflow planning are complete.
 
 ## Last Completed Task
-
-Task ID: `P8-T08`
-
-Title: Retention metadata and audit-log implementation planning.
-
-Result:
-
-- Retention metadata model documented in `/docs/06-data-model.md` and `/docs/11-product-memory.md`.
-- Audit event model documented in `/docs/06-data-model.md`.
-- DG-011 Document Retention Automation moved to `Confirmed`.
-- DG-012 Deletion Workflow And Responsibility moved to `Confirmed`.
-- DG-014 Audit Logging Scope moved to `Confirmed`.
-- First implementation slice scoped as P8-T09.
-- Physical file deletion remains out of scope until metadata and audit foundations exist.
-- No product feature code was changed.
-
-## Current Task
-
-Task ID: `P8-T09`
-
-Title: Implement retention metadata and audit event foundation.
-
-Status: Complete.
-
-Prepared result:
-
-- `supabase/retention-audit-foundation.sql` created.
-- Supabase migration file created: `supabase/migrations/20260508195000_retention_audit_foundation.sql`.
-- `supabase/schema.sql` updated with document retention metadata and `audit_events`.
-- `supabase/rls-storage-lockdown.sql` updated to lock down `audit_events`.
-- Server persistence initializes retention metadata for new document records.
-- Admin order detail displays retention status, deletion status, and eligibility date.
-- Admin status updates insert `audit_events`.
-- Moving an order to `completed` or `blocked` sets sensitive documents' `retention_eligible_at` to 90 days later.
-- No physical file deletion.
-- No Vercel Cron.
-- `npm run lint` passes.
-- `npm run build` passes.
-- Supabase SQL artifact was applied manually in Supabase SQL Editor.
-- Remote schema check confirms `documents` retention metadata columns exist.
-- Remote schema check confirms `audit_events` exists.
-- Dev server verification confirms unauthenticated `/admin/orders` redirects to `/admin/login`.
-- Dev server verification confirms unauthenticated admin PATCH returns `Unauthorized`.
-- Authenticated admin status update verified by user.
-- Supabase verification confirmed an `order_status_updated` audit event.
-- Supabase verification confirmed both sensitive document rows for the tested order received `retention_eligible_at`.
-- Tested order ID: `3c34ff96-f0eb-4e86-bb5c-609268b188d4`.
-- New status: `completed`.
-- Retention eligible date: `2026-08-07T00:13:37.338Z`.
-- Supabase CLI is installed, but remote project operations require `supabase login` / `SUPABASE_ACCESS_TOKEN`; `supabase status` also requires Docker for local status.
-
-## Next Task
 
 Task ID: `P8-T10`
 
 Title: Retention deletion workflow implementation planning.
 
+Result:
+
+- First physical deletion workflow scoped as manual/admin-triggered.
+- Vercel Cron deferred until the manual workflow is verified.
+- DG-013 Reviewer Access Scopes confirmed for MVP controlled launch.
+- DG-016 Physical Deletion Safeguards added and confirmed.
+- DG-017 Automated Retention Cron added and deferred.
+- Deletion audit sequence defined: attempt before storage removal, success/failure after outcome.
+- Customer operational memory remains separate from sensitive upload cleanup.
+- No product feature code was changed.
+
+## Current Task
+
+Task ID: `P8-T10`
+
+Title: Retention deletion workflow implementation planning.
+
+Status: Complete.
+
+Prepared result:
+
+- First physical deletion workflow should be manual/admin-triggered, not scheduled.
+- Vercel Cron remains deferred.
+- Physical deletion must be limited to eligible `sensitive_upload` records.
+- The server must verify `retention_eligible_at <= now()` before storage removal.
+- Admin confirmation is required before each selected document or reviewed batch is deleted.
+- Deletion attempt/result audit events are required.
+- Deletion success updates document metadata and removes the storage object.
+- Deletion failure preserves the document record and keeps the item visible for follow-up.
+- Customer operational metadata is preserved.
+- No product feature code was changed.
+
+## Next Task
+
+Task ID: `P8-T11`
+
+Title: Manual retention deletion workflow foundation.
+
 Scope:
 
-- Define first deletion implementation slice now that metadata/audit foundations are verified.
-- Decide whether first deletion action is manual admin-triggered or scheduled.
-- Define safeguards before physical deletion.
-- Do not implement deletion until scope is confirmed.
+- Add a server-side authenticated admin deletion action for eligible sensitive uploads.
+- Verify document ownership, retention category, eligibility date, deletion status, bucket, and storage path before deletion.
+- Create `document_deletion_attempted` before storage removal.
+- Delete from private Supabase Storage only after the audit attempt is created.
+- Update document deletion metadata and create success/failure audit events.
+- Keep Vercel Cron out of scope.
+- Keep customer operational metadata untouched.
 
 ## Completed Tasks
 
@@ -103,6 +92,7 @@ Scope:
 - P8-T08: Retention metadata and audit-log implementation planning complete.
 - P8-T09: Retention metadata and audit event foundation implemented.
 - P8-T09V: Authenticated admin retention/audit verification complete.
+- P8-T10: Retention deletion workflow implementation planning complete.
 
 ## What Is Implemented
 
@@ -171,6 +161,11 @@ Scope:
   - Admin status update records `order_status_updated` audit event.
   - Moving an order to `completed` schedules sensitive uploads for retention eligibility 90 days later.
   - Verified with order ID `3c34ff96-f0eb-4e86-bb5c-609268b188d4`.
+- P8-T10 deletion workflow planning:
+  - First physical deletion workflow is manual/admin-triggered.
+  - Vercel Cron is deferred until manual deletion is verified.
+  - Physical deletion requires server-side eligibility checks, admin confirmation, and audit events.
+  - Customer operational memory remains separate from sensitive upload deletion.
 - Key files:
   - `lib/supabase-server.ts` — service-role Supabase client.
   - `lib/supabase-ssr.ts` — SSR auth client (route handlers, server components).
@@ -185,11 +180,10 @@ Scope:
 
 - AbreUSA-branded sender domain migration (temporary current sender is confirmed; branded sender remains a future improvement).
 - Vercel production deployment (temporary Vercel URL acceptable if possible; env vars not yet set in Vercel dashboard).
-- Retention automation and deletion workflows.
-- Physical file deletion workflow.
+- Manual physical file deletion workflow.
 - Vercel Cron retention automation.
-- Reviewer access scope refinement.
-- Audit logging for document access/deletion/status changes.
+- Reviewer access scope refinement beyond the single authenticated admin MVP model.
+- Audit logging for document access/login/logout/email events beyond current order status and planned deletion events.
 - Payment processing (Post-MVP).
 - Customer dashboard (Post-MVP).
 - EIN-only and Registered Agent-only dedicated flows (deferred, Post-MVP).
@@ -198,7 +192,7 @@ Scope:
 - Automated status-triggered emails to applicant (Post-MVP).
 - Real AI OCR/document extraction (Post-MVP).
 - Signed URL strategy for reviewer access beyond admin portal (resolved for admin; Post-MVP for external reviewers).
-- Document retention period policy (Decision Needed).
+- Automated retention Cron.
 - Multi-state LLC formation (Post-MVP).
 - Operating Agreement generation (Post-MVP).
 - Conversational onboarding UI or chat experience; only assistive strategy is proposed.
@@ -210,16 +204,17 @@ Scope:
 
 ## Exact Next Step To Resume
 
-Execute `P8-T10: Retention deletion workflow implementation planning`.
+Execute `P8-T11: Manual retention deletion workflow foundation`.
 
-Deliverable: scope the first physical deletion workflow with safeguards. No deletion implementation until confirmed.
+Deliverable: implement the first server-side manual/admin deletion path for eligible sensitive uploads only, with audit attempt/result records and no Vercel Cron.
 
 ## Blockers And Risks
 
 - `RESEND_API_KEY` and `SUPABASE_SERVICE_ROLE_KEY` must be set in Vercel environment variables before production deployment.
 - AbreUSA domain email migration is a Decision Needed item before long-term production use.
-- Document retention period is confirmed, but deletion automation is not implemented.
+- Document retention period is confirmed, but physical deletion is not implemented.
 - Physical deletion remains intentionally unimplemented.
+- Automated retention Cron remains deferred until manual deletion is verified.
 - EIN-only and Registered Agent-only flows remain deferred (Post-MVP).
 - New onboarding concepts can invalidate current UX assumptions; DG-005 through DG-009 now have proposed direction but still need confirmation before implementation.
 - AI-guided onboarding introduces privacy, PII, passport-data, legal/tax guidance, and compliance risks.

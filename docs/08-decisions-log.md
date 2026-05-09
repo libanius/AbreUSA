@@ -620,3 +620,33 @@ The first implementation slice should add document retention metadata, add an op
 Reason:
 
 Physical deletion without metadata, admin visibility, and audit records would create operational ambiguity. The foundation should make deletion eligibility visible and auditable before enforcement begins.
+
+### 2026-05-09: First Physical Deletion Workflow Must Be Manual And Audited
+
+Decision:
+
+The first physical sensitive document deletion workflow should be manual/admin-triggered, server-side, and fully audited before any scheduled automation is introduced.
+
+Required safeguards:
+
+- Verify `retention_category = sensitive_upload`.
+- Verify `retention_eligible_at <= now()` server-side.
+- Verify the document has not already been deleted.
+- Create `document_deletion_attempted` before storage removal.
+- On success, create `document_deleted` and update deletion metadata on the document row.
+- On failure, create `document_deletion_failed`, preserve the document record, and keep the item visible for follow-up.
+- Preserve applicant profile, service history, company metadata, protocol history, status timeline, and operational notes.
+
+Reason:
+
+Manual audited deletion reduces sensitive-document retention risk without introducing premature scheduled automation. It also verifies the operational model before Vercel Cron or bulk deletion is considered.
+
+### 2026-05-09: Retention Cron Deferred Until Manual Workflow Is Verified
+
+Decision:
+
+Do not add Vercel Cron or automated physical deletion yet. Cron remains the preferred future automation path after manual deletion behavior, audit records, failure handling, and admin review are verified.
+
+Reason:
+
+The project needs a safe, inspectable deletion path before unattended deletion runs against private storage. A manual-first workflow keeps MVP governance simple while preserving a clear path to scale.

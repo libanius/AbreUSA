@@ -1533,6 +1533,48 @@ P8-T09V status:
 - No physical file deletion was performed.
 - No Vercel Cron was added.
 
+P8-T10 status:
+
+- Status: Complete (2026-05-09).
+- First physical deletion workflow is scoped as manual/admin-triggered, not scheduled.
+- Vercel Cron remains deferred until manual deletion behavior, audit records, failure handling, and admin review are verified.
+- DG-013 Reviewer Access Scopes moved to `Confirmed` for MVP controlled launch.
+- DG-016 Physical Deletion Safeguards added and confirmed.
+- DG-017 Automated Retention Cron added and deferred.
+- `/docs/08-decisions-log.md`, `/docs/10-decision-gates.md`, `/docs/11-product-memory.md`, `/docs/09-build-status.md`, and `/progress/index.html` updated.
+- No product feature code was changed.
+
+P8-T10 deletion workflow plan:
+
+- Delete only sensitive uploads eligible under the retention policy.
+- Enforce `retention_eligible_at <= now()` server-side.
+- Require authenticated admin confirmation before physical deletion.
+- Create `document_deletion_attempted` before storage removal.
+- On success, create `document_deleted` and update the document row with `retention_status = deleted`, `deletion_status = success`, `deleted_at`, `deleted_by`, `deletion_reason`, and `deletion_audit_id`.
+- On failure, create `document_deletion_failed`, set `deletion_status = failed`, preserve the document record, and keep the item visible for operational follow-up.
+- Preserve customer memory: applicant profile, service history, company metadata, protocol history, status timeline, and operational notes are not deleted by the sensitive upload cleanup workflow.
+- Do not add broad bulk deletion without a reviewed preview/dry-run step.
+
+Next implementation task:
+
+- Task ID: `P8-T11`.
+- Title: Manual retention deletion workflow foundation.
+- Scope:
+  - Add a server-side authenticated admin deletion action for eligible sensitive uploads.
+  - Verify document ownership, retention category, eligibility date, deletion status, bucket, and storage path before deletion.
+  - Delete from private Supabase Storage only after audit attempt creation.
+  - Update deletion metadata and audit events on success/failure.
+  - Keep Vercel Cron out of scope.
+  - Keep customer operational metadata untouched.
+- Acceptance criteria:
+  - Ineligible documents cannot be deleted.
+  - Eligible document deletion records attempt/result audit events.
+  - Successful deletion removes the storage object and marks the document as deleted.
+  - Failed deletion records failure without removing operational visibility.
+  - `npm run lint` passes.
+  - `npm run build` passes.
+  - Browser/API verification covers unauthorized, ineligible, and eligible deletion paths.
+
 Potential additions (post-P8-T02):
 
 - Payment processing.

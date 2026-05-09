@@ -268,10 +268,10 @@
           <span class="pill done" data-en="Current phase" data-pt="Fase atual">Current phase</span>
           <p class="phase" data-en="Phase 8: Post-MVP Expansion and Strategic Evolution" data-pt="Fase 8: Expansão pós-MVP e evolução estratégica">Phase 8: Post-MVP Expansion and Strategic Evolution</p>
           <p
-            data-en="Phase 8 in progress. P8-T09V is complete. Retention metadata and audit event foundation is verified."
-            data-pt="Fase 8 em andamento. P8-T09V está concluído. A base de metadados de retenção e eventos de auditoria está verificada."
+            data-en="Phase 8 in progress. P8-T10 is complete. The first deletion workflow is scoped as manual, admin-triggered, and audited."
+            data-pt="Fase 8 em andamento. P8-T10 está concluído. O primeiro workflow de deleção está escopado como manual, acionado por admin e auditado."
           >
-            Phase 8 in progress. P8-T09V is complete. Retention metadata and audit event foundation is verified.
+            Phase 8 in progress. P8-T10 is complete. The first deletion workflow is scoped as manual, admin-triggered, and audited.
           </p>
           <div class="progress-wrap" aria-label="Project progress">
             <div class="progress-label">
@@ -286,7 +286,7 @@
 
         <aside class="card metric">
           <span class="pill" data-en="Last updated" data-pt="Última atualização">Last updated</span>
-          <p class="phase" data-en="May 8, 2026" data-pt="8 de maio de 2026">May 8, 2026</p>
+          <p class="phase" data-en="May 9, 2026" data-pt="9 de maio de 2026">May 9, 2026</p>
           <p
             class="updated"
             data-en="Source of truth: /docs App Spine and current build status."
@@ -355,6 +355,7 @@
             <li data-en="P8-T08 Retention metadata and audit-log implementation planning complete." data-pt="P8-T08 Planejamento de implementação de metadados de retenção e audit log concluído.">P8-T08 Retention metadata and audit-log implementation planning complete.</li>
             <li data-en="P8-T09 implemented: retention SQL applied, remote schema verified, admin retention UI compiled, unauthenticated admin routes still protected." data-pt="P8-T09 implementado: SQL de retenção aplicado, schema remoto verificado, UI de retenção no admin compilada, rotas admin sem autenticação seguem protegidas.">P8-T09 implemented: retention SQL applied, remote schema verified, admin retention UI compiled, unauthenticated admin routes still protected.</li>
             <li data-en="P8-T09V verified: admin status update created audit event and scheduled sensitive document retention eligibility for 90 days later." data-pt="P8-T09V verificado: atualização de status admin criou audit event e agendou elegibilidade de retenção dos documentos sensíveis para 90 dias depois.">P8-T09V verified: admin status update created audit event and scheduled sensitive document retention eligibility for 90 days later.</li>
+            <li data-en="P8-T10 complete: first physical deletion workflow scoped as manual/admin-triggered with audit events and server-side eligibility checks." data-pt="P8-T10 concluído: primeiro workflow de deleção física escopado como manual/acionado por admin, com audit events e validações de elegibilidade no servidor.">P8-T10 complete: first physical deletion workflow scoped as manual/admin-triggered with audit events and server-side eligibility checks.</li>
           </ul>
         </article>
 
@@ -399,31 +400,31 @@
             <li data-en="Retention philosophy confirmed: AbreUSA should keep customer lifecycle memory, not indefinite sensitive document storage." data-pt="Filosofia de retenção confirmada: AbreUSA deve manter memória do ciclo de vida do cliente, não armazenamento indefinido de documentos sensíveis.">Retention philosophy confirmed: AbreUSA should keep customer lifecycle memory, not indefinite sensitive document storage.</li>
             <li data-en="Temporary current sender is confirmed; temporary Vercel-provided URL is acceptable for controlled deployment if possible." data-pt="O remetente atual temporário está confirmado; URL temporária fornecida pela Vercel é aceitável para deploy controlado se possível.">Temporary current sender is confirmed; temporary Vercel-provided URL is acceptable for controlled deployment if possible.</li>
             <li data-en="Retention automation direction: mark sensitive uploads as eligible for deletion before deletion, then delete with audit record." data-pt="Direção de automação de retenção: marcar uploads sensíveis como elegíveis para deleção antes de deletar, depois deletar com registro de auditoria.">Retention automation direction: mark sensitive uploads as eligible for deletion before deletion, then delete with audit record.</li>
-            <li data-en="Retention metadata and audit event models are planned; physical deletion remains out of scope for the first implementation slice." data-pt="Modelos de metadados de retenção e eventos de auditoria estão planejados; deleção física fica fora do primeiro recorte de implementação.">Retention metadata and audit event models are planned; physical deletion remains out of scope for the first implementation slice.</li>
-            <li data-en="Physical deletion remains intentionally unimplemented; next step is deletion workflow planning with safeguards." data-pt="Deleção física continua intencionalmente não implementada; próximo passo é planejar o workflow de deleção com salvaguardas.">Physical deletion remains intentionally unimplemented; next step is deletion workflow planning with safeguards.</li>
+            <li data-en="Retention metadata and audit event foundation are implemented and verified; physical deletion remains intentionally unimplemented." data-pt="A base de metadados de retenção e eventos de auditoria está implementada e verificada; deleção física continua intencionalmente não implementada.">Retention metadata and audit event foundation are implemented and verified; physical deletion remains intentionally unimplemented.</li>
+            <li data-en="Physical deletion remains intentionally unimplemented; next step is a manual admin deletion foundation for eligible sensitive uploads only." data-pt="Deleção física continua intencionalmente não implementada; o próximo passo é uma base de deleção manual por admin apenas para uploads sensíveis elegíveis.">Physical deletion remains intentionally unimplemented; next step is a manual admin deletion foundation for eligible sensitive uploads only.</li>
             <li data-en="Payment, customer dashboard, branded AbreUSA sender migration, retention automation, and onboarding evolution implementations remain not implemented." data-pt="Pagamento, dashboard do cliente, migração para remetente AbreUSA, automação de retenção e implementações de evolução de onboarding ainda não foram implementados.">Payment, customer dashboard, branded AbreUSA sender migration, retention automation, and onboarding evolution implementations remain not implemented.</li>
           </ul>
         </article>
 
         <article class="card task">
           <span class="pill done" data-en="Last completed" data-pt="Última concluída">Last completed</span>
-          <h2 data-en="P8-T09V — Verified" data-pt="P8-T09V — Verificado">P8-T09V — Verified</h2>
+          <h2 data-en="P8-T10 — Planned" data-pt="P8-T10 — Planejado">P8-T10 — Planned</h2>
           <p
-            data-en="Admin status update created an audit event and scheduled document retention eligibility for 2026-08-07."
-            data-pt="A atualização de status admin criou um audit event e agendou a elegibilidade de retenção dos documentos para 2026-08-07."
+            data-en="First physical deletion workflow is scoped as manual/admin-triggered, server-side eligible, and audited before any Cron automation."
+            data-pt="O primeiro workflow de deleção física está escopado como manual/acionado por admin, validado no servidor e auditado antes de qualquer automação Cron."
           >
-            Admin status update created an audit event and scheduled document retention eligibility for 2026-08-07.
+            First physical deletion workflow is scoped as manual/admin-triggered, server-side eligible, and audited before any Cron automation.
           </p>
         </article>
 
         <article class="card next">
           <span class="pill" data-en="Next task" data-pt="Próxima tarefa">Next task</span>
-          <h2 data-en="P8-T10 — Deletion Planning" data-pt="P8-T10 — Planejar deleção">P8-T10 — Deletion Planning</h2>
+          <h2 data-en="P8-T11 — Manual Deletion" data-pt="P8-T11 — Deleção manual">P8-T11 — Manual Deletion</h2>
           <p
-            data-en="Scope the first physical deletion workflow with safeguards before implementing any file removal."
-            data-pt="Escopar o primeiro workflow de deleção física com salvaguardas antes de implementar remoção de arquivos."
+            data-en="Implement the first server-side admin deletion path for eligible sensitive uploads only, with audit attempt/result records and no Vercel Cron."
+            data-pt="Implementar o primeiro caminho server-side de deleção por admin apenas para uploads sensíveis elegíveis, com registros de tentativa/resultado e sem Vercel Cron."
           >
-            Scope the first physical deletion workflow with safeguards before implementing any file removal.
+            Implement the first server-side admin deletion path for eligible sensitive uploads only, with audit attempt/result records and no Vercel Cron.
           </p>
         </article>
       </section>
@@ -438,7 +439,7 @@
           <li data-en="Payment timing if payment is added later." data-pt="Momento do pagamento caso pagamento seja adicionado depois.">Payment timing if payment is added later.</li>
           <li data-en="PDF/export strategy beyond HTML preview." data-pt="Estratégia de PDF/exportação além do preview em HTML.">PDF/export strategy beyond HTML preview.</li>
           <li data-en="Draft persistence and resume behavior." data-pt="Persistência de rascunho e retomada do fluxo.">Draft persistence and resume behavior.</li>
-          <li data-en="Retention automation, deletion workflow, reviewer access scopes, and audit logging." data-pt="Automação de retenção, workflow de deleção, escopos de acesso de reviewers e auditoria.">Retention automation, deletion workflow, reviewer access scopes, and audit logging.</li>
+          <li data-en="Manual deletion implementation, future retention Cron, granular reviewer access scopes, and expanded audit logging." data-pt="Implementação de deleção manual, Cron futuro de retenção, escopos granulares de reviewers e auditoria expandida.">Manual deletion implementation, future retention Cron, granular reviewer access scopes, and expanded audit logging.</li>
           <li data-en="Signed URL strategy for internal document review." data-pt="Estratégia de URLs assinadas para revisão interna de documentos.">Signed URL strategy for internal document review.</li>
           <li data-en="Conversational onboarding role: supplement or replace parts of the guided flow." data-pt="Papel do onboarding conversacional: complementar ou substituir partes do fluxo guiado.">Conversational onboarding role: supplement or replace parts of the guided flow.</li>
           <li data-en="AI-guided onboarding scope and guardrails for PII, passport data, and legal/tax guidance." data-pt="Escopo e limites do onboarding guiado por IA para PII, dados de passaporte e orientação legal/tributária.">AI-guided onboarding scope and guardrails for PII, passport data, and legal/tax guidance.</li>

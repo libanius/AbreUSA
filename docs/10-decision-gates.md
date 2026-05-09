@@ -46,7 +46,7 @@ P8-T06 confirmation:
 
 - Initial retention policy confirmed.
 - Implementation automation is not built yet.
-- Retention automation, deletion workflows, reviewer access scopes, audit logging, and future compliance framework needs remain separate gates.
+- Retention automation, deletion workflows, reviewer access scopes, audit logging, and future compliance framework needs are tracked through separate gates.
 
 Follow-up required:
 
@@ -281,6 +281,12 @@ P8-T08 confirmation:
 - File deletion remains out of scope for the first implementation slice.
 - Manual-only operation is acceptable for the first slice; Vercel Cron can be added after metadata/audit foundations exist.
 
+P8-T10 confirmation:
+
+- The first physical deletion workflow should be manual/admin-triggered, not scheduled.
+- Vercel Cron remains deferred until the manual workflow is verified with audit records and safe failure handling.
+- The deletion API must check `retention_eligible_at <= now()` server-side before deleting any file.
+
 ### DG-012: Deletion Workflow And Responsibility
 
 Category: Operations, governance.
@@ -309,11 +315,18 @@ P8-T08 confirmation:
 - First implementation should preserve deletion responsibility as manual/admin-reviewed.
 - Metadata should support later automation without requiring immediate automatic deletion.
 
+P8-T10 confirmation:
+
+- AbreUSA operations owns first-pass deletion review.
+- Physical deletion requires explicit admin confirmation for each selected document or reviewed batch.
+- Deleted file metadata remains in the operational record; customer lifecycle memory is not deleted as part of sensitive file cleanup.
+- Deletion failures must be recorded without hiding the document from operational review.
+
 ### DG-013: Reviewer Access Scopes
 
 Category: Security, admin, operations.
 
-Status: Proposed.
+Status: Confirmed.
 
 Decision needed:
 
@@ -331,6 +344,12 @@ P8-T07 proposed direction:
 - Generate short-lived signed URLs server-side.
 - Do not add granular role-based access until order volume, team size, or external reviewers require it.
 - Future scopes may include owner/admin, reviewer, operations, and external accountant/tax reviewer.
+
+P8-T10 confirmation:
+
+- Single authenticated admin access remains acceptable for the first deletion workflow.
+- Granular reviewer scopes remain deferred until operational volume, external reviewer access, or assignment workflows require them.
+- Deletion actions must still be server-side and service-role only; browser code must not receive storage credentials.
 
 ### DG-014: Audit Logging Scope
 
@@ -360,6 +379,12 @@ P8-T08 confirmation:
 - Priority audit events: document retention eligibility, document deletion attempt/result, and order status update.
 - Signed URL generation and admin login/logout can follow after the first audit foundation exists.
 
+P8-T10 confirmation:
+
+- First deletion implementation must create `document_deletion_attempted` before storage removal.
+- Successful deletion must create `document_deleted`, update the document row to `retention_status = deleted`, set `deletion_status = success`, and record `deleted_at`, `deleted_by`, `deletion_reason`, and `deletion_audit_id`.
+- Failed deletion must create `document_deletion_failed`, set `deletion_status = failed`, preserve the document for review, and store a non-sensitive error message.
+
 ### DG-015: Future Compliance Framework Needs
 
 Category: Compliance, privacy, scalability.
@@ -373,3 +398,49 @@ Decision needed:
 Blocks:
 
 - Enterprise or regulated expansion.
+
+### DG-016: Physical Deletion Safeguards
+
+Category: Privacy, storage, operations.
+
+Status: Confirmed.
+
+Decision:
+
+- Do not implement physical file deletion without server-side eligibility checks, admin confirmation, and audit records.
+- Deletion must be limited to sensitive uploads that are eligible under the retention policy.
+- Generated operational files and customer operational metadata must not be deleted by the sensitive upload workflow.
+
+Blocks:
+
+- First physical file deletion implementation.
+- Any future bulk deletion workflow.
+
+P8-T10 confirmation:
+
+- Deletion must run through authenticated admin routes only.
+- The server must verify order/document ownership, storage bucket/path, retention category, retention eligibility, and current deletion status.
+- No permanent public URLs should be introduced.
+- No broad bulk deletion should run without a reviewed preview/dry-run step.
+- Failed deletion should leave enough metadata for manual follow-up.
+
+### DG-017: Automated Retention Cron
+
+Category: Automation, deployment, operations.
+
+Status: Deferred.
+
+Decision needed:
+
+- When to move from manual/admin-triggered deletion to scheduled deletion automation.
+- Whether Vercel Cron should mark eligible documents only, delete eligible documents, or both.
+
+Blocks:
+
+- Automatic retention enforcement.
+- Scheduled deletion at scale.
+
+P8-T10 direction:
+
+- Defer Cron until manual deletion is implemented and verified.
+- Prefer a future two-phase Cron design: eligibility marking first, deletion execution only after operational review criteria are proven.

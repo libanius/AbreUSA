@@ -136,7 +136,7 @@ Constraints:
 
 ## Retention Automation Architecture
 
-Status: P8-T07 proposed architecture. Not implemented.
+Status: P8-T10 deletion workflow planning complete. Manual deletion implementation not yet built.
 
 Recommended workflow:
 
@@ -152,6 +152,14 @@ Recommended workflow:
    - Record deletion outcome.
 4. Preserve customer memory:
    - Do not delete applicant profile, service history, company metadata, protocol history, status timeline, or operational notes as part of sensitive file deletion.
+
+First physical deletion approach:
+
+- Start with manual/admin-triggered deletion.
+- Do not start with Vercel Cron or unattended deletion.
+- Require server-side eligibility checks before storage removal.
+- Require admin confirmation before each selected document or reviewed batch is deleted.
+- Keep Vercel Cron as the preferred future automation path only after the manual workflow is verified.
 
 ## Deletion Audit Model
 
@@ -171,9 +179,33 @@ Deletion records should capture:
 
 Audit records should be operational metadata.
 
+Deletion event sequence:
+
+1. Create `document_deletion_attempted` before deleting from storage.
+2. Remove the object from the private Supabase Storage bucket.
+3. On success:
+   - Create `document_deleted`.
+   - Set `retention_status` to `deleted`.
+   - Set `deletion_status` to `success`.
+   - Set `deleted_at`, `deleted_by`, `deletion_reason`, and `deletion_audit_id`.
+4. On failure:
+   - Create `document_deletion_failed`.
+   - Set `deletion_status` to `failed`.
+   - Preserve the document record and enough non-sensitive metadata for follow-up.
+   - Do not hide the item from operational review.
+
+Deletion safeguards:
+
+- Delete only `sensitive_upload` records that are eligible under the retention policy.
+- Enforce `retention_eligible_at <= now()` on the server.
+- Do not delete generated operational files in the sensitive upload workflow.
+- Do not delete customer operational metadata in the sensitive upload workflow.
+- Do not expose storage credentials or permanent public URLs to browser code.
+- Do not run broad bulk deletion without a reviewed preview/dry-run step.
+
 ## Retention Metadata Model
 
-Status: P8-T08 planning model. Not implemented.
+Status: P8-T09 implemented and P8-T09V verified for status-triggered eligibility scheduling.
 
 Recommended metadata for sensitive document records:
 
@@ -204,7 +236,8 @@ First implementation boundary:
 - Add retention metadata and audit event structure first.
 - Show retention status in the admin order detail.
 - Do not physically delete files in the first slice.
-- Decide manual SOP vs Vercel Cron after metadata and audit records exist.
+- Manual/admin-triggered deletion is the next implementation slice.
+- Vercel Cron remains deferred until manual deletion is verified.
 
 ## Reviewer Access Scope
 
