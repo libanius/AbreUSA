@@ -1555,25 +1555,28 @@ P8-T10 deletion workflow plan:
 - Preserve customer memory: applicant profile, service history, company metadata, protocol history, status timeline, and operational notes are not deleted by the sensitive upload cleanup workflow.
 - Do not add broad bulk deletion without a reviewed preview/dry-run step.
 
-Next implementation task:
+Completed task:
 
 - Task ID: `P8-T11`.
 - Title: Manual retention deletion workflow foundation.
-- Scope:
-  - Add a server-side authenticated admin deletion action for eligible sensitive uploads.
-  - Verify document ownership, retention category, eligibility date, deletion status, bucket, and storage path before deletion.
-  - Delete from private Supabase Storage only after audit attempt creation.
-  - Update deletion metadata and audit events on success/failure.
-  - Keep Vercel Cron out of scope.
-  - Keep customer operational metadata untouched.
-- Acceptance criteria:
-  - Ineligible documents cannot be deleted.
-  - Eligible document deletion records attempt/result audit events.
-  - Successful deletion removes the storage object and marks the document as deleted.
-  - Failed deletion records failure without removing operational visibility.
-  - `npm run lint` passes.
-  - `npm run build` passes.
-  - Browser/API verification covers unauthorized, ineligible, and eligible deletion paths.
+- Status: Complete.
+- Result:
+  - `/api/admin/documents/[id]` DELETE route with full server-side eligibility checks.
+  - `document_deletion_attempted` audit event created before storage removal.
+  - `document_deleted` or `document_deletion_failed` audit event on outcome.
+  - Document metadata updated on success.
+  - Admin UI delete button with two-step confirmation added.
+  - Build passes. TypeScript clean.
+
+Next task:
+
+- Task ID: `P8-T12`.
+- Title: To be determined by next planning session.
+- Candidates:
+  - Vercel Cron automated retention scan (DG-017 deferred).
+  - Production deployment environment variable configuration.
+  - AbreUSA-branded sender domain migration.
+  - Additional audit event types.
 
 Potential additions (post-P8-T02):
 

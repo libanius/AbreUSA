@@ -110,6 +110,10 @@ type AbreUsaDatabase = {
           retention_eligible_at?: string;
           retention_status?: string;
           deletion_status?: string;
+          deleted_at?: string;
+          deleted_by?: string;
+          deletion_reason?: string;
+          deletion_audit_id?: string;
         };
         Relationships: [];
       };

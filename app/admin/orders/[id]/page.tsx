@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getSupabaseServerClient } from "@/lib/supabase-server";
 import StatusUpdater from "./_components/status-updater";
+import DeleteDocumentButton from "./_components/delete-document-button";
 
 const SERVICE_LABELS: Record<string, string> = {
   complete_llc_ein: "Complete Package (LLC + EIN)",
@@ -246,7 +247,7 @@ export default async function AdminOrderDetailPage({
                     </p>
                   ) : null}
                 </div>
-                <div className="flex gap-2 shrink-0">
+                <div className="flex flex-wrap gap-2 shrink-0">
                   {doc.viewUrl && (
                     <a
                       href={doc.viewUrl}
@@ -265,6 +266,12 @@ export default async function AdminOrderDetailPage({
                     >
                       Download
                     </a>
+                  )}
+                  {Boolean(doc.retention_eligible_at) &&
+                   new Date(doc.retention_eligible_at as string) <= new Date() &&
+                   doc.retention_status !== "deleted" &&
+                   doc.deletion_status !== "success" && (
+                    <DeleteDocumentButton documentId={doc.id as string} />
                   )}
                 </div>
               </div>

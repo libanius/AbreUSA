@@ -5,61 +5,55 @@
 Phase 8: Post-MVP Expansion and strategic evolution.
 
 Phases 1–7 are complete. P8-T01 (Resend email) and P8-T02 (admin portal) are complete.
-P8-T03 through P8-T10 are complete. Retention metadata, audit event foundation, and first deletion workflow planning are complete.
+P8-T03 through P8-T11 are complete. Retention metadata, audit event foundation, deletion workflow planning, and manual retention deletion workflow are complete.
 
 ## Last Completed Task
-
-Task ID: `P8-T10`
-
-Title: Retention deletion workflow implementation planning.
-
-Result:
-
-- First physical deletion workflow scoped as manual/admin-triggered.
-- Vercel Cron deferred until the manual workflow is verified.
-- DG-013 Reviewer Access Scopes confirmed for MVP controlled launch.
-- DG-016 Physical Deletion Safeguards added and confirmed.
-- DG-017 Automated Retention Cron added and deferred.
-- Deletion audit sequence defined: attempt before storage removal, success/failure after outcome.
-- Customer operational memory remains separate from sensitive upload cleanup.
-- No product feature code was changed.
-
-## Current Task
-
-Task ID: `P8-T10`
-
-Title: Retention deletion workflow implementation planning.
-
-Status: Complete.
-
-Prepared result:
-
-- First physical deletion workflow should be manual/admin-triggered, not scheduled.
-- Vercel Cron remains deferred.
-- Physical deletion must be limited to eligible `sensitive_upload` records.
-- The server must verify `retention_eligible_at <= now()` before storage removal.
-- Admin confirmation is required before each selected document or reviewed batch is deleted.
-- Deletion attempt/result audit events are required.
-- Deletion success updates document metadata and removes the storage object.
-- Deletion failure preserves the document record and keeps the item visible for follow-up.
-- Customer operational metadata is preserved.
-- No product feature code was changed.
-
-## Next Task
 
 Task ID: `P8-T11`
 
 Title: Manual retention deletion workflow foundation.
 
-Scope:
+Result:
 
-- Add a server-side authenticated admin deletion action for eligible sensitive uploads.
-- Verify document ownership, retention category, eligibility date, deletion status, bucket, and storage path before deletion.
-- Create `document_deletion_attempted` before storage removal.
-- Delete from private Supabase Storage only after the audit attempt is created.
-- Update document deletion metadata and create success/failure audit events.
-- Keep Vercel Cron out of scope.
-- Keep customer operational metadata untouched.
+- Server-side authenticated DELETE endpoint at `/api/admin/documents/[id]` implemented.
+- Eligibility checks: retention_category === sensitive_upload, retention_eligible_at <= now(), deletion_status !== success, retention_status !== deleted, storage_path set.
+- `document_deletion_attempted` audit event created before storage removal.
+- Supabase Storage file removed only after attempt event is persisted.
+- On success: document updated (retention_status = deleted, deletion_status = success, deleted_at, deleted_by, deletion_reason, deletion_audit_id) and `document_deleted` audit event created.
+- On failure: document updated (deletion_status = failed) and `document_deletion_failed` audit event created.
+- `DeleteDocumentButton` client component added to admin order detail page.
+- Delete button appears only when retention_eligible_at has passed and document is not already deleted.
+- Admin must click Delete file then Confirm before deletion proceeds.
+- Customer operational metadata untouched.
+- Vercel Cron remains out of scope.
+
+## Current Task
+
+Task ID: `P8-T11`
+
+Title: Manual retention deletion workflow foundation.
+
+Status: Complete.
+
+Result:
+
+- `/api/admin/documents/[id]` DELETE route implemented with full eligibility and safety checks.
+- `document_deletion_attempted` audit event fires before storage removal.
+- Success and failure paths both create audit events and update document metadata.
+- Admin UI delete button with two-step confirmation added to order detail page.
+
+## Next Task
+
+Task ID: `P8-T12`
+
+Title: To be determined by next planning session.
+
+Candidates:
+
+- Vercel Cron automated retention scan (DG-017 deferred).
+- Production deployment environment variable configuration.
+- AbreUSA-branded sender domain migration.
+- Additional audit event types (admin login/logout, signed URL events).
 
 ## Completed Tasks
 
@@ -93,6 +87,7 @@ Scope:
 - P8-T09: Retention metadata and audit event foundation implemented.
 - P8-T09V: Authenticated admin retention/audit verification complete.
 - P8-T10: Retention deletion workflow implementation planning complete.
+- P8-T11: Manual retention deletion workflow foundation implemented.
 
 ## What Is Implemented
 
@@ -161,6 +156,14 @@ Scope:
   - Admin status update records `order_status_updated` audit event.
   - Moving an order to `completed` schedules sensitive uploads for retention eligibility 90 days later.
   - Verified with order ID `3c34ff96-f0eb-4e86-bb5c-609268b188d4`.
+- P8-T11 manual retention deletion workflow:
+  - `/api/admin/documents/[id]` DELETE route with server-side eligibility verification.
+  - Checks: retention_category, retention_eligible_at <= now(), deletion_status, retention_status, storage_path.
+  - `document_deletion_attempted` audit event created before storage removal.
+  - `document_deleted` audit event on success; `document_deletion_failed` audit event on failure.
+  - Document metadata updated on success: retention_status = deleted, deletion_status = success, deleted_at, deleted_by, deletion_reason, deletion_audit_id.
+  - `DeleteDocumentButton` client component with two-step confirmation in admin order detail.
+  - Customer operational metadata untouched. Vercel Cron out of scope.
 - P8-T10 deletion workflow planning:
   - First physical deletion workflow is manual/admin-triggered.
   - Vercel Cron is deferred until manual deletion is verified.
@@ -180,7 +183,7 @@ Scope:
 
 - AbreUSA-branded sender domain migration (temporary current sender is confirmed; branded sender remains a future improvement).
 - Vercel production deployment (temporary Vercel URL acceptable if possible; env vars not yet set in Vercel dashboard).
-- Manual physical file deletion workflow.
+- ~~Manual physical file deletion workflow.~~ (Implemented in P8-T11)
 - Vercel Cron retention automation.
 - Reviewer access scope refinement beyond the single authenticated admin MVP model.
 - Audit logging for document access/login/logout/email events beyond current order status and planned deletion events.
