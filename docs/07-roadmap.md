@@ -1516,9 +1516,22 @@ P8-T09 status:
 
 Pending verification:
 
-- Authenticated admin order detail browser verification.
-- Authenticated admin status update audit-event insertion.
-- Requires admin credentials or an existing authenticated admin session.
+- Complete.
+- Authenticated admin status update verified by user.
+- Supabase verification confirmed `audit_events` row for order status update.
+- Supabase verification confirmed both sensitive documents for the tested order received `retention_eligible_at`.
+- Tested order ID: `3c34ff96-f0eb-4e86-bb5c-609268b188d4`.
+- New status: `completed`.
+- Retention eligible date: `2026-08-07T00:13:37.338Z`.
+
+P8-T09V status:
+
+- Status: Complete (2026-05-08).
+- Admin status update wrote an `order_status_updated` event to `audit_events`.
+- Audit metadata captured previous status `approved`, new status `completed`, retention update `scheduled`, and retention eligible date.
+- Passport and U.S. address proof rows were updated with retention status `active`, deletion status `not_applicable`, and retention eligible date.
+- No physical file deletion was performed.
+- No Vercel Cron was added.
 
 Potential additions (post-P8-T02):
 

@@ -5,7 +5,7 @@
 Phase 8: Post-MVP Expansion and strategic evolution.
 
 Phases 1–7 are complete. P8-T01 (Resend email) and P8-T02 (admin portal) are complete.
-P8-T03 through P8-T08 are complete. P8-T09 implementation is complete with partial runtime verification; authenticated admin verification is pending.
+P8-T03 through P8-T09V are complete. Retention metadata and audit event foundation is implemented and verified.
 
 ## Last Completed Task
 
@@ -30,7 +30,7 @@ Task ID: `P8-T09`
 
 Title: Implement retention metadata and audit event foundation.
 
-Status: Implementation complete with partial runtime verification.
+Status: Complete.
 
 Prepared result:
 
@@ -51,23 +51,26 @@ Prepared result:
 - Remote schema check confirms `audit_events` exists.
 - Dev server verification confirms unauthenticated `/admin/orders` redirects to `/admin/login`.
 - Dev server verification confirms unauthenticated admin PATCH returns `Unauthorized`.
-- Authenticated admin order detail/status audit verification remains pending because no admin credentials/session are available in the local context.
+- Authenticated admin status update verified by user.
+- Supabase verification confirmed an `order_status_updated` audit event.
+- Supabase verification confirmed both sensitive document rows for the tested order received `retention_eligible_at`.
+- Tested order ID: `3c34ff96-f0eb-4e86-bb5c-609268b188d4`.
+- New status: `completed`.
+- Retention eligible date: `2026-08-07T00:13:37.338Z`.
 - Supabase CLI is installed, but remote project operations require `supabase login` / `SUPABASE_ACCESS_TOKEN`; `supabase status` also requires Docker for local status.
 
 ## Next Task
 
-Task ID: `P8-T09V`
+Task ID: `P8-T10`
 
-Title: Authenticated admin retention metadata verification.
+Title: Retention deletion workflow implementation planning.
 
 Scope:
 
-- Log in as an admin.
-- Browser-verify admin order detail shows retention metadata.
-- Update an order status as admin.
-- Verify the status update records an `audit_events` row.
-- Do not physically delete files.
-- Do not add Vercel Cron.
+- Define first deletion implementation slice now that metadata/audit foundations are verified.
+- Decide whether first deletion action is manual admin-triggered or scheduled.
+- Define safeguards before physical deletion.
+- Do not implement deletion until scope is confirmed.
 
 ## Completed Tasks
 
@@ -97,7 +100,9 @@ Scope:
   - P8-T05: Launch-blocking operational Decision Gates reviewed.
   - P8-T06: Initial retention and customer data lifecycle policy confirmed.
   - P8-T07: Retention automation and deletion workflow architecture complete.
-  - P8-T08: Retention metadata and audit-log implementation planning complete.
+- P8-T08: Retention metadata and audit-log implementation planning complete.
+- P8-T09: Retention metadata and audit event foundation implemented.
+- P8-T09V: Authenticated admin retention/audit verification complete.
 
 ## What Is Implemented
 
@@ -160,6 +165,12 @@ Scope:
   - `audit_events` operational table is planned.
   - Admin retention status visibility is required before physical deletion.
   - First implementation slice is scoped with no file deletion and no Vercel Cron.
+- P8-T09/P8-T09V retention metadata foundation:
+  - Supabase schema includes document retention metadata and `audit_events`.
+  - Admin detail shows document retention status.
+  - Admin status update records `order_status_updated` audit event.
+  - Moving an order to `completed` schedules sensitive uploads for retention eligibility 90 days later.
+  - Verified with order ID `3c34ff96-f0eb-4e86-bb5c-609268b188d4`.
 - Key files:
   - `lib/supabase-server.ts` — service-role Supabase client.
   - `lib/supabase-ssr.ts` — SSR auth client (route handlers, server components).
@@ -175,8 +186,8 @@ Scope:
 - AbreUSA-branded sender domain migration (temporary current sender is confirmed; branded sender remains a future improvement).
 - Vercel production deployment (temporary Vercel URL acceptable if possible; env vars not yet set in Vercel dashboard).
 - Retention automation and deletion workflows.
-- Authenticated browser verification of retention metadata in admin order detail.
-- Authenticated status-update audit event verification.
+- Physical file deletion workflow.
+- Vercel Cron retention automation.
 - Reviewer access scope refinement.
 - Audit logging for document access/deletion/status changes.
 - Payment processing (Post-MVP).
@@ -199,16 +210,16 @@ Scope:
 
 ## Exact Next Step To Resume
 
-Execute `P8-T09V: Authenticated admin retention metadata verification`.
+Execute `P8-T10: Retention deletion workflow implementation planning`.
 
-Deliverable: log in as admin, verify retention status display, update status, and confirm audit event insertion. No physical file deletion.
+Deliverable: scope the first physical deletion workflow with safeguards. No deletion implementation until confirmed.
 
 ## Blockers And Risks
 
 - `RESEND_API_KEY` and `SUPABASE_SERVICE_ROLE_KEY` must be set in Vercel environment variables before production deployment.
 - AbreUSA domain email migration is a Decision Needed item before long-term production use.
 - Document retention period is confirmed, but deletion automation is not implemented.
-- P8-T09 authenticated admin verification is pending until admin credentials/session are available.
+- Physical deletion remains intentionally unimplemented.
 - EIN-only and Registered Agent-only flows remain deferred (Post-MVP).
 - New onboarding concepts can invalidate current UX assumptions; DG-005 through DG-009 now have proposed direction but still need confirmation before implementation.
 - AI-guided onboarding introduces privacy, PII, passport-data, legal/tax guidance, and compliance risks.
