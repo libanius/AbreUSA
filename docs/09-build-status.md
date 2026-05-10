@@ -26,7 +26,7 @@ Task ID: `P8-T14`
 
 Title: Confirm remaining launch operations.
 
-Status: In progress; blocked by owner/operator confirmations.
+Status: In progress; email receipt retest pending with a real inbox.
 
 Result:
 
@@ -54,7 +54,7 @@ Result:
   - Supabase order and document rows created.
   - Private storage objects created: `passport.pdf` and `us_address_proof.pdf`.
 - Vercel production error log query after verification returned no error logs.
-- Production confirmation email path produced no visible Vercel error logs, but inbox receipt was not verified in this session.
+- Production confirmation email path produced no visible Vercel error logs, but `AUS-2026-0011` used applicant email `ana.prod@example.com`, which is not an inspectable real inbox.
 - Initial authenticated admin verification exposed a production issue: `/admin/orders` and `/admin/orders/[id]` were cacheable/prerendered Server Components and did not reliably show newly created orders.
 - Fix applied: `export const dynamic = "force-dynamic";` added to:
   - `app/admin/orders/page.tsx`.
@@ -86,11 +86,13 @@ Result:
   - `npx vercel inspect https://abre-usa.vercel.app` shows the production deployment is `Ready`.
   - Recent filtered Vercel error log query returned no logs.
   - Supabase Auth contains a confirmed user for `contact@brightscalegroup.com`.
-- P8-T14 cannot be fully closed by automation because the remaining items require owner/operator confirmation:
-  - Inbox receipt of the production confirmation email for `AUS-2026-0011`.
-  - Password/session ownership for the permanent admin account.
-  - Whether controlled launch stays on `https://abre-usa.vercel.app` or moves to a custom domain now.
-  - Whether the temporary sender remains in use or AbreUSA-branded sender migration starts now.
+- P8-T14 owner/operator confirmations received on 2026-05-10:
+  - Production email for `AUS-2026-0011` did not arrive; follow-up check confirmed the order used `ana.prod@example.com`, so receipt cannot be verified from a real inbox.
+  - Permanent admin access for `contact@brightscalegroup.com` is confirmed by the owner/operator.
+  - Controlled launch should continue on the current temporary Vercel URL, interpreted as `https://abre-usa.vercel.app`.
+  - Temporary sender remains in use; AbreUSA-branded sender migration stays deferred.
+- Remaining P8-T14 blocker:
+  - Run a production email receipt test with a real inbox the owner/operator can inspect.
 
 ## Next Task
 
@@ -100,12 +102,10 @@ Title: Confirm remaining launch operations.
 
 Scope:
 
-Complete the owner/operator confirmations required to close P8-T14:
+Complete the remaining email receipt confirmation required to close P8-T14:
 
-- Confirm production email receipt for `AUS-2026-0011` or run a new email receipt test to an inbox the owner can inspect.
-- Confirm permanent admin user password/session access for `contact@brightscalegroup.com` or another AbreUSA admin.
-- Decide whether controlled launch stays on `https://abre-usa.vercel.app` or moves to a custom domain now.
-- Decide whether to continue with the temporary sender or start AbreUSA-branded sender migration now.
+- Run a new production email receipt test to an inbox the owner/operator can inspect.
+- Keep permanent admin access, temporary Vercel URL, and temporary sender decisions as confirmed unless changed by the owner/operator.
 
 ## Completed Tasks
 
@@ -143,6 +143,7 @@ Complete the owner/operator confirmations required to close P8-T14:
 - P8-T12: Production deployment readiness planning complete.
 - P8-T13: Production deployment and customer flow verification complete.
 - P8-T13V: Authenticated production admin verification complete.
+- P8-T14: Launch operations partially confirmed; email receipt retest with a real inbox remains pending.
 
 ## What Is Implemented
 
@@ -261,22 +262,23 @@ Complete the owner/operator confirmations required to close P8-T14:
 
 ## Exact Next Step To Resume
 
-Close P8-T14 owner/operator confirmations.
+Run a production email receipt test with a real inspectable inbox.
 
-Required from the owner/operator:
+Required before closing P8-T14:
 
-- Confirm whether the production confirmation email for `AUS-2026-0011` was received.
-- Confirm permanent admin account ownership and password access for `contact@brightscalegroup.com`.
-- Confirm whether controlled users should use `https://abre-usa.vercel.app` for launch or whether a custom domain should be configured now.
-- Confirm whether AbreUSA-branded sender migration starts now or remains deferred.
+- Use a real recipient email address the owner/operator can inspect.
+- Submit a new production order or otherwise trigger the production confirmation email path.
+- Confirm receipt in the inbox.
+- Record the new protocol number and receipt result in the App Spine.
 
 ## Blockers And Risks
 
-- Production confirmation email inbox receipt is still pending.
-- Permanent admin user exists and is email-confirmed, but password/session ownership is still pending owner confirmation.
+- Production confirmation email inbox receipt is still pending because `AUS-2026-0011` used `ana.prod@example.com`, not a real inspectable inbox.
+- Permanent admin user exists, is email-confirmed, and owner/operator confirmed access.
 - Correct AbreUSA Vercel account is authenticated as `abreusaonline-7459`.
 - Vercel project is linked and deployed at `https://abre-usa.vercel.app`.
-- AbreUSA domain email migration is a Decision Needed item before long-term production use.
+- Custom domain is deferred for now; controlled launch continues on `https://abre-usa.vercel.app`.
+- AbreUSA domain email migration remains deferred; temporary sender remains in use.
 - Manual physical deletion is implemented (P8-T11). In-browser verification against a real eligible document is recommended before enabling for production use.
 - Automated retention Cron (Vercel Cron) remains deferred until manual deletion is verified in production.
 - EIN-only and Registered Agent-only flows remain deferred (Post-MVP).

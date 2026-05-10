@@ -693,3 +693,64 @@ Files:
 Reason:
 
 The first authenticated production admin verification showed that the admin list/detail pages could be prerendered or cached, which prevented the newly created production test order `AUS-2026-0011` from appearing reliably. Admin review pages must read current operational data from Supabase on demand.
+
+### 2026-05-10: Controlled Launch Stays On Temporary Vercel URL
+
+Decision:
+
+Continue controlled launch on the temporary Vercel URL for now.
+
+Result:
+
+- Current production URL remains `https://abre-usa.vercel.app`.
+- Custom domain setup remains deferred.
+
+Reason:
+
+Owner/operator confirmed that the launch should continue on the Vercel URL instead of configuring a custom domain now.
+
+### 2026-05-10: Temporary Sender Remains In Use
+
+Decision:
+
+Keep the current temporary sender and defer AbreUSA-branded sender migration.
+
+Result:
+
+- Current sender remains `noreply@notifications.brightscalegroup.com`.
+- AbreUSA-branded sender migration remains a future operational improvement.
+
+Reason:
+
+Owner/operator confirmed that the temporary sender should remain in use for the controlled launch.
+
+### 2026-05-10: Permanent Admin Access Confirmed
+
+Decision:
+
+Use `contact@brightscalegroup.com` as the permanent admin account for the current controlled launch.
+
+Result:
+
+- Supabase Auth contains a confirmed user for `contact@brightscalegroup.com`.
+- Owner/operator confirmed access.
+
+Reason:
+
+The single authenticated admin model remains acceptable for MVP controlled launch, and the owner/operator confirmed account access.
+
+### 2026-05-10: Production Email Receipt Requires Real Inbox Retest
+
+Decision:
+
+Do not treat `AUS-2026-0011` as proof of production email receipt.
+
+Result:
+
+- Owner/operator reported that the email did not arrive.
+- Follow-up check showed `AUS-2026-0011` used `ana.prod@example.com`, which is not a real inspectable inbox.
+- A new production email receipt test with a real inbox is required before closing P8-T14.
+
+Reason:
+
+The production email path produced no visible Vercel error logs, but receipt cannot be verified when the test order uses an example-domain address.

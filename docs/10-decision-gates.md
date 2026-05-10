@@ -237,7 +237,7 @@ Decision:
 Blocks:
 
 - Custom production domain remains a future improvement.
-- Production email inbox receipt remains pending.
+- Production email inbox receipt remains pending with a real inspectable inbox.
 
 P8-T06 confirmation:
 
@@ -281,10 +281,14 @@ P8-T14 technical check:
 
 P8-T14 remaining owner/operator confirmations:
 
-- Confirm production email inbox receipt for `AUS-2026-0011` or run a new receipt test.
-- Confirm permanent admin password/session ownership.
-- Confirm whether the controlled launch remains on `https://abre-usa.vercel.app` or moves to a custom domain now.
-- Confirm whether temporary sender use continues or AbreUSA-branded sender migration starts now.
+- Production email for `AUS-2026-0011` did not arrive; follow-up check confirmed the order used `ana.prod@example.com`, so receipt cannot be verified from a real inbox.
+- Permanent admin password/session ownership is confirmed by the owner/operator.
+- Controlled launch remains on the temporary Vercel URL, interpreted as `https://abre-usa.vercel.app`.
+- Temporary sender use continues; AbreUSA-branded sender migration remains deferred.
+
+Remaining P8-T14 blocker:
+
+- Run a new production email receipt test with a real inbox the owner/operator can inspect.
 
 ### DG-011: Document Retention Automation
 
