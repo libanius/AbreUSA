@@ -1568,15 +1568,66 @@ Completed task:
   - Admin UI delete button with two-step confirmation added.
   - Build passes. TypeScript clean.
 
-Next task:
+P8-T12 status:
 
-- Task ID: `P8-T12`.
-- Title: To be determined by next planning session.
-- Candidates:
-  - Vercel Cron automated retention scan (DG-017 deferred).
-  - Production deployment environment variable configuration.
-  - AbreUSA-branded sender domain migration.
-  - Additional audit event types.
+- Status: Complete (2026-05-09).
+- Decision: The next MVP-readiness task should be production deployment readiness, not Vercel Cron, sender-domain migration, or expanded audit logging.
+- Rationale:
+  - The core guided intake, persistence, admin review, email confirmation, security lockdown, retention metadata, audit foundation, and manual deletion workflow are already implemented.
+  - DG-017 keeps automated retention Cron deferred until manual deletion is verified in production.
+  - AbreUSA-branded sender migration is important for long-term production polish but the temporary verified sender is already confirmed for controlled deployment.
+  - Additional audit events are useful but not the primary blocker to putting the MVP in front of controlled users.
+  - DG-010 still blocks production deployment until Vercel environment variables, project link, and launch access model are confirmed.
+- No product feature code was changed.
+
+P8-T12 deployment readiness plan:
+
+- Required environment variables:
+  - `NEXT_PUBLIC_SUPABASE_URL`.
+  - `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
+  - `SUPABASE_SERVICE_ROLE_KEY`.
+  - `RESEND_API_KEY`.
+- Required platform confirmations:
+  - Vercel project is linked to the repository.
+  - Vercel environment variables are configured for the target environment.
+  - `SUPABASE_SERVICE_ROLE_KEY` is server-side only and never exposed with a `NEXT_PUBLIC_` prefix.
+  - Initial launch access model is confirmed: internal-only, protected preview, controlled users, or public production.
+  - Temporary Vercel-provided URL remains acceptable for the first controlled deployment if a custom domain is not ready.
+- Required verification after deployment:
+  - Customer Complete Package path can submit an order.
+  - Supabase order, applicant, LLC, member, registered agent, EIN, generated form, and document rows are created.
+  - Private document files are uploaded.
+  - Confirmation email is sent or safely skipped if intentionally unconfigured.
+  - Admin login works.
+  - Admin order list and detail load.
+  - Admin signed document links work.
+  - Admin status update writes an audit event.
+  - Manual deletion button remains hidden unless a document is retention-eligible.
+- Out of scope:
+  - Vercel Cron retention automation.
+  - AbreUSA-branded sender-domain migration.
+  - Payment.
+  - Customer dashboard.
+  - Expanded audit event types beyond what already exists.
+  - EIN-only and Registered Agent-only dedicated flows.
+
+Next operational task:
+
+- Task ID: `P8-T13`.
+- Title: Configure Vercel production environment and perform controlled deployment verification.
+- Scope:
+  - Link or confirm the Vercel project.
+  - Configure required Vercel environment variables.
+  - Deploy to Vercel.
+  - Verify the deployed customer and admin flows end to end.
+  - Record the deployed URL and verification result in `/docs/09-build-status.md` and `/progress/index.html`.
+- Acceptance criteria:
+  - Vercel deployment succeeds.
+  - Deployed customer order flow persists a real test order with documents.
+  - Confirmation email behavior is verified.
+  - Admin login, order detail, signed document access, status update, and audit event creation are verified.
+  - No server-side secret is exposed to the browser.
+  - Build status and progress page are updated with the deployment URL and verification notes.
 
 Potential additions (post-P8-T02):
 

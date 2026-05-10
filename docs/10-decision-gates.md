@@ -243,6 +243,12 @@ P8-T06 confirmation:
 - Required env vars are documented in `.env.example`.
 - `SUPABASE_SERVICE_ROLE_KEY` must be set only server-side and never exposed with a `NEXT_PUBLIC_` prefix.
 
+P8-T12 planning:
+
+- Production deployment readiness is the next MVP-readiness priority.
+- P8-T13 should configure the Vercel environment, deploy, and verify the controlled production flow.
+- Vercel Cron, branded sender migration, and expanded audit logging remain separate follow-up tasks.
+
 Required before deployment:
 
 - `NEXT_PUBLIC_SUPABASE_URL`.

@@ -5,55 +5,55 @@
 Phase 8: Post-MVP Expansion and strategic evolution.
 
 Phases 1–7 are complete. P8-T01 (Resend email) and P8-T02 (admin portal) are complete.
-P8-T03 through P8-T11 are complete. Retention metadata, audit event foundation, deletion workflow planning, and manual retention deletion workflow are complete.
+P8-T03 through P8-T12 are complete. Retention metadata, audit event foundation, deletion workflow planning, manual retention deletion workflow, and production deployment readiness planning are complete.
 
 ## Last Completed Task
 
-Task ID: `P8-T11`
+Task ID: `P8-T12`
 
-Title: Manual retention deletion workflow foundation.
+Title: Production deployment readiness planning.
 
 Result:
 
-- Server-side authenticated DELETE endpoint at `/api/admin/documents/[id]` implemented.
-- Eligibility checks: retention_category === sensitive_upload, retention_eligible_at <= now(), deletion_status !== success, retention_status !== deleted, storage_path set.
-- `document_deletion_attempted` audit event created before storage removal.
-- Supabase Storage file removed only after attempt event is persisted.
-- On success: document updated (retention_status = deleted, deletion_status = success, deleted_at, deleted_by, deletion_reason, deletion_audit_id) and `document_deleted` audit event created.
-- On failure: document updated (deletion_status = failed) and `document_deletion_failed` audit event created.
-- `DeleteDocumentButton` client component added to admin order detail page.
-- Delete button appears only when retention_eligible_at has passed and document is not already deleted.
-- Admin must click Delete file then Confirm before deletion proceeds.
-- Customer operational metadata untouched.
-- Vercel Cron remains out of scope.
+- P8-T12 selected production deployment readiness as the next MVP-readiness priority.
+- Vercel Cron remains deferred under DG-017 until manual deletion is verified in production.
+- AbreUSA-branded sender-domain migration remains a future improvement; the temporary verified sender is acceptable for controlled deployment.
+- Expanded audit events remain useful but are not the main blocker to controlled MVP deployment.
+- P8-T13 defined as the next operational task: configure Vercel production environment and perform controlled deployment verification.
+- No product feature code changed.
 
 ## Current Task
 
-Task ID: `P8-T11`
+Task ID: `P8-T13`
 
-Title: Manual retention deletion workflow foundation.
+Title: Configure Vercel production environment and perform controlled deployment verification.
 
-Status: Complete.
+Status: In progress. Correct AbreUSA Vercel account authenticated; project link pending.
 
 Result:
 
-- `/api/admin/documents/[id]` DELETE route implemented with full eligibility and safety checks.
-- `document_deletion_attempted` audit event fires before storage removal.
-- Success and failure paths both create audit events and update document metadata.
-- Admin UI delete button with two-step confirmation added to order detail page.
+- Local `.vercel/` project link is not present.
+- Vercel CLI is available (`53.3.1`).
+- `npx vercel login` was completed against the wrong Vercel account (`eosoffgrid-5698`).
+- That account was logged out with `npx vercel logout`.
+- Correct AbreUSA Vercel account login completed.
+- `npx vercel whoami` now returns `abreusaonline-7459`.
+- No deployment was attempted.
+- No environment variables were changed.
 
 ## Next Task
 
-Task ID: `P8-T12`
+Task ID: `P8-T13`
 
-Title: To be determined by next planning session.
+Title: Configure Vercel production environment and perform controlled deployment verification.
 
-Candidates:
+Scope:
 
-- Vercel Cron automated retention scan (DG-017 deferred).
-- Production deployment environment variable configuration.
-- AbreUSA-branded sender domain migration.
-- Additional audit event types (admin login/logout, signed URL events).
+- Link or confirm the Vercel project.
+- Configure required Vercel environment variables.
+- Deploy to Vercel.
+- Verify the deployed customer and admin flows end to end.
+- Record the deployed URL and verification result.
 
 ## Completed Tasks
 
@@ -88,6 +88,7 @@ Candidates:
 - P8-T09V: Authenticated admin retention/audit verification complete.
 - P8-T10: Retention deletion workflow implementation planning complete.
 - P8-T11: Manual retention deletion workflow foundation implemented.
+- P8-T12: Production deployment readiness planning complete.
 
 ## What Is Implemented
 
@@ -206,18 +207,21 @@ Candidates:
 
 ## Exact Next Step To Resume
 
-Open a new planning session to confirm P8-T12.
+Execute P8-T13: configure the Vercel production environment and perform controlled deployment verification.
 
-P8-T11 is fully implemented and the build is clean. The next task must be determined from the following candidates:
+Required before execution:
 
-- Vercel Cron automated retention scan (DG-017 deferred; requires manual deletion to be verified in production first).
-- Production deployment: set `RESEND_API_KEY` and `SUPABASE_SERVICE_ROLE_KEY` in Vercel dashboard, then deploy.
-- AbreUSA-branded sender domain migration (Decision Needed before long-term production use).
-- Additional audit event types: admin login/logout, signed URL creation, document open/download intent.
+- Confirm or link the Vercel project.
+- Configure `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, and `RESEND_API_KEY` in Vercel.
+- Confirm launch access model: internal-only, protected preview, controlled users, or public production.
+- Deploy and verify customer order submission, email behavior, admin review, signed document access, status update audit event, and secret handling.
 
 ## Blockers And Risks
 
 - `RESEND_API_KEY` and `SUPABASE_SERVICE_ROLE_KEY` must be set in Vercel environment variables before production deployment.
+- Vercel CLI is logged out after detecting the wrong account (`eosoffgrid-5698`).
+- Correct AbreUSA Vercel account is now authenticated as `abreusaonline-7459`.
+- Vercel project linkage and launch access model still need confirmation before P8-T13 can complete.
 - AbreUSA domain email migration is a Decision Needed item before long-term production use.
 - Manual physical deletion is implemented (P8-T11). In-browser verification against a real eligible document is recommended before enabling for production use.
 - Automated retention Cron (Vercel Cron) remains deferred until manual deletion is verified in production.

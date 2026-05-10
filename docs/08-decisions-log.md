@@ -650,3 +650,13 @@ Do not add Vercel Cron or automated physical deletion yet. Cron remains the pref
 Reason:
 
 The project needs a safe, inspectable deletion path before unattended deletion runs against private storage. A manual-first workflow keeps MVP governance simple while preserving a clear path to scale.
+
+### 2026-05-09: Production Deployment Readiness Is Next MVP Priority
+
+Decision:
+
+After P8-T11, prioritize production deployment readiness and controlled Vercel deployment verification before Vercel Cron, AbreUSA-branded sender migration, expanded audit logging, or new product features.
+
+Reason:
+
+The core MVP flow, admin portal, server-side persistence, security lockdown, email integration, retention metadata, audit foundation, and manual deletion workflow are already implemented. The main blocker to controlled MVP use is now operational deployment: Vercel project linkage, production environment variables, launch access model, deployment, and end-to-end verification on the deployed URL.
