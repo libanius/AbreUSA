@@ -32,7 +32,7 @@ export async function POST(request: Request) {
       addressProof: isFile(addressProof) ? addressProof : null,
     });
 
-    void sendConfirmationEmail({
+    await sendConfirmationEmail({
       to: payload.applicant.email,
       applicantName: payload.applicant.name,
       protocolNumber: result.protocolNumber,
