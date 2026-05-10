@@ -269,6 +269,23 @@ P8-T13V result:
 - Admin status update created `order_status_updated` audit event `55b19546-f7ed-4a1b-99e1-5373cb9577ca`.
 - Temporary admin verification user was deleted after the test.
 
+P8-T14 technical check:
+
+- Active Vercel account confirmed as `abreusaonline-7459`.
+- Vercel project confirmed as `abre-usa-s-projects/abre-usa`.
+- Production deployment at `https://abre-usa.vercel.app` is `Ready`.
+- Production env vars remain configured and encrypted.
+- Production `/` and `/admin/login` health checks return `200`.
+- Recent filtered Vercel error log query returned no logs.
+- Supabase Auth contains a confirmed user for `contact@brightscalegroup.com`.
+
+P8-T14 remaining owner/operator confirmations:
+
+- Confirm production email inbox receipt for `AUS-2026-0011` or run a new receipt test.
+- Confirm permanent admin password/session ownership.
+- Confirm whether the controlled launch remains on `https://abre-usa.vercel.app` or moves to a custom domain now.
+- Confirm whether temporary sender use continues or AbreUSA-branded sender migration starts now.
+
 ### DG-011: Document Retention Automation
 
 Category: Operations, privacy, architecture.

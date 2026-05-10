@@ -9,26 +9,24 @@ P8-T03 through P8-T12 are complete. Retention metadata, audit event foundation, 
 
 ## Last Completed Task
 
-Task ID: `P8-T12`
+Task ID: `P8-T13V`
 
-Title: Production deployment readiness planning.
+Title: Authenticated production admin verification.
 
 Result:
 
-- P8-T12 selected production deployment readiness as the next MVP-readiness priority.
-- Vercel Cron remains deferred under DG-017 until manual deletion is verified in production.
-- AbreUSA-branded sender-domain migration remains a future improvement; the temporary verified sender is acceptable for controlled deployment.
-- Expanded audit events remain useful but are not the main blocker to controlled MVP deployment.
-- P8-T13 defined as the next operational task: configure Vercel production environment and perform controlled deployment verification.
-- No product feature code changed.
+- Production admin login, order list, order detail, signed document links, status update, audit event, and deletion eligibility UI were verified.
+- Admin order pages were forced to render dynamically after stale production admin data was observed.
+- Temporary admin verification user cleanup was confirmed.
+- Vercel production error log query after admin verification returned no error logs.
 
 ## Current Task
 
-Task ID: `P8-T13`
+Task ID: `P8-T14`
 
-Title: Configure Vercel production environment and perform controlled deployment verification.
+Title: Confirm remaining launch operations.
 
-Status: Complete.
+Status: In progress; blocked by owner/operator confirmations.
 
 Result:
 
@@ -74,6 +72,25 @@ Result:
   - `order_status_updated` audit event created: `55b19546-f7ed-4a1b-99e1-5373cb9577ca`.
   - Temporary admin verification user cleanup confirmed: no `admin-verify` users remain in Supabase Auth.
 - Vercel production error log query after admin verification returned no error logs.
+- P8-T14 technical checks performed on 2026-05-10:
+  - `npx vercel whoami` confirms the active account is `abreusaonline-7459`.
+  - Vercel project list confirms `abre-usa-s-projects/abre-usa` with latest production URL `https://abre-usa.vercel.app`.
+  - Vercel production environment variables remain configured and encrypted:
+    - `NEXT_PUBLIC_SUPABASE_URL`.
+    - `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
+    - `SUPABASE_SERVICE_ROLE_KEY`.
+    - `RESEND_API_KEY`.
+  - Production health checks passed:
+    - `/` returns `200`.
+    - `/admin/login` returns `200`.
+  - `npx vercel inspect https://abre-usa.vercel.app` shows the production deployment is `Ready`.
+  - Recent filtered Vercel error log query returned no logs.
+  - Supabase Auth contains a confirmed user for `contact@brightscalegroup.com`.
+- P8-T14 cannot be fully closed by automation because the remaining items require owner/operator confirmation:
+  - Inbox receipt of the production confirmation email for `AUS-2026-0011`.
+  - Password/session ownership for the permanent admin account.
+  - Whether controlled launch stays on `https://abre-usa.vercel.app` or moves to a custom domain now.
+  - Whether the temporary sender remains in use or AbreUSA-branded sender migration starts now.
 
 ## Next Task
 
@@ -83,10 +100,12 @@ Title: Confirm remaining launch operations.
 
 Scope:
 
-- Confirm production email receipt for `AUS-2026-0011` or run a new email receipt test.
-- Confirm permanent admin user ownership for `contact@brightscalegroup.com` or another AbreUSA admin.
-- Decide whether controlled launch stays on `https://abre-usa.vercel.app` or moves to a custom domain.
-- Decide whether to continue with the temporary sender or start AbreUSA-branded sender migration.
+Complete the owner/operator confirmations required to close P8-T14:
+
+- Confirm production email receipt for `AUS-2026-0011` or run a new email receipt test to an inbox the owner can inspect.
+- Confirm permanent admin user password/session access for `contact@brightscalegroup.com` or another AbreUSA admin.
+- Decide whether controlled launch stays on `https://abre-usa.vercel.app` or moves to a custom domain now.
+- Decide whether to continue with the temporary sender or start AbreUSA-branded sender migration now.
 
 ## Completed Tasks
 
@@ -242,20 +261,20 @@ Scope:
 
 ## Exact Next Step To Resume
 
-Execute P8-T14: confirm remaining launch operations.
+Close P8-T14 owner/operator confirmations.
 
-Required before execution:
+Required from the owner/operator:
 
 - Confirm whether the production confirmation email for `AUS-2026-0011` was received.
-- Confirm permanent admin account ownership and password access.
-- Decide whether to keep the temporary Vercel URL for controlled users or configure a custom domain.
-- Decide whether AbreUSA-branded sender migration starts now or remains deferred.
+- Confirm permanent admin account ownership and password access for `contact@brightscalegroup.com`.
+- Confirm whether controlled users should use `https://abre-usa.vercel.app` for launch or whether a custom domain should be configured now.
+- Confirm whether AbreUSA-branded sender migration starts now or remains deferred.
 
 ## Blockers And Risks
 
 - Production confirmation email inbox receipt is still pending.
-- Vercel CLI is logged out after detecting the wrong account (`eosoffgrid-5698`).
-- Correct AbreUSA Vercel account is now authenticated as `abreusaonline-7459`.
+- Permanent admin user exists and is email-confirmed, but password/session ownership is still pending owner confirmation.
+- Correct AbreUSA Vercel account is authenticated as `abreusaonline-7459`.
 - Vercel project is linked and deployed at `https://abre-usa.vercel.app`.
 - AbreUSA domain email migration is a Decision Needed item before long-term production use.
 - Manual physical deletion is implemented (P8-T11). In-browser verification against a real eligible document is recommended before enabling for production use.

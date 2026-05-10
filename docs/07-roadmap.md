@@ -1690,6 +1690,24 @@ Next operational task:
   - Sender-domain decision is documented.
   - Build status and progress page are updated.
 
+P8-T14 status:
+
+- Status: In progress; technical checks complete, owner/operator confirmations pending.
+- Technical checks completed on 2026-05-10:
+  - Active Vercel account confirmed as `abreusaonline-7459`.
+  - Vercel project confirmed as `abre-usa-s-projects/abre-usa`.
+  - Latest production URL remains `https://abre-usa.vercel.app`.
+  - Production env vars remain configured and encrypted in Vercel.
+  - Production deployment inspect result is `Ready`.
+  - Production health checks passed for `/` and `/admin/login`.
+  - Recent filtered Vercel error log query returned no logs.
+  - Supabase Auth contains a confirmed user for `contact@brightscalegroup.com`.
+- Remaining blockers:
+  - Owner/operator must confirm inbox receipt for the production email related to `AUS-2026-0011`, or request a new receipt test to an inspectable inbox.
+  - Owner/operator must confirm password/session access for the permanent admin account.
+  - Owner/operator must decide whether controlled launch uses `https://abre-usa.vercel.app` or a custom domain now.
+  - Owner/operator must decide whether the temporary sender remains in use or AbreUSA-branded sender migration starts now.
+
 Potential additions (post-P8-T02):
 
 - Payment processing.
