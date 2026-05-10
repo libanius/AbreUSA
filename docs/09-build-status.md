@@ -4,29 +4,28 @@
 
 Phase 8: Post-MVP Expansion and strategic evolution.
 
-Phases 1–7 are complete. P8-T01 (Resend email) and P8-T02 (admin portal) are complete.
-P8-T03 through P8-T12 are complete. Retention metadata, audit event foundation, deletion workflow planning, manual retention deletion workflow, and production deployment readiness planning are complete.
+Phases 1–7 are complete. P8-T01 through P8-T14 are complete. Controlled MVP launch is fully verified: production deployment, authenticated admin portal, and production email confirmation are all confirmed.
 
 ## Last Completed Task
-
-Task ID: `P8-T13V`
-
-Title: Authenticated production admin verification.
-
-Result:
-
-- Production admin login, order list, order detail, signed document links, status update, audit event, and deletion eligibility UI were verified.
-- Admin order pages were forced to render dynamically after stale production admin data was observed.
-- Temporary admin verification user cleanup was confirmed.
-- Vercel production error log query after admin verification returned no error logs.
-
-## Current Task
 
 Task ID: `P8-T14`
 
 Title: Confirm remaining launch operations.
 
-Status: In progress; email receipt retest pending with a real inbox.
+Result:
+
+- Production email fire-and-forget bug identified and fixed: `void sendConfirmationEmail()` replaced with `await` in `app/api/orders/route.ts`. Serverless functions on Vercel were terminating before the Resend API call completed.
+- Redeployed to production after fix.
+- New test order submitted: `AUS-2026-0014` (order ID `df140edf-bc35-4f91-a3ae-de5e3e6cf89c`).
+- Production confirmation email received in `brightscalegroup@gmail.com` inbox. Receipt confirmed by owner/operator.
+- Permanent admin access via `contact@brightscalegroup.com` is confirmed.
+- Controlled launch continues on `https://abre-usa.vercel.app`.
+- Temporary sender `noreply@notifications.brightscalegroup.com` remains in use.
+- All P8-T14 acceptance criteria are met. Controlled MVP launch is complete.
+
+## Current Task
+
+None. P8-T14 is complete. Controlled MVP launch is verified. The next task will be defined by the owner/operator based on Post-MVP priorities.
 
 Result:
 
@@ -96,16 +95,7 @@ Result:
 
 ## Next Task
 
-Task ID: `P8-T14`
-
-Title: Confirm remaining launch operations.
-
-Scope:
-
-Complete the remaining email receipt confirmation required to close P8-T14:
-
-- Run a new production email receipt test to an inbox the owner/operator can inspect.
-- Keep permanent admin access, temporary Vercel URL, and temporary sender decisions as confirmed unless changed by the owner/operator.
+No next task is currently defined. The controlled MVP launch is complete. Post-MVP priorities (payment, customer dashboard, AI extraction, multi-state, branded sender domain, Vercel Cron retention automation) are tracked in the roadmap and remain pending owner/operator direction.
 
 ## Completed Tasks
 
@@ -143,7 +133,7 @@ Complete the remaining email receipt confirmation required to close P8-T14:
 - P8-T12: Production deployment readiness planning complete.
 - P8-T13: Production deployment and customer flow verification complete.
 - P8-T13V: Authenticated production admin verification complete.
-- P8-T14: Launch operations partially confirmed; email receipt retest with a real inbox remains pending.
+- P8-T14: All launch operations confirmed. Email bug fixed (void → await). Production confirmation email received in real inbox (AUS-2026-0014). Controlled MVP launch complete.
 
 ## What Is Implemented
 
@@ -171,6 +161,7 @@ Complete the remaining email receipt confirmation required to close P8-T14:
   - Logout clears session.
 - `.env.example` documents all required environment variables.
 - `/progress/index.html` bilingual stakeholder dashboard.
+- Production email sending awaited before route response (`await sendConfirmationEmail`) to prevent serverless early-termination silently dropping emails.
 - Strategic evolution operating model:
   - `AGENTS.md` includes Strategic Evolution Rules.
   - `/docs/START-HERE.md` explains App Spine-first execution.
@@ -262,18 +253,11 @@ Complete the remaining email receipt confirmation required to close P8-T14:
 
 ## Exact Next Step To Resume
 
-Run a production email receipt test with a real inspectable inbox.
-
-Required before closing P8-T14:
-
-- Use a real recipient email address the owner/operator can inspect.
-- Submit a new production order or otherwise trigger the production confirmation email path.
-- Confirm receipt in the inbox.
-- Record the new protocol number and receipt result in the App Spine.
+Controlled MVP launch is complete. No blocking tasks remain. Next steps are owner/operator-directed Post-MVP priorities.
 
 ## Blockers And Risks
 
-- Production confirmation email inbox receipt is still pending because `AUS-2026-0011` used `ana.prod@example.com`, not a real inspectable inbox.
+- Production confirmation email verified: `AUS-2026-0014` received at `brightscalegroup@gmail.com` on 2026-05-09.
 - Permanent admin user exists, is email-confirmed, and owner/operator confirmed access.
 - Correct AbreUSA Vercel account is authenticated as `abreusaonline-7459`.
 - Vercel project is linked and deployed at `https://abre-usa.vercel.app`.

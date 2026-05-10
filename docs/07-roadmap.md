@@ -4,7 +4,7 @@
 
 Phase 8: Post-MVP Expansion and strategic evolution.
 
-Phases 1-7 are complete. P8-T01 and P8-T02 are complete. P8-T03 is the documentation-only strategic evolution synchronization layer.
+Phases 1–7 are complete. P8-T01 through P8-T14 are complete. Controlled MVP launch is fully verified.
 
 ## Phase 0: App Spine Confirmation
 
@@ -1155,14 +1155,8 @@ P7-T05 completed 2026-05-07:
 
 Current Phase 8 status:
 
-- P8-T01 complete.
-- P8-T02 complete.
-- P8-T03 complete.
-- P8-T04 complete.
-- P8-T05 complete.
-- P8-T06 complete.
-- P8-T07 complete.
-- P8-T08 complete.
+- P8-T01 through P8-T14 complete.
+- Controlled MVP launch fully verified on 2026-05-09.
 
 ### P8-T01: Applicant Email Confirmation — Integration Structure
 
@@ -1692,23 +1686,15 @@ Next operational task:
 
 P8-T14 status:
 
-- Status: In progress; technical checks complete and owner/operator decisions mostly confirmed, but email receipt retest with a real inbox remains pending.
-- Technical checks completed on 2026-05-10:
-  - Active Vercel account confirmed as `abreusaonline-7459`.
-  - Vercel project confirmed as `abre-usa-s-projects/abre-usa`.
-  - Latest production URL remains `https://abre-usa.vercel.app`.
-  - Production env vars remain configured and encrypted in Vercel.
-  - Production deployment inspect result is `Ready`.
-  - Production health checks passed for `/` and `/admin/login`.
-  - Recent filtered Vercel error log query returned no logs.
-  - Supabase Auth contains a confirmed user for `contact@brightscalegroup.com`.
-- Owner/operator confirmations received on 2026-05-10:
-  - Production email for `AUS-2026-0011` did not arrive.
-  - Permanent admin access is confirmed.
-  - Controlled launch should remain on the temporary Vercel URL, interpreted as `https://abre-usa.vercel.app`.
-  - Temporary sender remains in use; AbreUSA-branded sender migration remains deferred.
-- Remaining blocker:
-  - `AUS-2026-0011` used `ana.prod@example.com`, so production email receipt cannot be verified from a real inbox. Run a new email receipt test with an inspectable inbox before closing P8-T14.
+- Status: Complete (2026-05-09).
+- Root cause identified: `void sendConfirmationEmail()` in `app/api/orders/route.ts` caused silent email failures — Vercel terminated the serverless function before the Resend API call completed.
+- Fix applied: replaced `void` with `await`. Build passed. Redeployed to production.
+- New test order submitted: `AUS-2026-0014` (order ID `df140edf-bc35-4f91-a3ae-de5e3e6cf89c`).
+- Production confirmation email received at `brightscalegroup@gmail.com`. Receipt confirmed by owner/operator.
+- Permanent admin access via `contact@brightscalegroup.com` confirmed.
+- Controlled launch on `https://abre-usa.vercel.app` confirmed.
+- Temporary sender `noreply@notifications.brightscalegroup.com` confirmed for controlled launch.
+- All acceptance criteria met. P8-T14 closed.
 
 Potential additions (post-P8-T02):
 

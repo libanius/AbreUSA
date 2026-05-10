@@ -754,3 +754,37 @@ Result:
 Reason:
 
 The production email path produced no visible Vercel error logs, but receipt cannot be verified when the test order uses an example-domain address.
+
+### 2026-05-09: Email Fire-and-Forget Bug Fixed
+
+Decision:
+
+Replace `void sendConfirmationEmail()` with `await sendConfirmationEmail()` in `app/api/orders/route.ts`.
+
+Result:
+
+- The fire-and-forget pattern caused silent email failures in production because Vercel terminated the serverless function before the Resend API call completed.
+- Fix applied in commit `b3c3f0d`. Build passed. Redeployed to production.
+- Production email confirmed received at `brightscalegroup@gmail.com` for `AUS-2026-0014`.
+
+Reason:
+
+Serverless Lambda functions on Vercel do not guarantee continuation after the response is returned. Any async work dispatched with `void` may be silently dropped. Email sending must be awaited before the route returns a response.
+
+### 2026-05-09: Controlled MVP Launch Complete — P8-T14 Closed
+
+Decision:
+
+Close P8-T14 and declare the controlled MVP launch complete.
+
+Result:
+
+- Production email receipt confirmed with a real inspectable inbox (`brightscalegroup@gmail.com`) for `AUS-2026-0014`.
+- Permanent admin access confirmed for `contact@brightscalegroup.com`.
+- Controlled launch continues on `https://abre-usa.vercel.app`.
+- Temporary sender `noreply@notifications.brightscalegroup.com` remains in use.
+- No blocking operational tasks remain.
+
+Reason:
+
+All P8-T14 acceptance criteria are now met. The MVP product is live, verified, and operational. Next steps are Post-MVP priorities as directed by the owner/operator.
