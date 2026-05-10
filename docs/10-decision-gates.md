@@ -225,17 +225,19 @@ P8-T04 proposed direction:
 
 Category: Deployment, security, operations.
 
-Status: Proposed.
+Status: Confirmed for temporary Vercel production deployment.
 
 Decision:
 
-- Use Vercel deployment if possible.
+- Use Vercel deployment.
 - A temporary Vercel-provided address is acceptable for initial controlled deployment.
-- Production env vars still need to be configured before deploy works.
+- Production env vars are configured in Vercel.
+- Production deployment URL: `https://abre-usa.vercel.app`.
 
 Blocks:
 
-- Production deployment.
+- Custom production domain remains a future improvement.
+- Authenticated admin verification remains pending.
 
 P8-T06 confirmation:
 
@@ -249,14 +251,17 @@ P8-T12 planning:
 - P8-T13 should configure the Vercel environment, deploy, and verify the controlled production flow.
 - Vercel Cron, branded sender migration, and expanded audit logging remain separate follow-up tasks.
 
-Required before deployment:
+P8-T13 result:
 
-- `NEXT_PUBLIC_SUPABASE_URL`.
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
-- `SUPABASE_SERVICE_ROLE_KEY`.
-- `RESEND_API_KEY`.
-- Confirm Vercel project link.
-- Confirm launch access model: internal-only, password/protected preview, controlled users, or public production.
+- Vercel project linked/created: `abre-usa-s-projects/abre-usa`.
+- Production env vars configured:
+  - `NEXT_PUBLIC_SUPABASE_URL`.
+  - `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
+  - `SUPABASE_SERVICE_ROLE_KEY`.
+  - `RESEND_API_KEY`.
+- Production deploy succeeded at `https://abre-usa.vercel.app`.
+- Customer Complete Package flow verified with test protocol `AUS-2026-0011`.
+- Authenticated admin portal verification remains pending.
 
 ### DG-011: Document Retention Automation
 

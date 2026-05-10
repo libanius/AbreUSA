@@ -660,3 +660,21 @@ After P8-T11, prioritize production deployment readiness and controlled Vercel d
 Reason:
 
 The core MVP flow, admin portal, server-side persistence, security lockdown, email integration, retention metadata, audit foundation, and manual deletion workflow are already implemented. The main blocker to controlled MVP use is now operational deployment: Vercel project linkage, production environment variables, launch access model, deployment, and end-to-end verification on the deployed URL.
+
+### 2026-05-09: Temporary Vercel Production Deployment Completed
+
+Decision:
+
+Deploy the MVP to Vercel under the AbreUSA account and use the temporary Vercel URL for controlled validation.
+
+Result:
+
+- Vercel account: `abreusaonline-7459`.
+- Vercel project: `abre-usa-s-projects/abre-usa`.
+- Production URL: `https://abre-usa.vercel.app`.
+- Production env vars configured in Vercel.
+- Deployed customer Complete Package flow verified with protocol `AUS-2026-0011`.
+
+Reason:
+
+The temporary Vercel URL is sufficient for controlled MVP validation while custom domain setup, branded sender migration, and broader launch decisions remain separate follow-up work.

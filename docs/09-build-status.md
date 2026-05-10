@@ -28,32 +28,52 @@ Task ID: `P8-T13`
 
 Title: Configure Vercel production environment and perform controlled deployment verification.
 
-Status: In progress. Correct AbreUSA Vercel account authenticated; project link pending.
+Status: Deployed and customer flow verified. Authenticated admin verification pending.
 
 Result:
 
-- Local `.vercel/` project link is not present.
 - Vercel CLI is available (`53.3.1`).
 - `npx vercel login` was completed against the wrong Vercel account (`eosoffgrid-5698`).
 - That account was logged out with `npx vercel logout`.
 - Correct AbreUSA Vercel account login completed.
 - `npx vercel whoami` now returns `abreusaonline-7459`.
-- No deployment was attempted.
-- No environment variables were changed.
+- Vercel project linked/created: `abre-usa-s-projects/abre-usa`.
+- Production environment variables configured in Vercel:
+  - `NEXT_PUBLIC_SUPABASE_URL`.
+  - `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
+  - `SUPABASE_SERVICE_ROLE_KEY`.
+  - `RESEND_API_KEY`.
+- Production deployment succeeded.
+- Production URL: `https://abre-usa.vercel.app`.
+- Deployment build passed on Vercel.
+- HTTP verification passed:
+  - `/` returns `200`.
+  - `/admin/login` returns `200`.
+  - `/admin/orders` redirects unauthenticated users to `/admin/login`.
+- Browser verification passed for deployed Complete Package customer flow:
+  - Test protocol: `AUS-2026-0011`.
+  - Order ID: `44885adc-ebec-42b3-9365-f582b14f4144`.
+  - Supabase order and document rows created.
+  - Private storage objects created: `passport.pdf` and `us_address_proof.pdf`.
+- Vercel production error log query after verification returned no error logs.
+- Production confirmation email path produced no visible Vercel error logs, but inbox receipt was not verified in this session.
+- Authenticated admin portal verification remains pending because admin credentials/user confirmation were not available in this session.
 
 ## Next Task
 
-Task ID: `P8-T13`
+Task ID: `P8-T13V`
 
-Title: Configure Vercel production environment and perform controlled deployment verification.
+Title: Verify authenticated production admin portal.
 
 Scope:
 
-- Link or confirm the Vercel project.
-- Configure required Vercel environment variables.
-- Deploy to Vercel.
-- Verify the deployed customer and admin flows end to end.
-- Record the deployed URL and verification result.
+- Confirm or create a Supabase Auth admin user for production.
+- Log in at `https://abre-usa.vercel.app/admin/login`.
+- Verify `/admin/orders` lists the production test order.
+- Verify `/admin/orders/[id]` loads order detail.
+- Verify signed document open/download links.
+- Verify admin status update writes an `order_status_updated` audit event.
+- Verify manual deletion button remains hidden for non-eligible documents.
 
 ## Completed Tasks
 
@@ -183,7 +203,7 @@ Scope:
 ## What Is NOT Implemented
 
 - AbreUSA-branded sender domain migration (temporary current sender is confirmed; branded sender remains a future improvement).
-- Vercel production deployment (temporary Vercel URL acceptable if possible; env vars not yet set in Vercel dashboard).
+- Custom production domain (temporary Vercel URL is deployed and verified).
 - Vercel Cron retention automation.
 - Reviewer access scope refinement beyond the single authenticated admin MVP model.
 - Audit logging for document access/login/logout/email events beyond current order status and planned deletion events.
@@ -207,21 +227,21 @@ Scope:
 
 ## Exact Next Step To Resume
 
-Execute P8-T13: configure the Vercel production environment and perform controlled deployment verification.
+Execute P8-T13V: verify the authenticated production admin portal.
 
 Required before execution:
 
-- Confirm or link the Vercel project.
-- Configure `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, and `RESEND_API_KEY` in Vercel.
-- Confirm launch access model: internal-only, protected preview, controlled users, or public production.
-- Deploy and verify customer order submission, email behavior, admin review, signed document access, status update audit event, and secret handling.
+- Confirm or create a Supabase Auth admin user.
+- Use the admin user to log in at `https://abre-usa.vercel.app/admin/login`.
+- Verify order detail, signed document access, status update audit event, and deletion-button eligibility behavior.
 
 ## Blockers And Risks
 
-- `RESEND_API_KEY` and `SUPABASE_SERVICE_ROLE_KEY` must be set in Vercel environment variables before production deployment.
+- Authenticated production admin verification is still pending.
+- Production confirmation email inbox receipt is still pending.
 - Vercel CLI is logged out after detecting the wrong account (`eosoffgrid-5698`).
 - Correct AbreUSA Vercel account is now authenticated as `abreusaonline-7459`.
-- Vercel project linkage and launch access model still need confirmation before P8-T13 can complete.
+- Vercel project is linked and deployed at `https://abre-usa.vercel.app`.
 - AbreUSA domain email migration is a Decision Needed item before long-term production use.
 - Manual physical deletion is implemented (P8-T11). In-browser verification against a real eligible document is recommended before enabling for production use.
 - Automated retention Cron (Vercel Cron) remains deferred until manual deletion is verified in production.

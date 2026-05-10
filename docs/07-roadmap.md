@@ -1577,7 +1577,7 @@ P8-T12 status:
   - DG-017 keeps automated retention Cron deferred until manual deletion is verified in production.
   - AbreUSA-branded sender migration is important for long-term production polish but the temporary verified sender is already confirmed for controlled deployment.
   - Additional audit events are useful but not the primary blocker to putting the MVP in front of controlled users.
-  - DG-010 still blocks production deployment until Vercel environment variables, project link, and launch access model are confirmed.
+  - DG-010 was the main blocker before P8-T13 because Vercel environment variables, project link, and launch access model were not confirmed yet.
 - No product feature code was changed.
 
 P8-T12 deployment readiness plan:
@@ -1628,6 +1628,51 @@ Next operational task:
   - Admin login, order detail, signed document access, status update, and audit event creation are verified.
   - No server-side secret is exposed to the browser.
   - Build status and progress page are updated with the deployment URL and verification notes.
+
+P8-T13 status:
+
+- Status: Deployed and customer flow verified. Authenticated admin verification pending.
+- Vercel project linked/created: `abre-usa-s-projects/abre-usa`.
+- Production URL: `https://abre-usa.vercel.app`.
+- Production environment variables configured:
+  - `NEXT_PUBLIC_SUPABASE_URL`.
+  - `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
+  - `SUPABASE_SERVICE_ROLE_KEY`.
+  - `RESEND_API_KEY`.
+- Vercel production build and deployment succeeded.
+- HTTP verification passed:
+  - `/` returns `200`.
+  - `/admin/login` returns `200`.
+  - `/admin/orders` redirects unauthenticated users to `/admin/login`.
+- Deployed Complete Package browser verification passed:
+  - Test protocol: `AUS-2026-0011`.
+  - Order ID: `44885adc-ebec-42b3-9365-f582b14f4144`.
+  - Supabase order and document records created.
+  - Private storage files created: `passport.pdf` and `us_address_proof.pdf`.
+- Vercel production error log query after verification returned no error logs.
+- Not yet verified:
+  - Inbox receipt for the production confirmation email.
+  - Authenticated admin login on production.
+  - Production admin order detail.
+  - Production signed document open/download links.
+  - Production admin status update audit event.
+  - Production manual deletion eligibility UI.
+
+Next verification task:
+
+- Task ID: `P8-T13V`.
+- Title: Verify authenticated production admin portal.
+- Scope:
+  - Confirm or create a Supabase Auth admin user.
+  - Log in at `https://abre-usa.vercel.app/admin/login`.
+  - Verify order list, order detail, signed document links, status update audit event, and deletion-button eligibility behavior.
+- Acceptance criteria:
+  - Admin login succeeds in production.
+  - Production order list includes `AUS-2026-0011`.
+  - Production order detail loads for the test order.
+  - Signed document open/download links work.
+  - Status update writes an `order_status_updated` audit event.
+  - Delete button remains hidden for documents that are not retention-eligible.
 
 Potential additions (post-P8-T02):
 
