@@ -237,7 +237,7 @@ Decision:
 Blocks:
 
 - Custom production domain remains a future improvement.
-- Authenticated admin verification remains pending.
+- Production email inbox receipt remains pending.
 
 P8-T06 confirmation:
 
@@ -261,7 +261,13 @@ P8-T13 result:
   - `RESEND_API_KEY`.
 - Production deploy succeeded at `https://abre-usa.vercel.app`.
 - Customer Complete Package flow verified with test protocol `AUS-2026-0011`.
-- Authenticated admin portal verification remains pending.
+
+P8-T13V result:
+
+- Admin order pages were updated to force dynamic rendering after stale admin data was observed.
+- Authenticated production admin verification passed.
+- Admin status update created `order_status_updated` audit event `55b19546-f7ed-4a1b-99e1-5373cb9577ca`.
+- Temporary admin verification user was deleted after the test.
 
 ### DG-011: Document Retention Automation
 

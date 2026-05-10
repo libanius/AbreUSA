@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { getSupabaseServerClient } from "@/lib/supabase-server";
 
+export const dynamic = "force-dynamic";
+
 const SERVICE_LABELS: Record<string, string> = {
   complete_llc_ein: "Complete Package",
   florida_llc: "Florida LLC",

@@ -1631,7 +1631,7 @@ Next operational task:
 
 P8-T13 status:
 
-- Status: Deployed and customer flow verified. Authenticated admin verification pending.
+- Status: Complete.
 - Vercel project linked/created: `abre-usa-s-projects/abre-usa`.
 - Production URL: `https://abre-usa.vercel.app`.
 - Production environment variables configured:
@@ -1650,29 +1650,45 @@ P8-T13 status:
   - Supabase order and document records created.
   - Private storage files created: `passport.pdf` and `us_address_proof.pdf`.
 - Vercel production error log query after verification returned no error logs.
-- Not yet verified:
-  - Inbox receipt for the production confirmation email.
-  - Authenticated admin login on production.
-  - Production admin order detail.
-  - Production signed document open/download links.
-  - Production admin status update audit event.
-  - Production manual deletion eligibility UI.
+- Production confirmation email path produced no visible Vercel error logs, but inbox receipt was not verified in this session.
 
-Next verification task:
+P8-T13V status:
 
-- Task ID: `P8-T13V`.
-- Title: Verify authenticated production admin portal.
-- Scope:
-  - Confirm or create a Supabase Auth admin user.
-  - Log in at `https://abre-usa.vercel.app/admin/login`.
-  - Verify order list, order detail, signed document links, status update audit event, and deletion-button eligibility behavior.
-- Acceptance criteria:
-  - Admin login succeeds in production.
+- Status: Complete.
+- Initial authenticated admin verification exposed a real production issue: `/admin/orders` and `/admin/orders/[id]` were cacheable/prerendered and could show stale data.
+- Fix implemented:
+  - Added `export const dynamic = "force-dynamic";` to `app/admin/orders/page.tsx`.
+  - Added `export const dynamic = "force-dynamic";` to `app/admin/orders/[id]/page.tsx`.
+- `npm run lint` passed.
+- `npm run build` passed and confirmed both admin pages are dynamic.
+- Production redeploy succeeded at `https://abre-usa.vercel.app`.
+- Authenticated admin verification passed using a temporary Supabase Auth admin user that was deleted after verification.
+- Verification results:
+  - Admin login succeeded in production.
   - Production order list includes `AUS-2026-0011`.
-  - Production order detail loads for the test order.
-  - Signed document open/download links work.
-  - Status update writes an `order_status_updated` audit event.
-  - Delete button remains hidden for documents that are not retention-eligible.
+  - Production order detail loads for order `44885adc-ebec-42b3-9365-f582b14f4144`.
+  - Signed document open/download links were generated and reachable.
+  - Status update from `approved` to `internal_review` succeeded.
+  - Audit event created: `55b19546-f7ed-4a1b-99e1-5373cb9577ca`.
+  - Delete button remained hidden because the documents are not retention-eligible.
+  - Temporary admin verification user cleanup confirmed; no `admin-verify` users remain in Supabase Auth.
+- Vercel production error log query after admin verification returned no error logs.
+
+Next operational task:
+
+- Task ID: `P8-T14`.
+- Title: Confirm remaining launch operations.
+- Scope:
+  - Confirm production email receipt for `AUS-2026-0011` or run a new email receipt test.
+  - Confirm permanent admin user ownership and password access.
+  - Decide whether controlled launch stays on `https://abre-usa.vercel.app` or moves to a custom domain.
+  - Decide whether to continue with the temporary sender or start AbreUSA-branded sender migration.
+- Acceptance criteria:
+  - Email receipt status is known and documented.
+  - Permanent admin account access is confirmed.
+  - Domain decision is documented.
+  - Sender-domain decision is documented.
+  - Build status and progress page are updated.
 
 Potential additions (post-P8-T02):
 

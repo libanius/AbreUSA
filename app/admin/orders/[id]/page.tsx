@@ -4,6 +4,8 @@ import { getSupabaseServerClient } from "@/lib/supabase-server";
 import StatusUpdater from "./_components/status-updater";
 import DeleteDocumentButton from "./_components/delete-document-button";
 
+export const dynamic = "force-dynamic";
+
 const SERVICE_LABELS: Record<string, string> = {
   complete_llc_ein: "Complete Package (LLC + EIN)",
   florida_llc: "Florida LLC Formation",

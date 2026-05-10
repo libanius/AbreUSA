@@ -28,7 +28,7 @@ Task ID: `P8-T13`
 
 Title: Configure Vercel production environment and perform controlled deployment verification.
 
-Status: Deployed and customer flow verified. Authenticated admin verification pending.
+Status: Complete.
 
 Result:
 
@@ -57,23 +57,36 @@ Result:
   - Private storage objects created: `passport.pdf` and `us_address_proof.pdf`.
 - Vercel production error log query after verification returned no error logs.
 - Production confirmation email path produced no visible Vercel error logs, but inbox receipt was not verified in this session.
-- Authenticated admin portal verification remains pending because admin credentials/user confirmation were not available in this session.
+- Initial authenticated admin verification exposed a production issue: `/admin/orders` and `/admin/orders/[id]` were cacheable/prerendered Server Components and did not reliably show newly created orders.
+- Fix applied: `export const dynamic = "force-dynamic";` added to:
+  - `app/admin/orders/page.tsx`.
+  - `app/admin/orders/[id]/page.tsx`.
+- `npm run lint` passed.
+- `npm run build` passed and confirmed both admin pages are dynamic.
+- Production redeploy succeeded.
+- Authenticated production admin verification passed using a temporary Supabase Auth admin user that was deleted after verification.
+- Admin verification results:
+  - `/admin/orders` listed `AUS-2026-0011`.
+  - `/admin/orders/44885adc-ebec-42b3-9365-f582b14f4144` loaded.
+  - Signed document links were generated and reachable.
+  - Delete button remained hidden because the documents are not retention-eligible.
+  - Status update from `approved` to `internal_review` succeeded.
+  - `order_status_updated` audit event created: `55b19546-f7ed-4a1b-99e1-5373cb9577ca`.
+  - Temporary admin verification user cleanup confirmed: no `admin-verify` users remain in Supabase Auth.
+- Vercel production error log query after admin verification returned no error logs.
 
 ## Next Task
 
-Task ID: `P8-T13V`
+Task ID: `P8-T14`
 
-Title: Verify authenticated production admin portal.
+Title: Confirm remaining launch operations.
 
 Scope:
 
-- Confirm or create a Supabase Auth admin user for production.
-- Log in at `https://abre-usa.vercel.app/admin/login`.
-- Verify `/admin/orders` lists the production test order.
-- Verify `/admin/orders/[id]` loads order detail.
-- Verify signed document open/download links.
-- Verify admin status update writes an `order_status_updated` audit event.
-- Verify manual deletion button remains hidden for non-eligible documents.
+- Confirm production email receipt for `AUS-2026-0011` or run a new email receipt test.
+- Confirm permanent admin user ownership for `contact@brightscalegroup.com` or another AbreUSA admin.
+- Decide whether controlled launch stays on `https://abre-usa.vercel.app` or moves to a custom domain.
+- Decide whether to continue with the temporary sender or start AbreUSA-branded sender migration.
 
 ## Completed Tasks
 
@@ -109,6 +122,8 @@ Scope:
 - P8-T10: Retention deletion workflow implementation planning complete.
 - P8-T11: Manual retention deletion workflow foundation implemented.
 - P8-T12: Production deployment readiness planning complete.
+- P8-T13: Production deployment and customer flow verification complete.
+- P8-T13V: Authenticated production admin verification complete.
 
 ## What Is Implemented
 
@@ -227,17 +242,17 @@ Scope:
 
 ## Exact Next Step To Resume
 
-Execute P8-T13V: verify the authenticated production admin portal.
+Execute P8-T14: confirm remaining launch operations.
 
 Required before execution:
 
-- Confirm or create a Supabase Auth admin user.
-- Use the admin user to log in at `https://abre-usa.vercel.app/admin/login`.
-- Verify order detail, signed document access, status update audit event, and deletion-button eligibility behavior.
+- Confirm whether the production confirmation email for `AUS-2026-0011` was received.
+- Confirm permanent admin account ownership and password access.
+- Decide whether to keep the temporary Vercel URL for controlled users or configure a custom domain.
+- Decide whether AbreUSA-branded sender migration starts now or remains deferred.
 
 ## Blockers And Risks
 
-- Authenticated production admin verification is still pending.
 - Production confirmation email inbox receipt is still pending.
 - Vercel CLI is logged out after detecting the wrong account (`eosoffgrid-5698`).
 - Correct AbreUSA Vercel account is now authenticated as `abreusaonline-7459`.

@@ -678,3 +678,18 @@ Result:
 Reason:
 
 The temporary Vercel URL is sufficient for controlled MVP validation while custom domain setup, branded sender migration, and broader launch decisions remain separate follow-up work.
+
+### 2026-05-09: Admin Order Pages Must Be Dynamic
+
+Decision:
+
+Force dynamic rendering for production admin order list and order detail pages.
+
+Files:
+
+- `app/admin/orders/page.tsx`.
+- `app/admin/orders/[id]/page.tsx`.
+
+Reason:
+
+The first authenticated production admin verification showed that the admin list/detail pages could be prerendered or cached, which prevented the newly created production test order `AUS-2026-0011` from appearing reliably. Admin review pages must read current operational data from Supabase on demand.
