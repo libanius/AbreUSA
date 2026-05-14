@@ -2123,7 +2123,7 @@ Stop checkpoint:
 - Phase 11 first slice is complete and deployed.
 - Exact next roadmap action: implement `P11-T03` rate limiting for `/dashboard` lookup before broader dashboard usage.
 
-Current Phase 11 hardening task:
+Phase 11 hardening task:
 
 - Task ID: `P11-T03`.
 - Title: Add rate limiting to customer dashboard lookup.
@@ -2148,3 +2148,22 @@ Current Phase 11 hardening task:
   - Invalid lookup still shows the existing neutral not-found behavior under the limit.
   - `npm run lint` and `npm run build` pass.
   - Production deployment and verification are recorded after deploy.
+
+- Result:
+  - Added Supabase migration `20260514223000_customer_dashboard_rate_limits.sql`.
+  - Added `customer_dashboard_rate_limits` table and `check_customer_dashboard_rate_limit` RPC.
+  - Applied migration to Supabase with `npx supabase db push`.
+  - Added server-only dashboard rate-limit helper using hashed IP and hashed protocol/email tuple identifiers.
+  - `/dashboard` now checks the rate limit before querying order data.
+  - Exceeded limits show the neutral Portuguese message: "Muitas tentativas de consulta foram feitas em pouco tempo. Aguarde alguns minutos e tente novamente."
+  - Valid and invalid lookups still work under the limit.
+  - Local verification passed: `npm run lint`, `npm run build`, valid lookup, invalid lookup, exceeded-limit lookup, and sensitive-token HTML check.
+  - Production deployed to `https://abre-usa.vercel.app`.
+  - Production deployment ID: `dpl_5DpoZY6usFF3qhubM9WXJdS8owLN`.
+  - Production verification passed: `/dashboard` returns `200`, valid lookup returns `AUS-2026-0020`, invalid lookup returns the neutral not-found message, exceeded-limit lookup returns the neutral rate-limit message, `/` returns `200`, and unauthenticated `/admin/orders` redirects to `/admin/login`.
+
+Stop checkpoint:
+
+- Date: 2026-05-14.
+- Phase 11 customer dashboard lookup MVP is complete, rate-limited, deployed, and production-verified.
+- Exact next roadmap action: choose the next customer dashboard slice. Recommended: define `P11-T04` for authenticated customer access or magic-link strategy before adding customer document downloads or correction workflows.

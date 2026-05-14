@@ -4,57 +4,64 @@
 
 Phase 11: Customer Dashboard Journey.
 
-Phases 1–11 first production slice are complete. Current task is Phase 11 hardening: rate limit the public customer dashboard lookup.
+Phases 1–11 first production slice are complete. Phase 11 dashboard lookup is now rate-limited, deployed, and production-verified.
 
 ## Last Completed Task
-
-Task ID: `P11-T02`
-
-Title: Deploy customer dashboard lookup MVP and verify production.
-
-Result:
-
-- Production deployment is Ready.
-- Deployment ID: `dpl_GoRjqfqJFDwcYofHqU6dn9SStsHL`.
-- Production URL: `https://abre-fl7829zy2-abre-usa-s-projects.vercel.app`.
-- Production alias: `https://abre-usa.vercel.app`.
-- Production `/dashboard` returns `200`.
-- Valid production lookup with `AUS-2026-0020` and the applicant email returns the safe customer summary.
-- Invalid production lookup with the wrong email returns a neutral not-found message and does not reveal customer/order details.
-- Production HTML checks confirmed no `storage_path`, signed URLs, download/view URLs, storage object paths, admin controls, audit records, or raw sensitive passport fields are exposed.
-- Production `/` returns `200`.
-- Production unauthenticated `/admin/orders` redirects to `/admin/login`.
-- Pre-deploy verification passed:
-  - `npm run lint`.
-  - `npm run build`.
-
-## Current Task
 
 Task ID: `P11-T03`
 
 Title: Add rate limiting to customer dashboard lookup.
 
+Result:
+
+- Supabase migration `20260514223000_customer_dashboard_rate_limits.sql` created and applied with `npx supabase db push`.
+- Added shared rate-limit table and RPC: `customer_dashboard_rate_limits` and `check_customer_dashboard_rate_limit`.
+- `/dashboard` checks rate limits before querying order data.
+- Limits apply by hashed client IP and hashed protocol/email lookup tuple.
+- Exceeded limits show the neutral Portuguese message: "Muitas tentativas de consulta foram feitas em pouco tempo. Aguarde alguns minutos e tente novamente."
+- Production deployment is Ready.
+- Deployment ID: `dpl_5DpoZY6usFF3qhubM9WXJdS8owLN`.
+- Production URL: `https://abre-hcpnwburm-abre-usa-s-projects.vercel.app`.
+- Production alias: `https://abre-usa.vercel.app`.
+- Production `/dashboard` returns `200`.
+- Valid production lookup with `AUS-2026-0020` and the applicant email returns the safe customer summary.
+- Invalid production lookup returns the neutral not-found message.
+- Exceeded-limit production lookup returns the neutral rate-limit message.
+- Production `/` returns `200`.
+- Production unauthenticated `/admin/orders` redirects to `/admin/login`.
+- Sensitive-token checks confirmed no `storage_path`, signed URLs, download/view URLs, storage object paths, admin controls, audit records, or raw sensitive passport fields are exposed.
+- Verification passed:
+  - `npx supabase db push`.
+  - `npm run lint`.
+  - `npm run build`.
+  - Local valid lookup.
+  - Local invalid lookup.
+  - Local exceeded-limit lookup.
+  - Production valid lookup.
+  - Production invalid lookup.
+  - Production exceeded-limit lookup.
+
+## Current Task
+
+Task ID: `TBD`
+
+Title: Choose the next customer dashboard slice.
+
 Scope:
 
-- Add a Supabase-backed shared rate-limit counter for `/dashboard` lookup attempts.
-- Rate limit by client IP and lookup tuple.
-- Check rate limit before querying order data.
-- Show a neutral Portuguese message when the limit is exceeded.
-- Preserve valid lookup, invalid lookup, admin, OCR, order persistence, and production flow.
+- Select the next Phase 11 customer dashboard priority.
+- Recommended next slice: define `P11-T04` for authenticated customer access or magic-link strategy before adding customer document downloads or correction workflows.
+- Keep payment, full dashboard portal, and customer correction workflows out of scope until the next slice is explicitly scoped.
 
 Acceptance criteria:
 
-- Rate-limit schema/function is committed and applied to Supabase.
-- `/dashboard` checks the limit before order lookup.
-- Exceeded limit does not query or reveal order data.
-- Valid lookup still works under the limit.
-- Invalid lookup still shows the existing neutral not-found message under the limit.
-- `npm run lint` and `npm run build` pass.
-- Production deployment and verification are recorded after deploy.
+- App Spine is updated before implementation.
+- Scope, out-of-scope items, acceptance criteria, and risks are recorded.
+- No future customer dashboard items are marked complete until implemented and verified.
 
 ## Next Task
 
-Implement `P11-T03`: `/dashboard` lookup rate limiting.
+Choose the next Phase 11 customer dashboard slice. Recommended: `P11-T04` authenticated customer access or magic-link strategy.
 
 ## Completed Tasks
 
@@ -113,6 +120,7 @@ Implement `P11-T03`: `/dashboard` lookup rate limiting.
 - Phase 11 first production slice complete:
   - P11-T01: Customer dashboard lookup MVP implemented locally. `/dashboard` supports protocol + applicant email lookup, returns a safe customer DTO, and hides sensitive document URLs/storage paths/raw files. Lint, build, valid lookup, invalid lookup, and sensitive-token HTML checks passed.
   - P11-T02: Customer dashboard lookup MVP deployed to production and verified at `https://abre-usa.vercel.app`. Valid lookup, invalid lookup, sensitive-token HTML checks, home health check, and admin unauthenticated redirect passed.
+  - P11-T03: Customer dashboard lookup rate limiting implemented, applied to Supabase, deployed to production, and verified. `/dashboard` now rate limits by hashed IP and hashed protocol/email tuple before order lookup.
 
 ## What Is Implemented
 
@@ -156,6 +164,7 @@ Implement `P11-T03`: `/dashboard` lookup rate limiting.
 - `/progress/index.html` bilingual stakeholder dashboard.
 - Customer dashboard journey:
   - `/dashboard` protocol + applicant email lookup implemented and deployed.
+  - `/dashboard` lookup is rate-limited by hashed IP and hashed protocol/email tuple using a Supabase-backed shared counter.
   - Safe customer summary includes protocol, service, status, dates, applicant, LLC, document checklist/status, generated form checklist, and next-step timeline.
   - Signed document URLs, storage paths, raw uploaded files, admin controls, and audit records are not exposed.
   - Confirmation screen links to `/dashboard` with the protocol prefilled.
@@ -200,28 +209,26 @@ Implement `P11-T03`: `/dashboard` lookup rate limiting.
 
 ## Exact Next Step To Resume
 
-1. Implement `P11-T03`: Supabase-backed `/dashboard` lookup rate limiting.
-2. Run `npx supabase db push`, `npm run lint`, and `npm run build`.
-3. Verify valid lookup, invalid lookup, and exceeded-limit behavior locally.
-4. Deploy and verify production.
-5. Update `/docs/07-roadmap.md`, `/docs/09-build-status.md`, and `/progress/index.html` with results.
+1. Choose the next Phase 11 customer dashboard slice.
+2. Recommended: define `P11-T04` for authenticated customer access or magic-link strategy before adding customer document downloads or correction workflows.
+3. Update `/docs/07-roadmap.md`, `/docs/09-build-status.md`, and `/progress/index.html` before implementation.
 
 Resume command prompt:
 
-Read `AGENTS.md`, `/docs/START-HERE.md`, `/docs/07-roadmap.md`, and this file. Resume with `P11-T03` implementation.
+Read `AGENTS.md`, `/docs/START-HERE.md`, `/docs/07-roadmap.md`, and this file. Resume by choosing and documenting the next Phase 11 customer dashboard slice. Recommended: `P11-T04` authenticated customer access or magic-link strategy.
 
 ## Blockers And Risks
 
 - Production confirmation email verified: `AUS-2026-0014` received at `brightscalegroup@gmail.com` on 2026-05-09.
 - Permanent admin user exists, is email-confirmed, and owner/operator confirmed access.
 - Correct AbreUSA Vercel account is authenticated as `abreusaonline-7459`.
-- Vercel project is linked. Current production deployment: `dpl_GoRjqfqJFDwcYofHqU6dn9SStsHL` (Phase 11).
+- Vercel project is linked. Current production deployment: `dpl_5DpoZY6usFF3qhubM9WXJdS8owLN` (Phase 11 P11-T03).
 - Custom domain is deferred; controlled launch continues on `https://abre-usa.vercel.app`.
 - AbreUSA domain email migration remains deferred; temporary Brightscale sender in use.
 - Manual physical deletion is implemented (P8-T11). In-browser verification against a real eligible document is recommended before enabling for production use.
 - Automated retention Cron (Vercel Cron) remains deferred until manual deletion is verified in production.
 - OCR extraction only supports image files (JPEG, PNG, GIF, WebP). PDF uploads are accepted for Supabase storage but return `unsupported_file_type` error for extraction — customer sees friendly fallback and can continue manually.
 - Admin portal has no rate limiting or brute-force protection on the login page (acceptable for MVP internal use).
-- Customer dashboard lookup has no rate limiting yet. The MVP relies on protocol + applicant email and exposes only a safe DTO, but rate limiting should be added before broader public launch volume.
+- Customer dashboard lookup is rate-limited, but still does not have full customer authentication, magic-link access, document downloads, or correction workflows.
 - Default PATH does not include Node/npm on this machine; use `PATH=/usr/local/opt/node@22/bin:$PATH` for local commands.
 - The project path contains a curly apostrophe (U+2019); use Python subprocess or `pathlib.Path.cwd()` for shell commands — do not use shell `find | head -1` pattern.
