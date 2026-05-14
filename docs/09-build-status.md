@@ -10,20 +10,24 @@ Phase 8.5 is complete. The guided onboarding UX cleanup is implemented before pa
 
 ## Last Completed Task
 
-Task ID: `P8-T14`
+Task ID: `P8.5-T02`
 
-Title: Confirm remaining launch operations.
+Title: Add same-as-residential checkbox to company address flow.
 
 Result:
 
-- Production email fire-and-forget bug identified and fixed: `void sendConfirmationEmail()` replaced with `await` in `app/api/orders/route.ts`. Serverless functions on Vercel were terminating before the Resend API call completed.
-- Redeployed to production after fix.
-- New test order submitted: `AUS-2026-0014` (order ID `df140edf-bc35-4f91-a3ae-de5e3e6cf89c`).
-- Production confirmation email received in `brightscalegroup@gmail.com` inbox. Receipt confirmed by owner/operator.
-- Permanent admin access via `contact@brightscalegroup.com` is confirmed.
-- Controlled launch continues on `https://abre-usa.vercel.app`.
-- Temporary sender `noreply@notifications.brightscalegroup.com` remains in use.
-- All P8-T14 acceptance criteria are met. Controlled MVP launch is complete.
+- Applicant/contact step now captures residential street, city, state, and ZIP.
+- LLC/company principal address step includes the checkbox `Usar o mesmo endereço residencial informado anteriormente`.
+- When checked, the final LLC principal address payload uses the applicant residential address.
+- When unchecked, the user can enter and preserve a separate LLC/company principal address.
+- Final review shows whether the company address is the same as the residential address or a separate address.
+- Admin order detail shows applicant residential address, LLC principal address, and the address relationship.
+- Supabase schema and migration include applicant residential address fields and `llcs.principal_same_as_applicant_address`.
+- Remote Supabase migration applied with `npx supabase db push`.
+- `npm run lint` passes.
+- `npm run build` passes.
+- Server-side `/api/orders` persistence and document upload verification passed with test protocol `AUS-2026-0016`.
+- Supabase verification confirmed applicant residential address persisted, LLC principal address copied from applicant residential address, `principal_same_as_applicant_address = true`, and two document records persisted.
 
 ## Current Task
 
@@ -62,72 +66,6 @@ P8.5-T02 result:
   - LLC principal address persisted with the same values.
   - `principal_same_as_applicant_address` persisted as `true`.
   - Two document rows persisted.
-
-Result:
-
-- Vercel CLI is available (`53.3.1`).
-- `npx vercel login` was completed against the wrong Vercel account (`eosoffgrid-5698`).
-- That account was logged out with `npx vercel logout`.
-- Correct AbreUSA Vercel account login completed.
-- `npx vercel whoami` now returns `abreusaonline-7459`.
-- Vercel project linked/created: `abre-usa-s-projects/abre-usa`.
-- Production environment variables configured in Vercel:
-  - `NEXT_PUBLIC_SUPABASE_URL`.
-  - `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
-  - `SUPABASE_SERVICE_ROLE_KEY`.
-  - `RESEND_API_KEY`.
-- Production deployment succeeded.
-- Production URL: `https://abre-usa.vercel.app`.
-- Deployment build passed on Vercel.
-- HTTP verification passed:
-  - `/` returns `200`.
-  - `/admin/login` returns `200`.
-  - `/admin/orders` redirects unauthenticated users to `/admin/login`.
-- Browser verification passed for deployed Complete Package customer flow:
-  - Test protocol: `AUS-2026-0011`.
-  - Order ID: `44885adc-ebec-42b3-9365-f582b14f4144`.
-  - Supabase order and document rows created.
-  - Private storage objects created: `passport.pdf` and `us_address_proof.pdf`.
-- Vercel production error log query after verification returned no error logs.
-- Production confirmation email path produced no visible Vercel error logs, but `AUS-2026-0011` used applicant email `ana.prod@example.com`, which is not an inspectable real inbox.
-- Initial authenticated admin verification exposed a production issue: `/admin/orders` and `/admin/orders/[id]` were cacheable/prerendered Server Components and did not reliably show newly created orders.
-- Fix applied: `export const dynamic = "force-dynamic";` added to:
-  - `app/admin/orders/page.tsx`.
-  - `app/admin/orders/[id]/page.tsx`.
-- `npm run lint` passed.
-- `npm run build` passed and confirmed both admin pages are dynamic.
-- Production redeploy succeeded.
-- Authenticated production admin verification passed using a temporary Supabase Auth admin user that was deleted after verification.
-- Admin verification results:
-  - `/admin/orders` listed `AUS-2026-0011`.
-  - `/admin/orders/44885adc-ebec-42b3-9365-f582b14f4144` loaded.
-  - Signed document links were generated and reachable.
-  - Delete button remained hidden because the documents are not retention-eligible.
-  - Status update from `approved` to `internal_review` succeeded.
-  - `order_status_updated` audit event created: `55b19546-f7ed-4a1b-99e1-5373cb9577ca`.
-  - Temporary admin verification user cleanup confirmed: no `admin-verify` users remain in Supabase Auth.
-- Vercel production error log query after admin verification returned no error logs.
-- P8-T14 technical checks performed on 2026-05-10:
-  - `npx vercel whoami` confirms the active account is `abreusaonline-7459`.
-  - Vercel project list confirms `abre-usa-s-projects/abre-usa` with latest production URL `https://abre-usa.vercel.app`.
-  - Vercel production environment variables remain configured and encrypted:
-    - `NEXT_PUBLIC_SUPABASE_URL`.
-    - `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
-    - `SUPABASE_SERVICE_ROLE_KEY`.
-    - `RESEND_API_KEY`.
-  - Production health checks passed:
-    - `/` returns `200`.
-    - `/admin/login` returns `200`.
-  - `npx vercel inspect https://abre-usa.vercel.app` shows the production deployment is `Ready`.
-  - Recent filtered Vercel error log query returned no logs.
-  - Supabase Auth contains a confirmed user for `contact@brightscalegroup.com`.
-- P8-T14 owner/operator confirmations received on 2026-05-10:
-  - Production email for `AUS-2026-0011` did not arrive; follow-up check confirmed the order used `ana.prod@example.com`, so receipt cannot be verified from a real inbox.
-  - Permanent admin access for `contact@brightscalegroup.com` is confirmed by the owner/operator.
-  - Controlled launch should continue on the current temporary Vercel URL, interpreted as `https://abre-usa.vercel.app`.
-  - Temporary sender remains in use; AbreUSA-branded sender migration stays deferred.
-- Remaining P8-T14 blocker:
-  - Run a production email receipt test with a real inbox the owner/operator can inspect.
 
 ## Next Task
 
@@ -177,7 +115,9 @@ No next task is currently defined. Post-MVP priorities remain owner/operator-dir
 ## What Is Implemented
 
 - Full guided 13-step intake for Complete Package (LLC + EIN) and Florida LLC paths.
-- Applicant contact step (name, email, phone) — step 2.
+- Applicant contact step (name, email, phone, residential address) — step 2.
+- Company principal address can reuse the applicant residential address through a checkbox.
+- Persisted order data stores the copied LLC principal address plus `principal_same_as_applicant_address`.
 - Document collection for passport and U.S. address proof.
 - Local review screen, generated preview shells (Articles of Organization + SS-4), approval gate.
 - Confirmation screen with server-generated collision-resistant protocol number (`AUS-YYYY-NNNN`).
@@ -194,7 +134,7 @@ No next task is currently defined. Post-MVP priorities remain owner/operator-dir
 - Admin review portal at `/admin`:
   - Supabase Auth login at `/admin/login`. Auth guard via `proxy.ts`.
   - Order list at `/admin/orders` (newest first, with applicant data).
-  - Full order detail at `/admin/orders/[id]`.
+  - Full order detail at `/admin/orders/[id]`, including applicant residential address, LLC principal address, and address relationship.
   - Supabase signed URLs for private document access (open in tab + download).
   - Status dropdown with server-side PATCH update.
   - Logout clears session.
