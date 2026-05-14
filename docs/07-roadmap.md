@@ -2025,3 +2025,9 @@ Completed tasks:
 - Task ID: `P10-T04`.
 - Title: Approval step loading state and error retry.
 - Result: Button shows "Processando..." during persistence. Loading StatusMessage displayed. `handleContinueToConfirmation` is fail-closed: only navigates to confirmation on Supabase success; sets `persistError` and stays on approval step on failure for retry. Lint and build verified.
+
+Stop checkpoint:
+
+- Date: 2026-05-14.
+- Phase 10 is complete locally and production redeploy is pending.
+- Exact next roadmap action: deploy current `main` to `https://abre-usa.vercel.app`, then verify the document-assisted OCR path end-to-end in production.

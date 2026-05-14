@@ -28,6 +28,13 @@ Title: Awaiting next owner/operator priority.
 
 Phase 10 is complete locally. Next step is production redeploy, then choose next Post-MVP priority.
 
+Stop checkpoint:
+
+- Date: 2026-05-14.
+- Latest commit: `efc4fd4` — Update roadmap and build status for Phase 10 completion; implement OCR extraction and approval step enhancements.
+- Local docs reviewed before stopping: `/docs/09-build-status.md`, `/docs/07-roadmap.md`, `/progress/index.html`.
+- No implementation task is currently in progress.
+
 ## Next Task
 
 Production redeploy of Phase 10 to `https://abre-usa.vercel.app`, then choose the next owner/operator-directed priority. Candidates: payment, customer dashboard, branded sender/domain, retention Cron automation, EIN-only flow, Registered Agent-only flow, admin audit enhancements, or broader onboarding evolution.
@@ -165,6 +172,10 @@ Production redeploy of Phase 10 to `https://abre-usa.vercel.app`, then choose th
 1. Production redeploy of Phase 10 to `https://abre-usa.vercel.app` (push current `main` to Vercel).
 2. Verify customer flow end-to-end in production (document_assisted path with real image upload).
 3. Choose next owner/operator-directed Post-MVP priority.
+
+Resume command prompt:
+
+Read `AGENTS.md`, `/docs/START-HERE.md`, `/docs/07-roadmap.md`, and this file. Resume with production redeploy of Phase 10, then verify the document-assisted OCR path in production.
 
 ## Blockers And Risks
 
