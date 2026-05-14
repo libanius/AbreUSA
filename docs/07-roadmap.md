@@ -1821,6 +1821,36 @@ P8.5-T02 status:
   - `principal_same_as_applicant_address = true`.
   - Two document records persisted.
 
+## Phase 8.5 Deployment
+
+Status: Complete.
+
+Task ID: `P8.5-T03`.
+
+Title: Deploy Phase 8.5 onboarding UX cleanup to production.
+
+Scope:
+
+- Deploy the committed Phase 8.5 changes to Vercel production.
+- Verify the production alias points to the new deployment.
+- Run production health checks for the customer app and admin login.
+- Confirm unauthenticated admin orders still redirect to login.
+- Preserve controlled launch URL.
+
+P8.5-T03 status:
+
+- Status: Complete.
+- Local `npm run build` passed before deploy.
+- Vercel production deploy completed successfully.
+- Deployment ID: `dpl_FKGnAAzFvdhVNkeazTgXxugx7HsQ`.
+- Production deployment URL: `https://abre-ha3hf131u-abre-usa-s-projects.vercel.app`.
+- Production alias updated: `https://abre-usa.vercel.app`.
+- Production health checks passed:
+  - `/` returns `200`.
+  - `/admin/login` returns `200`.
+  - `/admin/orders` redirects unauthenticated users to `/admin/login`.
+- `npx vercel inspect https://abre-usa.vercel.app` reports the deployment is `Ready`.
+
 Potential additions (post-P8-T02):
 
 - Payment processing.
