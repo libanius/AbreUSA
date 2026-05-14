@@ -45,9 +45,9 @@ Result:
 
 Task ID: `P10-robustness`
 
-Title: Document extraction pipeline robustness fix.
+Title: Document extraction pipeline robustness fix — implemented and deployed to production.
 
-Result:
+Result (local + production):
 
 - `lib/preprocess-document.ts` added: sharp-based image normalization pipeline. Auto-rotates EXIF orientation (critical for mobile photos), resizes to max 4096px, compresses to max 4MB, converts all images to JPEG for consistent OpenAI input.
 - MIME allowlist expanded: `image/heic`, `image/heif`, `image/jpg`, `application/pdf` now accepted.
@@ -58,10 +58,13 @@ Result:
 - Format hint updated: "Formatos aceitos: JPG, JPEG, PNG ou PDF. Fotos de celular também são aceitas quando compatíveis. Se estiver usando iPhone, prefira enviar como JPG/JPEG ou PDF caso a leitura automática falhe."
 - extraction_review failed message is now context-aware: PDF-specific guidance shown when `errorCode === "pdf_requires_image"`.
 - Lint and build verified.
+- Production deployed: `dpl_H154NdEVXc2WUm1UJqm9c1ZPY91U` at `https://abre-nfx5wxbjr-abre-usa-s-projects.vercel.app`.
+- Production alias: `https://abre-usa.vercel.app`.
+- Production `/` returns 200.
 
 ## Next Task
 
-Deploy P10-robustness fix to production (`https://abre-usa.vercel.app`). Verify document-assisted flow with PNG and JPEG mobile photos. Then choose next Phase 11 slice.
+Verify P10-robustness in production with a real PNG and JPEG mobile photo upload (document-assisted flow). Then choose next Phase 11 slice (`P11-T04` authenticated customer access or magic-link strategy).
 
 ## Completed Tasks
 
@@ -125,6 +128,9 @@ Deploy P10-robustness fix to production (`https://abre-usa.vercel.app`). Verify 
   - Error codes: `image_decode_failed`, `heic_conversion_failed`, `pdf_requires_image`.
   - Upload UI: accept attribute and format hint updated per spec.
   - Lint and build verified.
+- Production deployed: `dpl_H154NdEVXc2WUm1UJqm9c1ZPY91U` at `https://abre-nfx5wxbjr-abre-usa-s-projects.vercel.app`.
+- Production alias: `https://abre-usa.vercel.app`.
+- Production `/` returns 200.
 - Phase 11 first production slice complete:
   - P11-T01: Customer dashboard lookup MVP implemented locally. `/dashboard` supports protocol + applicant email lookup, returns a safe customer DTO, and hides sensitive document URLs/storage paths/raw files. Lint, build, valid lookup, invalid lookup, and sensitive-token HTML checks passed.
   - P11-T02: Customer dashboard lookup MVP deployed to production and verified at `https://abre-usa.vercel.app`. Valid lookup, invalid lookup, sensitive-token HTML checks, home health check, and admin unauthenticated redirect passed.
@@ -231,7 +237,7 @@ Read `AGENTS.md`, `/docs/START-HERE.md`, `/docs/07-roadmap.md`, and this file. R
 - Production confirmation email verified: `AUS-2026-0014` received at `brightscalegroup@gmail.com` on 2026-05-09.
 - Permanent admin user exists, is email-confirmed, and owner/operator confirmed access.
 - Correct AbreUSA Vercel account is authenticated as `abreusaonline-7459`.
-- Vercel project is linked. Current production deployment: `dpl_5DpoZY6usFF3qhubM9WXJdS8owLN` (Phase 11 P11-T03).
+- Vercel project is linked. Current production deployment: `dpl_H154NdEVXc2WUm1UJqm9c1ZPY91U` (P10-robustness).
 - Custom domain is deferred; controlled launch continues on `https://abre-usa.vercel.app`.
 - AbreUSA domain email migration remains deferred; temporary Brightscale sender in use.
 - Manual physical deletion is implemented (P8-T11). In-browser verification against a real eligible document is recommended before enabling for production use.
