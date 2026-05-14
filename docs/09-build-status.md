@@ -183,7 +183,14 @@ Verify P10-robustness in production with a real PNG and JPEG mobile photo upload
   - Safe customer summary includes protocol, service, status, dates, applicant, LLC, document checklist/status, generated form checklist, and next-step timeline.
   - Signed document URLs, storage paths, raw uploaded files, admin controls, and audit records are not exposed.
   - Confirmation screen links to `/dashboard` with the protocol prefilled.
-  - Full customer login/account portal is not implemented yet.
+  - Full authenticated customer account portal (P11-T04):
+    - Customer signup at `/dashboard/register` (email + password, email verification via Supabase Auth).
+    - Customer login at `/dashboard/login`.
+    - Password reset at `/dashboard/reset-password` and `/dashboard/update-password`.
+    - OTP token exchange at `/auth/confirm` (handles signup confirmation and password recovery).
+    - Authenticated `/dashboard` shows orders by email without re-entering protocol.
+    - Protocol+email lookup form preserved as unauthenticated fallback.
+    - Admin routes protected against customer sessions via `ADMIN_EMAIL` env var check in `proxy.ts`.
 - Strategic evolution operating model: `AGENTS.md`, `/docs/START-HERE.md`, `/docs/COMMANDS.md`, `/docs/10-decision-gates.md`.
 - Document retention: 90-day sensitive upload retention, 1-year generated files, long-term customer metadata.
 - Manual admin deletion workflow with audit events (`document_deletion_attempted`, `document_deleted`, `document_deletion_failed`).
@@ -206,8 +213,8 @@ Verify P10-robustness in production with a real PNG and JPEG mobile photo upload
 - Vercel Cron retention automation.
 - Reviewer access scope refinement beyond the single authenticated admin MVP model.
 - Payment processing (Post-MVP).
-- Full authenticated customer dashboard/account portal.
-- Customer magic-link access.
+- Customer document download.
+- Customer correction/missing-information workflow (deferred).
 - Customer document download.
 - Customer correction/missing-information workflow.
 - EIN-only and Registered Agent-only dedicated flows (Post-MVP).
@@ -224,26 +231,31 @@ Verify P10-robustness in production with a real PNG and JPEG mobile photo upload
 
 ## Exact Next Step To Resume
 
-1. Implement `P11-T04`: Full authenticated customer account (email + password) via Supabase Auth.
-2. Scope is documented in `/docs/07-roadmap.md` under Phase 11.
-3. DG-007 is now confirmed for post-approval authenticated access. Draft resume remains deferred.
+1. Verify P11-T04 in production:
+   - Configure Supabase Auth allowed redirect URLs in the Supabase dashboard to include `https://abre-usa.vercel.app/auth/confirm`.
+   - Create a test customer account at `/dashboard/register` with the same email used in an existing order.
+   - Confirm verification email received, click link, verify session and order summary visible.
+   - Confirm admin login still works and customer account cannot access `/admin/orders`.
+2. Then choose the next Phase 11 slice or Post-MVP priority.
 
 Resume command prompt:
 
-Read `AGENTS.md`, `/docs/START-HERE.md`, `/docs/07-roadmap.md`, and this file. Implement `P11-T04`: customer account signup at `/register`, login at `/dashboard/login`, password reset, authenticated `/dashboard` route with Supabase RLS by email, and protocol+email fallback.
+Read `AGENTS.md`, `/docs/START-HERE.md`, `/docs/07-roadmap.md`, and this file. P11-T04 is deployed. Verify Supabase Auth redirect URL configuration and run the production customer account test.
 
 ## Blockers And Risks
 
 - Production confirmation email verified: `AUS-2026-0014` received at `brightscalegroup@gmail.com` on 2026-05-09.
 - Permanent admin user exists, is email-confirmed, and owner/operator confirmed access.
 - Correct AbreUSA Vercel account is authenticated as `abreusaonline-7459`.
-- Vercel project is linked. Current production deployment: `dpl_H154NdEVXc2WUm1UJqm9c1ZPY91U` (P10-robustness).
+- Vercel project is linked. Current production deployment: `dpl_31ZdR5zEXbFHsp5eKRWdFXtwsn3w` (P11-T04).
 - Custom domain is deferred; controlled launch continues on `https://abre-usa.vercel.app`.
 - AbreUSA domain email migration remains deferred; temporary Brightscale sender in use.
 - Manual physical deletion is implemented (P8-T11). In-browser verification against a real eligible document is recommended before enabling for production use.
 - Automated retention Cron (Vercel Cron) remains deferred until manual deletion is verified in production.
 - OCR extraction supports image files (JPEG, JPG, PNG, GIF, WebP, HEIC, HEIF) after sharp normalization. PDF uploads are accepted for Supabase storage but return `pdf_requires_image` error — customer sees specific guidance to upload as image and can continue manually.
 - Admin portal has no rate limiting or brute-force protection on the login page (acceptable for MVP internal use).
-- Customer dashboard lookup is rate-limited, but still does not have full customer authentication, magic-link access, document downloads, or correction workflows.
+- Customer accounts are implemented (signup, login, password reset, authenticated dashboard). Customer document downloads and correction workflows remain out of scope.
+- ADMIN_EMAIL env var is set in Vercel production; admin routes are protected from customer sessions.
+- Supabase Auth redirect URLs must be configured in Supabase dashboard: add https://abre-usa.vercel.app/auth/confirm and http://localhost:3000/auth/confirm to allowed redirect URLs.
 - Default PATH does not include Node/npm on this machine; use `PATH=/usr/local/opt/node@22/bin:$PATH` for local commands.
 - The project path contains a curly apostrophe (U+2019); use Python subprocess or `pathlib.Path.cwd()` for shell commands — do not use shell `find | head -1` pattern.

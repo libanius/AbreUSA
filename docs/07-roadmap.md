@@ -2211,4 +2211,20 @@ Phase 11 authenticated customer account task:
   - Admin portal and service-role routes are unaffected.
   - `npm run lint` and `npm run build` pass.
   - Production deployment and verification recorded.
-- Status: Planned.
+- Status: Complete.
+- Result:
+  - Customer signup at `/dashboard/register` (email + password via Supabase Auth with email verification).
+  - Customer login at `/dashboard/login` with email + password.
+  - Password reset at `/dashboard/reset-password` (sends reset link) and `/dashboard/update-password` (new password form).
+  - `/auth/confirm` route handler exchanges OTP tokens for sessions (signup confirmation and password recovery).
+  - `/dashboard/_components/logout-button.tsx` client logout component.
+  - Authenticated `/dashboard`: detects session via `createSupabaseServerComponentClient`, fetches all orders by email using service-role, shows orders without re-entering credentials. Logout redirects to `/dashboard/login`.
+  - Unauthenticated `/dashboard`: shows existing protocol+email lookup form with rate limiting (preserved as fallback).
+  - `getCustomerDashboardOrdersByEmail` added to `lib/customer-dashboard.ts`: two-step query via applicants table, returns all orders for authenticated email.
+  - `proxy.ts` updated: `ADMIN_EMAIL` env var check prevents customer accounts from accessing `/admin/*`; authenticated customers visiting `/dashboard/login` or `/dashboard/register` are redirected to `/dashboard`.
+  - `ADMIN_EMAIL` env var added to `.env.local` and Vercel production.
+  - DG-007 updated to `Confirmed` (post-approval authenticated access); draft resume remains deferred.
+  - `npm run lint` and `npm run build` pass (16 routes, 0 errors).
+  - Production deployed: `dpl_31ZdR5zEXbFHsp5eKRWdFXtwsn3w`.
+  - Production health checks: `/`, `/dashboard`, `/dashboard/login`, `/dashboard/register`, `/dashboard/reset-password` all return 200. `/admin/orders` returns 307 to `/admin/login`.
+  - Pending manual verification: Supabase Auth redirect URLs must be configured to allow `https://abre-usa.vercel.app/auth/confirm`. Customer account creation and email confirmation require a real test with a valid inbox.
