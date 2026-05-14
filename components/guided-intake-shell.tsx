@@ -162,6 +162,7 @@ type LocalOrderPayload = {
     extractedAddressData: Record<string, unknown>;
     extractionConfidence: number | null;
     userConfirmedExtractedData: boolean;
+    extractionErrors: { errorCode: string; message: string; details: string | null } | null;
     agentSummary: string | null;
     missingInformationFlags: string[];
   };
@@ -515,6 +516,7 @@ function StepFrame({
   onConfirmExtraction,
   onBackFromReview,
   extractionState,
+  extractionError,
   onContinueToMemberData,
   onContinueToMemberCount,
   onContinueToRegisteredAgent,
@@ -584,6 +586,7 @@ function StepFrame({
   onConfirmExtraction: () => void;
   onBackFromReview: () => void;
   extractionState: ExtractionState;
+  extractionError: { errorCode: string; message: string; details?: string } | null;
   onContinueToMemberData: () => void;
   onContinueToMemberCount: () => void;
   onContinueToRegisteredAgent: () => void;
@@ -1022,6 +1025,9 @@ function StepFrame({
                 Envie o passaporte e o comprovante de endereço agora. Os
                 documentos facilitarão o preenchimento dos próximos campos.
               </p>
+              <p className="mt-2 text-xs text-muted-foreground">
+                Para extração automática, use imagem (JPEG, PNG, WebP). PDF é aceito mas não pode ser lido automaticamente.
+              </p>
             </StatusMessage>
           ) : null}
 
@@ -1280,6 +1286,14 @@ function StepFrame({
                 Não conseguimos ler todos os dados automaticamente. Você ainda
                 pode continuar preenchendo manualmente.
               </p>
+              {extractionError ? (
+                <p className="mt-2 font-mono text-xs text-muted-foreground">
+                  Código: {extractionError.errorCode}
+                  {extractionError.details
+                    ? ` — ${extractionError.details}`
+                    : ""}
+                </p>
+              ) : null}
             </StatusMessage>
           ) : (
             <StatusMessage
@@ -2516,6 +2530,7 @@ export function GuidedIntakeShell() {
     });
   const [documentFiles, setDocumentFiles] = useState<{ passport: File | null; addressProof: File | null }>({ passport: null, addressProof: null });
   const [extractionState, setExtractionState] = useState<ExtractionState>("idle");
+  const [extractionError, setExtractionError] = useState<{ errorCode: string; message: string; details?: string } | null>(null);
   const [approvedOrderPayload, setApprovedOrderPayload] =
     useState<LocalOrderPayload | null>(null);
   const isDocumentAssisted = onboardingEntryMode === "document_assisted";
@@ -2628,6 +2643,7 @@ export function GuidedIntakeShell() {
     setDocuments(emptyDocumentCollection);
     setApprovalConfirmed(false);
     setExtractionState("idle");
+    setExtractionError(null);
     setApprovedOrderPayload(null);
   }
 
@@ -2690,6 +2706,13 @@ export function GuidedIntakeShell() {
         } : {},
         extractionConfidence: null,
         userConfirmedExtractedData: extractionState === "done",
+        extractionErrors: extractionError
+          ? {
+              errorCode: extractionError.errorCode,
+              message: extractionError.message,
+              details: extractionError.details ?? null,
+            }
+          : null,
         agentSummary: null,
         missingInformationFlags: [],
       },
@@ -2729,13 +2752,30 @@ export function GuidedIntakeShell() {
   async function handleContinueFromDocuments() {
     if (onboardingEntryMode === "document_assisted") {
       setExtractionState("loading");
+      setExtractionError(null);
       setActiveStep("extraction_review");
       try {
         const formData = new FormData();
         if (documentFiles.passport) formData.append("passport", documentFiles.passport);
         if (documentFiles.addressProof) formData.append("addressProof", documentFiles.addressProof);
         const res = await fetch("/api/extract-document", { method: "POST", body: formData });
-        if (!res.ok) throw new Error("Extraction API error");
+        if (!res.ok) {
+          let errorCode = "unknown_extraction_error";
+          let message = "Extraction failed";
+          let details: string | undefined;
+          try {
+            const errorBody = await res.json();
+            errorCode = errorBody.errorCode ?? errorCode;
+            message = errorBody.error ?? message;
+            details = errorBody.details;
+          } catch {
+            message = `HTTP ${res.status}`;
+          }
+          console.error("[extraction] Failed:", errorCode, message, details ?? "");
+          setExtractionError({ errorCode, message, details });
+          setExtractionState("failed");
+          return;
+        }
         const data = await res.json();
         setDocuments((prev) => ({
           ...prev,
@@ -2752,7 +2792,10 @@ export function GuidedIntakeShell() {
           },
         }));
         setExtractionState("done");
-      } catch {
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "Network error";
+        console.error("[extraction] Network/runtime error:", message);
+        setExtractionError({ errorCode: "unknown_extraction_error", message });
         setExtractionState("failed");
       }
     } else {
@@ -2950,6 +2993,7 @@ export function GuidedIntakeShell() {
                 : "documents"
             )}
             extractionState={extractionState}
+            extractionError={extractionError}
             onContinueToMemberData={() => setActiveStep("member_data")}
             onContinueToMemberCount={() => setActiveStep("member_count")}
             onContinueToRegisteredAgent={() => setActiveStep("registered_agent")}

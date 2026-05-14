@@ -30,35 +30,36 @@ async function extractPassport(
   mimeType: string,
 ): Promise<PassportExtraction> {
   const base64 = buffer.toString("base64");
-  const response = await getClient().chat.completions.create({
-    model: "gpt-4o",
-    response_format: { type: "json_object" },
-    messages: [
-      {
-        role: "system",
-        content:
-          "You are a document data extraction assistant. Extract specific fields from passport images and return only valid JSON. Return null for any field that cannot be clearly read.",
-      },
-      {
-        role: "user",
-        content: [
-          {
-            type: "image_url",
-            image_url: { url: `data:${mimeType};base64,${base64}`, detail: "high" },
-          },
-          {
-            type: "text",
-            text: `Extract these fields from this passport and return ONLY this JSON:
-{"fullName":"full name as printed or null","dateOfBirth":"YYYY-MM-DD or null","nationality":"country in Portuguese e.g. Brasileira or null","passportNumber":"passport number or null","passportExpiration":"YYYY-MM-DD or null"}`,
-          },
-        ],
-      },
-    ],
-    max_tokens: 300,
-  });
-
+  let responseContent: string | null = null;
   try {
-    const raw = JSON.parse(response.choices[0]?.message?.content ?? "{}");
+    const response = await getClient().chat.completions.create({
+      model: "gpt-4o",
+      response_format: { type: "json_object" },
+      messages: [
+        {
+          role: "system",
+          content:
+            "You are a document data extraction assistant. Extract specific fields from passport images and return only valid JSON. Return null for any field that cannot be clearly read.",
+        },
+        {
+          role: "user",
+          content: [
+            {
+              type: "image_url",
+              image_url: { url: `data:${mimeType};base64,${base64}`, detail: "high" },
+            },
+            {
+              type: "text",
+              text: `Extract these fields from this passport and return ONLY this JSON:
+{"fullName":"full name as printed or null","dateOfBirth":"YYYY-MM-DD or null","nationality":"country in Portuguese e.g. Brasileira or null","passportNumber":"passport number or null","passportExpiration":"YYYY-MM-DD or null"}`,
+            },
+          ],
+        },
+      ],
+      max_tokens: 300,
+    });
+    responseContent = response.choices[0]?.message?.content ?? null;
+    const raw = JSON.parse(responseContent ?? "{}");
     return {
       fullName: raw.fullName ?? null,
       dateOfBirth: raw.dateOfBirth ?? null,
@@ -66,8 +67,9 @@ async function extractPassport(
       passportNumber: raw.passportNumber ?? null,
       passportExpiration: raw.passportExpiration ?? null,
     };
-  } catch {
-    return { fullName: null, dateOfBirth: null, nationality: null, passportNumber: null, passportExpiration: null };
+  } catch (err) {
+    console.error("[extractPassport] Failed:", err instanceof Error ? err.message : err, "| raw response:", responseContent);
+    throw err;
   }
 }
 
@@ -76,43 +78,45 @@ async function extractAddress(
   mimeType: string,
 ): Promise<AddressExtraction> {
   const base64 = buffer.toString("base64");
-  const response = await getClient().chat.completions.create({
-    model: "gpt-4o",
-    response_format: { type: "json_object" },
-    messages: [
-      {
-        role: "system",
-        content:
-          "You are a document data extraction assistant. Extract US address information from documents like utility bills, bank statements, and leases. Return only valid JSON. Return null for fields that cannot be clearly read.",
-      },
-      {
-        role: "user",
-        content: [
-          {
-            type: "image_url",
-            image_url: { url: `data:${mimeType};base64,${base64}`, detail: "high" },
-          },
-          {
-            type: "text",
-            text: `Extract the US address from this document and return ONLY this JSON:
-{"streetAddress":"street and number or null","city":"city name or null","state":"2-letter US state code e.g. FL or null","zipCode":"5-digit ZIP or null"}`,
-          },
-        ],
-      },
-    ],
-    max_tokens: 200,
-  });
-
+  let responseContent: string | null = null;
   try {
-    const raw = JSON.parse(response.choices[0]?.message?.content ?? "{}");
+    const response = await getClient().chat.completions.create({
+      model: "gpt-4o",
+      response_format: { type: "json_object" },
+      messages: [
+        {
+          role: "system",
+          content:
+            "You are a document data extraction assistant. Extract US address information from documents like utility bills, bank statements, and leases. Return only valid JSON. Return null for fields that cannot be clearly read.",
+        },
+        {
+          role: "user",
+          content: [
+            {
+              type: "image_url",
+              image_url: { url: `data:${mimeType};base64,${base64}`, detail: "high" },
+            },
+            {
+              type: "text",
+              text: `Extract the US address from this document and return ONLY this JSON:
+{"streetAddress":"street and number or null","city":"city name or null","state":"2-letter US state code e.g. FL or null","zipCode":"5-digit ZIP or null"}`,
+            },
+          ],
+        },
+      ],
+      max_tokens: 200,
+    });
+    responseContent = response.choices[0]?.message?.content ?? null;
+    const raw = JSON.parse(responseContent ?? "{}");
     return {
       streetAddress: raw.streetAddress ?? null,
       city: raw.city ?? null,
       state: raw.state ?? null,
       zipCode: raw.zipCode ?? null,
     };
-  } catch {
-    return { streetAddress: null, city: null, state: null, zipCode: null };
+  } catch (err) {
+    console.error("[extractAddress] Failed:", err instanceof Error ? err.message : err, "| raw response:", responseContent);
+    throw err;
   }
 }
 
@@ -128,16 +132,13 @@ export async function extractDocuments(
   addressBuffer: Buffer | null,
   addressMime: string | null,
 ): Promise<ExtractionResult> {
-  const emptyPassport: PassportExtraction = { fullName: null, dateOfBirth: null, nationality: null, passportNumber: null, passportExpiration: null };
-  const emptyAddress: AddressExtraction = { streetAddress: null, city: null, state: null, zipCode: null };
-
   const [passport, address] = await Promise.all([
     passportBuffer && passportMime
       ? extractPassport(passportBuffer, passportMime)
-      : Promise.resolve(emptyPassport),
+      : Promise.resolve<PassportExtraction>({ fullName: null, dateOfBirth: null, nationality: null, passportNumber: null, passportExpiration: null }),
     addressBuffer && addressMime
       ? extractAddress(addressBuffer, addressMime)
-      : Promise.resolve(emptyAddress),
+      : Promise.resolve<AddressExtraction>({ streetAddress: null, city: null, state: null, zipCode: null }),
   ]);
 
   return { passport, address, confidence: computeConfidence(passport, address) };
