@@ -31,16 +31,15 @@ Result:
 
 ## Current Task
 
-Task ID: `P10-T02`
+Task ID: `P10-T03`
 
-Title: Prefill member/sócio step from confirmed applicant extraction data; fix step eyebrows.
+Title: Prefill EIN Responsible Party from primary member/sócio data.
 
 Scope:
-- In member_data step: when extraction was confirmed (document_assisted + extractionState === "done"), show "Usar meus dados como sócio da LLC" checkbox.
-- On check: prefill first member fullName from applicantContact.name, prefill address from residential address fields.
-- Data remains editable; additional members still manual; fallback to blank form when no extraction.
-- Fix all hardcoded "Passo N" eyebrows in StepFrame to use dynamic currentStep (affects all steps in document_assisted mode where stepOffset=2).
-- Source of truth: GitHub issue #3, latest comment (2026-05-14).
+- In ein_questions step: when primary member has a name, show "Usar o sócio principal como responsável pelo EIN" checkbox.
+- On check: prefill responsiblePartyName from memberData[0].fullName; prefill responsiblePartyPassportNumber from documents.extraction.passportNumber if available.
+- Data remains editable; fallback to manual form when no member data.
+- Source of truth: GitHub issue #3, comment 2026-05-14T03:59:35Z.
 
 ## Next Task
 

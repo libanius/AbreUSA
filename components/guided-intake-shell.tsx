@@ -633,6 +633,7 @@ function StepFrame({
   );
   const ownershipMatches = ownershipTotal === 100;
   const [useApplicantAsMember, setUseApplicantAsMember] = useState(false);
+  const [useMemberAsEinResponsible, setUseMemberAsEinResponsible] = useState(false);
   const isExtractionConfirmed =
     onboardingEntryMode === "document_assisted" &&
     extractionState === "done" &&
@@ -1678,6 +1679,49 @@ function StepFrame({
               })}
             </div>
           </FieldGroup>
+
+          {visibleMembers[0]?.fullName.trim() ? (
+            <div className="rounded-md border bg-card p-4">
+              <label className="flex cursor-pointer items-start gap-3">
+                <input
+                  checked={useMemberAsEinResponsible}
+                  className="mt-0.5 h-4 w-4 accent-primary"
+                  type="checkbox"
+                  onChange={(e) => {
+                    const checked = e.target.checked;
+                    setUseMemberAsEinResponsible(checked);
+                    if (checked) {
+                      onChangeEinQuestions(
+                        "responsiblePartyName",
+                        visibleMembers[0].fullName,
+                      );
+                      if (documents.extraction.passportNumber) {
+                        onChangeEinQuestions(
+                          "responsiblePartyPassportNumber",
+                          documents.extraction.passportNumber,
+                        );
+                      }
+                    }
+                  }}
+                />
+                <div className="grid gap-1">
+                  <p className="text-sm font-semibold text-foreground">
+                    Usar o sócio principal como responsável pelo EIN
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Vamos preencher o responsável pelo EIN com os dados do sócio
+                    principal informados anteriormente. Você poderá revisar e
+                    alterar se necessário.
+                  </p>
+                  {useMemberAsEinResponsible ? (
+                    <p className="mt-1 text-xs font-medium text-emerald-700">
+                      ✓ {visibleMembers[0].fullName}
+                    </p>
+                  ) : null}
+                </div>
+              </label>
+            </div>
+          ) : null}
 
           <FieldGroup title="Responsável pelo EIN (Responsible Party)">
             <FieldShell
