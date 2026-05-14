@@ -2,7 +2,7 @@
 
 ## Current Phase
 
-Phase 9: AI-Ready Onboarding Foundation.
+Phase 10: AI Document Extraction / OCR.
 
 Phases 1–7 are complete. P8-T01 through P8-T14 and Phase 8.5 are complete. Controlled MVP launch is fully verified: production deployment, authenticated admin portal, and production email confirmation are all confirmed.
 
@@ -31,11 +31,18 @@ Result:
 
 ## Current Task
 
-Task ID: `None active`
+Task ID: `P10-T01`
 
-Title: Awaiting next owner/operator priority.
+Title: Wire real OCR extraction into document-assisted flow; implement editable review and prefill.
 
-P9-T03 (flow correction) is complete and locally verified. Phase 9 is complete locally. Next step is to commit and redeploy to production.
+Scope:
+- `handleContinueFromDocuments` (document_assisted): trigger OpenAI extraction → navigate to extraction_review.
+- extraction_review step: now reachable at step 4; loading spinner, editable pre-filled fields, failure fallback.
+- `onConfirmExtraction`: prefill applicant_contact (name + address) from confirmed extraction data, navigate to applicant_contact.
+- totalSteps: 15 for document_assisted (adds extraction_review); 14 for manual.
+- progressItems for document_assisted: 15 items with "Extração" at position 4.
+- stepOffset: 2 for document_assisted (all middle steps shift +2); 0 for manual.
+- Admin view updated to show extraction status, extracted data, and whether customer confirmed.
 
 ## Next Task
 
@@ -83,10 +90,12 @@ Commit the completed Phase 9 state, then choose the next owner/operator-directed
   - P8.5-T02: Same-as-residential company address reuse complete. Applicant residential address, copied LLC principal address, and boolean relationship flag persist correctly. Verified with `AUS-2026-0016`.
   - P8.5-T03: Phase 8.5 production deployment complete. `https://abre-usa.vercel.app` now points to deployment `dpl_FKGnAAzFvdhVNkeazTgXxugx7HsQ`; production `/` and `/admin/login` return `200`, and `/admin/orders` redirects unauthenticated users to login.
   - P8.5-T04: Committed Phase 8.5 state redeployed to production. `https://abre-usa.vercel.app` now points to deployment `dpl_49uw5re5UDZQnVBDPJPPwqDufjSn`; production `/` and `/admin/login` return `200`, and `/admin/orders` redirects unauthenticated users to login.
-- Phase 9 complete locally:
+- Phase 9 complete:
   - P9-T01: AI-ready onboarding entry mode foundation implemented from GitHub issue #2 and verified with `AUS-2026-0017`.
   - P9-T02: Real AI OCR document extraction implemented via OpenAI GPT-4o Vision. Lint and build verified.
   - P9-T03: Document-assisted flow corrected. Documents now collected at step 3 (immediately after entry mode). totalSteps fixed to 14 for both modes. stepOffset pattern applied to all middle steps. Lint and build verified.
+- Phase 10 in progress:
+  - P10-T01: Wiring real OCR extraction into document-assisted flow.
 
 ## What Is Implemented
 
@@ -212,7 +221,7 @@ Commit the completed Phase 9 state, then choose the next owner/operator-directed
 
 ## Exact Next Step To Resume
 
-Commit the completed Phase 9 state (P9-T01 through P9-T03), then choose the next owner/operator-directed Post-MVP priority. Candidates: production redeploy, payment, customer dashboard, branded sender/domain work, retention Cron automation, EIN-only flow, Registered Agent-only flow, or broader onboarding evolution.
+Complete P10-T01: wire OCR extraction into document-assisted flow, implement editable extraction review at step 4, prefill applicant contact from confirmed extraction, run lint/build, and commit.
 
 ## Blockers And Risks
 

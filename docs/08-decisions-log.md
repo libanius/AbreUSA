@@ -862,3 +862,24 @@ Reason:
 
 The purpose of document-assisted mode is to use uploaded documents to pre-facilitate the remaining onboarding steps. Collecting documents first — before asking for applicant name, address, LLC data — makes the intended flow coherent. Collecting them late (as in the manual path) negates the facilitation purpose.
 
+### 2026-05-13: Phase 10 — Real OCR Extraction Activated on Document-Assisted Path
+
+Decision:
+
+Phase 10 activates real document extraction via OpenAI GPT-4o Vision on the document-assisted onboarding path. The extraction_review step (step 4 in document-assisted mode) is now reachable. Confirmed extraction data prefills applicant contact fields.
+
+Result:
+
+- `handleContinueFromDocuments` (document_assisted): triggers server-side OCR, navigates to extraction_review while loading.
+- extraction_review step at step 4: loading spinner, editable pre-filled fields on success, fallback message on failure. Customer must confirm before proceeding.
+- `onConfirmExtraction`: prefills applicant_contact name and residential address from confirmed extraction data, then navigates to applicant_contact.
+- totalSteps: 15 for document_assisted (adds extraction_review at step 4); 14 for manual (unchanged).
+- stepOffset: 2 for document_assisted; 0 for manual.
+- progressItems for document_assisted: 15 items with "Extração" at position 4.
+- Extraction failure does not block the user. Customer sees a friendly message and continues manually.
+- Manual path unchanged. Supabase persistence unchanged. Admin review unchanged.
+
+Reason:
+
+Phase 9 established the document-assisted path structure and positioned documents at step 3. Phase 10 completes the intended design by running real OCR after upload and using the result to prefill later onboarding fields — reducing manual data entry for document-assisted customers. The extraction_review step ensures the customer always reviews and confirms before confirmed data is used.
+

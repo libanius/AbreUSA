@@ -1249,7 +1249,7 @@ function StepFrame({
       return (
         <StepCard
           badge="Processando"
-          eyebrow="Passo 12 · Extração IA"
+          eyebrow={`Passo ${currentStep} · Extração IA`}
           title="Analisando documentos com IA..."
         >
           <div className="flex flex-col items-center gap-6 py-10">
@@ -1266,7 +1266,7 @@ function StepFrame({
     return (
       <StepCard
         badge="Rascunho local"
-        eyebrow="Passo 12 · Extração IA"
+        eyebrow={`Passo ${currentStep} · Extração IA`}
         title={
           extractionState === "failed"
             ? "Preencha os dados manualmente"
@@ -1275,20 +1275,20 @@ function StepFrame({
       >
         <div className="grid gap-3">
           {extractionState === "failed" ? (
-            <StatusMessage title="Extração não concluída" tone="warning">
+            <StatusMessage title="Não foi possível ler os documentos" tone="warning">
               <p>
-                Não foi possível extrair os dados automaticamente. Preencha os
-                campos abaixo e continue.
+                Não conseguimos ler todos os dados automaticamente. Você ainda
+                pode continuar preenchendo manualmente.
               </p>
             </StatusMessage>
           ) : (
             <StatusMessage
-              title="Dados extraídos · Todos os campos são editáveis"
+              title="Revise os dados extraídos"
               tone="info"
             >
               <p>
-                Revise e corrija cada campo antes de continuar. Nenhum dado é
-                enviado sem sua confirmação.
+                Extraímos algumas informações dos seus documentos. Revise com
+                atenção e corrija qualquer dado antes de continuar.
               </p>
             </StatusMessage>
           )}
@@ -2519,20 +2519,22 @@ export function GuidedIntakeShell() {
   const [approvedOrderPayload, setApprovedOrderPayload] =
     useState<LocalOrderPayload | null>(null);
   const isDocumentAssisted = onboardingEntryMode === "document_assisted";
-  const totalSteps = 14;
+  const totalSteps = isDocumentAssisted ? 15 : 14;
   const progressItems = isDocumentAssisted
-    ? ["Serviço", "Modo", "Documentos", "Contato", "Empresa", "Atividade", "Sócios", "Dados", "Endereço", "Agente", "EIN", "Revisão", "Aprovação", "Confirmação"]
+    ? ["Serviço", "Modo", "Documentos", "Extração", "Contato", "Empresa", "Atividade", "Sócios", "Dados", "Endereço", "Agente", "EIN", "Revisão", "Aprovação", "Confirmação"]
     : ["Serviço", "Modo", "Contato", "Empresa", "Atividade", "Sócios", "Dados", "Endereço", "Agente", "EIN", "Documentos", "Revisão", "Aprovação", "Confirmação"];
-  const stepOffset = isDocumentAssisted ? 1 : 0;
+  const stepOffset = isDocumentAssisted ? 2 : 0;
   const currentStep =
     activeStep === "confirmation"
-      ? 14
+      ? totalSteps
       : activeStep === "approval"
-      ? 13
+      ? totalSteps - 1
       : activeStep === "review"
-      ? 12
+      ? totalSteps - 2
       : activeStep === "documents"
       ? (isDocumentAssisted ? 3 : 11)
+      : activeStep === "extraction_review"
+      ? 4
       : activeStep === "ein_questions"
       ? 10 + stepOffset
       : activeStep === "registered_agent"
@@ -2724,9 +2726,35 @@ export function GuidedIntakeShell() {
     };
   }
 
-  function handleContinueFromDocuments() {
+  async function handleContinueFromDocuments() {
     if (onboardingEntryMode === "document_assisted") {
-      setActiveStep("applicant_contact");
+      setExtractionState("loading");
+      setActiveStep("extraction_review");
+      try {
+        const formData = new FormData();
+        if (documentFiles.passport) formData.append("passport", documentFiles.passport);
+        if (documentFiles.addressProof) formData.append("addressProof", documentFiles.addressProof);
+        const res = await fetch("/api/extract-document", { method: "POST", body: formData });
+        if (!res.ok) throw new Error("Extraction API error");
+        const data = await res.json();
+        setDocuments((prev) => ({
+          ...prev,
+          extraction: {
+            fullName: data.passport?.fullName ?? "",
+            dateOfBirth: data.passport?.dateOfBirth ?? "",
+            passportNumber: data.passport?.passportNumber ?? "",
+            passportExpiration: data.passport?.passportExpiration ?? "",
+            nationality: data.passport?.nationality ?? "",
+            streetAddress: data.address?.streetAddress ?? "",
+            city: data.address?.city ?? "",
+            state: data.address?.state ?? "",
+            zip: data.address?.zipCode ?? "",
+          },
+        }));
+        setExtractionState("done");
+      } catch {
+        setExtractionState("failed");
+      }
     } else {
       setActiveStep("review");
     }
@@ -2839,7 +2867,7 @@ export function GuidedIntakeShell() {
       <ProgressHeader
         currentStep={currentStep}
         label={currentLabel}
-        totalSteps={14}
+        totalSteps={totalSteps}
       />
       <main className="mx-auto flex w-full max-w-6xl flex-1 px-4 py-8 sm:px-6 lg:px-8">
         <div className="grid w-full gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
@@ -2853,7 +2881,7 @@ export function GuidedIntakeShell() {
             }
             onContinueToLlcName={() => setActiveStep("llc_name")}
             onBackToApplicantContact={() => setActiveStep("applicant_contact")}
-            onBackToEntryMode={() => setActiveStep(isDocumentAssisted ? "documents" : "entry_mode")}
+            onBackToEntryMode={() => setActiveStep(isDocumentAssisted ? "extraction_review" : "entry_mode")}
             approvedOrderPayload={approvedOrderPayload}
             businessActivity={businessActivity}
             businessAddress={businessAddress}
@@ -2904,7 +2932,18 @@ export function GuidedIntakeShell() {
             onContinueToDocuments={() => setActiveStep(isDocumentAssisted ? "review" : "documents")}
             onContinueToEinQuestions={() => setActiveStep("ein_questions")}
             onContinueFromDocuments={handleContinueFromDocuments}
-            onConfirmExtraction={() => setActiveStep("review")}
+            onConfirmExtraction={() => {
+              const ex = documents.extraction;
+              setApplicantContact((prev) => ({
+                ...prev,
+                name: ex.fullName || prev.name,
+                residentialStreet: ex.streetAddress || prev.residentialStreet,
+                residentialCity: ex.city || prev.residentialCity,
+                residentialState: ex.state || prev.residentialState,
+                residentialZip: ex.zip || prev.residentialZip,
+              }));
+              setActiveStep("applicant_contact");
+            }}
             onBackFromReview={() => setActiveStep(
               isDocumentAssisted
                 ? selectedService === "complete" ? "ein_questions" : "registered_agent"

@@ -87,36 +87,70 @@ The current prototype branches this service through LLC-style steps. Production 
 
 ## Phase 9: AI-Ready Onboarding Foundation
 
-Status: Complete locally (P9-T01 through P9-T03).
+Status: Complete (P9-T01 through P9-T03).
 
-Phase 9 implements the entry mode foundation and corrects the document-assisted flow so documents are collected immediately after mode selection.
+Phase 9 implemented the entry mode foundation and corrected the document-assisted flow so documents are collected immediately after mode selection. Phase 10 activates real extraction on top of this foundation.
+
+## Phase 10: AI Document Extraction / OCR
+
+Status: Current phase. Source of truth: GitHub issue #3.
 
 Post-diagnosis choice:
 
-After the customer selects or receives the recommended service, the flow offers two paths without requiring login at the beginning:
+After the customer selects or receives the recommended service, the flow offers two paths:
 
 1. `document_assisted`: "Enviar documentos para facilitar o preenchimento".
 2. `manual`: "Preencher manualmente".
 
-Document-assisted path (P9-T03 corrected flow):
+Document-assisted path (15 steps):
 
-- After selecting `document_assisted` at step 2, the customer immediately proceeds to document upload at step 3.
-- Documents (passport + address proof) are collected before applicant contact and LLC data entry, facilitating the remaining steps.
-- Uses the existing secure document upload and server-side persistence infrastructure.
-- A disclosure message informs the customer that documents will facilitate the remaining onboarding steps.
-- After documents, flow continues: applicant contact → LLC name → business activity → members → address → Registered Agent → EIN questions → review → approval → confirmation.
-- Total steps: 14 (documents at step 3, all middle steps offset by +1).
+1. Service selection.
+2. Mode selection (`document_assisted`).
+3. Document upload (passport + address proof).
+4. Extraction review — editable fields pre-filled from OCR result. Customer confirms or corrects.
+5. Applicant contact — pre-filled with confirmed extraction data where available.
+6. LLC name.
+7. Business activity.
+8. Member count.
+9. Member data.
+10. Principal Florida address.
+11. Registered Agent.
+12. EIN questions (Complete Package only).
+13. Review.
+14. Approval.
+15. Confirmation.
 
-Manual path:
+Extraction behavior:
 
-- After selecting `manual` at step 2, the customer proceeds directly to applicant contact at step 3.
-- Follows the standard guided flow: applicant contact → LLC name → business activity → members → address → Registered Agent → EIN questions → documents → review → approval → confirmation.
-- Total steps: 14 (documents at step 11).
+- After document upload Continue, OCR extraction runs automatically (server-side, OpenAI GPT-4o Vision).
+- Loading spinner shown during extraction.
+- On success: editable fields pre-filled with extracted data. Customer must review and confirm.
+- On failure: fallback message shown. Customer continues with manual entry. Flow never blocked.
+- Confirmed extraction data prefills applicant contact (name, residential address) at step 5.
+- Customer may still edit all fields at every step regardless of extraction result.
+
+Manual path (14 steps):
+
+1. Service selection.
+2. Mode selection (`manual`).
+3. Applicant contact.
+4. LLC name.
+5. Business activity.
+6. Member count.
+7. Member data.
+8. Principal Florida address.
+9. Registered Agent.
+10. EIN questions (Complete Package only).
+11. Document upload.
+12. Review.
+13. Approval.
+14. Confirmation.
 
 Review principle:
 
 - Customer approval remains required before AbreUSA review and before any government submission.
-- Any extracted data must be shown in an editable review surface before approval (future extraction_review step).
+- Extracted data must always be shown in an editable review surface before being used.
+- AI may not submit autonomously or make legal/tax decisions.
 
 ## Onboarding Architecture Discovery
 

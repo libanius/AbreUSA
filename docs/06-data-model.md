@@ -54,18 +54,23 @@ Document extraction status values:
 
 Phase 9 readiness fields:
 
-- `onboardingEntryMode`: stores whether the customer chose manual onboarding or document-assisted onboarding after service selection.
-- `documentExtractionStatus`: stores future extraction lifecycle state. Phase 9 does not run OCR, so the default is `not_started`.
-- `extractedApplicantData`: JSON/object placeholder for future customer-reviewable applicant extraction values.
-- `extractedAddressData`: JSON/object placeholder for future customer-reviewable address extraction values.
-- `extractionConfidence`: optional future numeric confidence signal.
-- `userConfirmedExtractedData`: whether the customer confirmed any extracted values before submission.
-- `agentSummary`: future internal/assistive summary; must not replace structured customer-reviewed data.
-- `missingInformationFlags`: JSON/object or array of future missing-information markers.
+- `onboardingEntryMode`: stores whether the customer chose manual or document-assisted onboarding.
+- `documentExtractionStatus`: extraction lifecycle state. Values: `not_started`, `pending`, `completed`, `failed`, `needs_review`.
+- `extractedApplicantData`: JSON object of customer-reviewable applicant extraction values (name, DOB, nationality, passport number, expiration).
+- `extractedAddressData`: JSON object of customer-reviewable address extraction values (street, city, state, ZIP).
+- `extractionConfidence`: optional numeric confidence signal from the extraction provider.
+- `userConfirmedExtractedData`: whether the customer confirmed extracted values before submission.
+- `agentSummary`: internal/assistive summary; must not replace structured customer-reviewed data.
+- `missingInformationFlags`: array of missing-information markers.
+- `extractionErrors`: JSON object capturing any extraction error details for admin review.
+- `extractionReviewedAt`: timestamp when the customer confirmed or dismissed the extraction review screen.
 
-Phase 9 constraint:
+Phase 10 note:
 
-- These fields prepare the architecture for Phase 10 or later. They must not be used to claim real OCR, automated passport parsing, proof-of-residence parsing, or autonomous AI behavior.
+- Phase 10 activates real document extraction via OpenAI GPT-4o Vision.
+- Extracted values are always shown in an editable review step before being used to prefill fields.
+- Customer must confirm extracted data. AI may not submit autonomously or make legal/tax decisions.
+- Extraction failure falls back to manual entry without blocking the user.
 
 ## Applicant
 

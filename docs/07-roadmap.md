@@ -1967,11 +1967,45 @@ Completed Phase 9 tasks:
   - Documents step eyebrow: dynamic `Passo \${currentStep} · Documentos`.
   - Verification: `npm run lint`, `npm run build` passed.
 
-Potential additions (post-P8-T02):
+Potential additions (post-Phase 9):
 
 - Payment processing.
 - Customer dashboard.
-- Real AI OCR/document extraction.
 - Multi-state LLC formation.
 - Operating Agreement generation.
 - Bank account preparation checklist.
+
+## Phase 10: AI Document Extraction / OCR
+
+Status: Current phase.
+
+Source of truth: GitHub issue #3.
+
+Purpose:
+
+Activate real document extraction on the document-assisted onboarding path. OCR runs after upload, extracted fields are shown in an editable review step, confirmed data prefills later onboarding steps. Fallback to manual entry if extraction fails.
+
+Scope:
+
+- Extraction provider: OpenAI GPT-4o Vision (server-side, existing infrastructure from P9-T02).
+- Documents: passport and proof of residence.
+- Passport extraction targets: full name, date of birth, nationality, passport number, expiration date.
+- Address extraction targets: street, city, state, ZIP.
+- Editable extraction review step (step 4 in document-assisted path).
+- Confirmed data prefills applicant contact step (name + residential address).
+- Extraction failure falls back to manual entry without blocking.
+- Admin view shows extraction status and data.
+- Manual path preserved. Supabase persistence preserved. Document upload preserved. Admin review preserved.
+
+Out of scope:
+
+- Conversational AI UI.
+- Autonomous AI decisions or submissions.
+- Legal/tax advice.
+- Payment, customer dashboard, multi-state.
+
+In-progress tasks:
+
+- Task ID: `P10-T01`.
+- Title: Wire real OCR extraction into document-assisted flow; implement editable review and prefill.
+- Status: In progress.
