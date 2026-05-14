@@ -152,9 +152,41 @@ type AbreUsaDatabase = {
         Update: never;
         Relationships: [];
       };
+      customer_dashboard_rate_limits: {
+        Row: Record<string, unknown>;
+        Insert: {
+          identifier: string;
+          attempt_count?: number;
+          window_start?: string;
+          blocked_until?: string | null;
+          updated_at?: string;
+        };
+        Update: {
+          attempt_count?: number;
+          window_start?: string;
+          blocked_until?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
-    Functions: Record<string, never>;
+    Functions: {
+      check_customer_dashboard_rate_limit: {
+        Args: {
+          p_identifier: string;
+          p_max_attempts?: number;
+          p_window_seconds?: number;
+          p_block_seconds?: number;
+        };
+        Returns: {
+          allowed?: boolean;
+          retry_after_seconds?: number;
+          remaining?: number;
+          reason?: string;
+        };
+      };
+    };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;
   };

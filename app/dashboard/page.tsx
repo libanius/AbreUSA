@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { headers } from "next/headers";
+import { checkCustomerDashboardRateLimit } from "@/lib/customer-dashboard-rate-limit";
 import { getCustomerDashboardOrder, type CustomerDashboardOrder } from "@/lib/customer-dashboard";
 
 export const dynamic = "force-dynamic";
@@ -6,6 +8,10 @@ export const dynamic = "force-dynamic";
 type DashboardSearchParams = {
   protocol?: string;
   email?: string;
+};
+
+type RateLimitedLookup = {
+  limited: boolean;
 };
 
 const STATUS_COLORS: Record<string, string> = {
@@ -106,6 +112,15 @@ function LookupForm({
       </p>
     </form>
   );
+}
+
+function getClientIp(requestHeaders: Headers) {
+  const forwardedFor = requestHeaders.get("x-forwarded-for");
+  if (forwardedFor) {
+    return forwardedFor.split(",")[0]?.trim() || "unknown";
+  }
+
+  return requestHeaders.get("x-real-ip") ?? "unknown";
 }
 
 function DashboardSummary({ order }: { order: CustomerDashboardOrder }) {
@@ -224,7 +239,25 @@ export default async function CustomerDashboardPage({
   const protocol = typeof params.protocol === "string" ? params.protocol.trim() : "";
   const email = typeof params.email === "string" ? params.email.trim() : "";
   const hasLookup = Boolean(protocol && email);
-  const order = hasLookup ? await getCustomerDashboardOrder({ protocol, email }) : null;
+  let rateLimit: RateLimitedLookup | null = null;
+  let order: CustomerDashboardOrder | null = null;
+
+  if (hasLookup) {
+    const requestHeaders = await headers();
+    const rateLimitResult = await checkCustomerDashboardRateLimit({
+      ipAddress: getClientIp(requestHeaders),
+      protocol,
+      email,
+    });
+
+    if (rateLimitResult.allowed) {
+      order = await getCustomerDashboardOrder({ protocol, email });
+    } else {
+      rateLimit = {
+        limited: true,
+      };
+    }
+  }
 
   return (
     <main className="min-h-screen bg-gray-50 px-4 py-6 text-gray-950 sm:px-6 lg:px-8">
@@ -246,7 +279,14 @@ export default async function CustomerDashboardPage({
 
         <LookupForm protocol={protocol} email={email} />
 
-        {hasLookup && !order ? (
+        {rateLimit?.limited ? (
+          <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4 text-sm leading-6 text-yellow-900">
+            Muitas tentativas de consulta foram feitas em pouco tempo. Aguarde alguns minutos e
+            tente novamente.
+          </div>
+        ) : null}
+
+        {hasLookup && !order && !rateLimit?.limited ? (
           <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4 text-sm leading-6 text-yellow-900">
             Nao encontramos um pedido com esse protocolo e e-mail. Confira os dados informados ou
             fale com a equipe AbreUSA.

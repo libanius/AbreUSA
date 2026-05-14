@@ -2121,4 +2121,30 @@ Stop checkpoint:
 
 - Date: 2026-05-14.
 - Phase 11 first slice is complete and deployed.
-- Exact next roadmap action: choose the next owner/operator-directed priority. Recommended next security hardening task before broader dashboard usage: add rate limiting to `/dashboard` lookup.
+- Exact next roadmap action: implement `P11-T03` rate limiting for `/dashboard` lookup before broader dashboard usage.
+
+Current Phase 11 hardening task:
+
+- Task ID: `P11-T03`.
+- Title: Add rate limiting to customer dashboard lookup.
+- Purpose:
+  - Reduce enumeration and brute-force risk on the public protocol + email lookup before broader customer dashboard usage.
+- Scope:
+  - Add a Supabase-backed shared rate-limit counter for `/dashboard` lookup attempts.
+  - Rate limit by client IP and by lookup tuple.
+  - Keep the customer-facing response neutral.
+  - Preserve valid lookup, invalid lookup, admin, OCR, order persistence, and production flow.
+- Out of scope:
+  - Full customer login.
+  - Magic-link authentication.
+  - CAPTCHA.
+  - WAF configuration.
+  - Payment, dashboard document downloads, and customer correction workflow.
+- Acceptance criteria:
+  - Rate-limit schema/function is committed and applied to Supabase.
+  - `/dashboard` checks the rate limit before querying order data.
+  - Exceeded limit shows a neutral Portuguese message and does not query or reveal order data.
+  - Valid lookup still works under the limit.
+  - Invalid lookup still shows the existing neutral not-found behavior under the limit.
+  - `npm run lint` and `npm run build` pass.
+  - Production deployment and verification are recorded after deploy.

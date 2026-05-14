@@ -900,3 +900,20 @@ Result:
 Reason:
 
 Customers need a simple way to check progress after receiving a protocol number. A protocol + email lookup delivers immediate value while avoiding the larger architecture and security decisions of a full customer account portal.
+
+### 2026-05-14: Customer Dashboard Lookup Rate Limiting
+
+Decision:
+
+The public `/dashboard` protocol + email lookup must be rate limited before broader usage. The first hardening slice uses a Supabase-backed shared counter instead of serverless in-memory counters.
+
+Result:
+
+- Rate limiting applies before customer order data is queried.
+- Limits apply by client IP and by lookup tuple.
+- Exceeded limits return a neutral Portuguese message and do not reveal whether a protocol or email exists.
+- Full customer authentication, magic links, CAPTCHA, WAF rules, and customer account creation remain future work.
+
+Reason:
+
+The dashboard intentionally avoids exposing sensitive files, but it is still a public lookup surface. Shared rate limiting reduces enumeration and brute-force risk across Vercel serverless instances without introducing a full account system yet.

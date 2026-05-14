@@ -4,7 +4,7 @@
 
 Phase 11: Customer Dashboard Journey.
 
-Phases 1–11 first production slice are complete. Customer dashboard lookup is deployed as a protocol + applicant email lookup, not a full customer account portal.
+Phases 1–11 first production slice are complete. Current task is Phase 11 hardening: rate limit the public customer dashboard lookup.
 
 ## Last Completed Task
 
@@ -30,24 +30,31 @@ Result:
 
 ## Current Task
 
-Task ID: `TBD`
+Task ID: `P11-T03`
 
-Title: Choose next owner/operator-directed priority.
+Title: Add rate limiting to customer dashboard lookup.
 
 Scope:
 
-- Select the next phase or hardening task before implementation.
-- Recommended next security hardening task: add rate limiting to `/dashboard` lookup before broader public dashboard usage.
-- Other candidate next tasks remain payment, full customer portal/auth, customer correction workflow, retention automation, or sender/domain cleanup.
+- Add a Supabase-backed shared rate-limit counter for `/dashboard` lookup attempts.
+- Rate limit by client IP and lookup tuple.
+- Check rate limit before querying order data.
+- Show a neutral Portuguese message when the limit is exceeded.
+- Preserve valid lookup, invalid lookup, admin, OCR, order persistence, and production flow.
 
 Acceptance criteria:
 
-- App Spine is updated before implementation.
-- Scope, out-of-scope items, acceptance criteria, and risks are recorded.
+- Rate-limit schema/function is committed and applied to Supabase.
+- `/dashboard` checks the limit before order lookup.
+- Exceeded limit does not query or reveal order data.
+- Valid lookup still works under the limit.
+- Invalid lookup still shows the existing neutral not-found message under the limit.
+- `npm run lint` and `npm run build` pass.
+- Production deployment and verification are recorded after deploy.
 
 ## Next Task
 
-Choose the next priority. Recommended: rate limit `/dashboard` lookup.
+Implement `P11-T03`: `/dashboard` lookup rate limiting.
 
 ## Completed Tasks
 
@@ -193,13 +200,15 @@ Choose the next priority. Recommended: rate limit `/dashboard` lookup.
 
 ## Exact Next Step To Resume
 
-1. Choose the next owner/operator-directed priority.
-2. Recommended next implementation: add rate limiting to `/dashboard` lookup before broader public dashboard usage.
-3. Update `/docs/07-roadmap.md`, `/docs/09-build-status.md`, and `/progress/index.html` before implementation.
+1. Implement `P11-T03`: Supabase-backed `/dashboard` lookup rate limiting.
+2. Run `npx supabase db push`, `npm run lint`, and `npm run build`.
+3. Verify valid lookup, invalid lookup, and exceeded-limit behavior locally.
+4. Deploy and verify production.
+5. Update `/docs/07-roadmap.md`, `/docs/09-build-status.md`, and `/progress/index.html` with results.
 
 Resume command prompt:
 
-Read `AGENTS.md`, `/docs/START-HERE.md`, `/docs/07-roadmap.md`, and this file. Resume by selecting and documenting the next priority. Recommended: `/dashboard` lookup rate limiting.
+Read `AGENTS.md`, `/docs/START-HERE.md`, `/docs/07-roadmap.md`, and this file. Resume with `P11-T03` implementation.
 
 ## Blockers And Risks
 
