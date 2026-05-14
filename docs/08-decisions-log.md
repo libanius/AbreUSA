@@ -805,3 +805,21 @@ Result:
 Reason:
 
 AbreUSA should feel like a Portuguese guided concierge experience, with one clear question at a time and less form-like friction before larger Post-MVP work.
+
+### 2026-05-13: Company Address Can Reuse Applicant Residential Address
+
+Decision:
+
+The onboarding flow allows the LLC/company principal address to reuse the applicant/residential address through a checkbox. The system stores both the copied address and a boolean flag indicating whether the addresses are the same.
+
+Result:
+
+- Applicant residential address is captured during the applicant/contact step.
+- The LLC/company principal address step includes a checkbox to use the previously provided residential address.
+- When selected, the LLC principal address payload uses the residential address values and stores `principalSameAsApplicantAddress = true`.
+- When not selected, the customer can enter a separate company principal address and the flag is false.
+- Admin order detail should display the applicant residential address, company principal address, and whether they are the same.
+
+Reason:
+
+The guided onboarding should avoid asking customers to type the same address multiple times while preserving clear operational data for AbreUSA review.

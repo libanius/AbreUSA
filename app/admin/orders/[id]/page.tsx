@@ -63,8 +63,8 @@ export default async function AdminOrderDetailPage({
     .from("orders")
     .select(`
       id, protocol_number, service_type, status, approved_at, created_at,
-      applicants(id, name, email, phone),
-      llcs(id, legal_name, state, business_activity_label, principal_street, principal_city, principal_state, principal_zip, management_type, member_count),
+      applicants(id, name, email, phone, residential_street, residential_city, residential_state, residential_zip),
+      llcs(id, legal_name, state, business_activity_label, principal_street, principal_city, principal_state, principal_zip, principal_same_as_applicant_address, management_type, member_count),
       members(id, member_index, full_name, address, ownership_percentage),
       registered_agents(id, choice, name, address, city, state, zip),
       ein_details(id, reason_for_applying, entity_type, responsible_party_name, responsible_party_passport_number, start_date, fiscal_closing_month),
@@ -88,6 +88,12 @@ export default async function AdminOrderDetailPage({
   const einDetails = ((order.ein_details as Record<string, unknown>[])?.[0]) ?? null;
   const generatedForms = (order.generated_forms as Record<string, unknown>[]) ?? [];
   const documents = (order.documents as Record<string, unknown>[]) ?? [];
+  const applicantResidentialAddress = applicant?.residential_street
+    ? `${applicant.residential_street as string}, ${applicant.residential_city as string}, ${applicant.residential_state as string} ${applicant.residential_zip as string}`
+    : "—";
+  const llcPrincipalAddress = llc
+    ? `${llc.principal_street as string}, ${llc.principal_city as string}, ${llc.principal_state as string} ${llc.principal_zip as string}`
+    : "—";
 
   // Generate signed URLs for each document (60 min expiry)
   type DocWithUrls = Record<string, unknown> & { viewUrl: string | null; downloadUrl: string | null };
@@ -142,6 +148,7 @@ export default async function AdminOrderDetailPage({
             <Field label="Name" value={applicant.name as string} />
             <Field label="Email" value={applicant.email as string} />
             <Field label="Phone" value={applicant.phone as string} />
+            <Field label="Residential Address" value={applicantResidentialAddress} />
           </div>
         </Section>
       )}
@@ -155,7 +162,15 @@ export default async function AdminOrderDetailPage({
             <Field label="Business Activity" value={llc.business_activity_label as string} />
             <Field label="Management Type" value={(llc.management_type as string).replace(/_/g, " ")} />
             <Field label="Member Count" value={llc.member_count as number} />
-            <Field label="Principal Address" value={`${llc.principal_street as string}, ${llc.principal_city as string}, ${llc.principal_state as string} ${llc.principal_zip as string}`} />
+            <Field label="Principal Address" value={llcPrincipalAddress} />
+            <Field
+              label="Address Relationship"
+              value={
+                llc.principal_same_as_applicant_address
+                  ? "Same as applicant residential address"
+                  : "Separate company principal address"
+              }
+            />
           </div>
         </Section>
       )}

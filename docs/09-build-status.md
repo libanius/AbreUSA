@@ -27,7 +27,7 @@ Result:
 
 ## Current Task
 
-None. P8.5-T01 is complete.
+None. P8.5-T02 is complete.
 
 Result:
 
@@ -41,6 +41,27 @@ Result:
 - `npm run lint` passes.
 - `npm run build` passes after clearing the interrupted `.next` cache.
 - Browser verification passed for service, business activity, and Registered Agent auto-advance behavior.
+- Server-side order persistence and document upload regression check passed through `/api/orders` with test protocol `AUS-2026-0015` and order ID `5c2dcc55-99c2-4f7f-a009-645db697a8b0`.
+
+Current P8.5-T02 goal:
+
+- Capture applicant/residential address in onboarding.
+- Allow the LLC/company principal address to reuse that residential address through a checkbox.
+- Persist the copied company address and the relationship boolean.
+- Show the relationship in final review and admin order detail.
+
+P8.5-T02 result:
+
+- Applicant/contact step captures residential address.
+- LLC/company principal address step includes a checkbox to reuse the applicant/residential address.
+- Final payload stores both the copied LLC principal address and `principalSameAsApplicantAddress`.
+- Admin detail shows applicant residential address, LLC principal address, and whether they are the same.
+- Supabase schema and migration were updated and pushed to the remote project.
+- Verification passed with `AUS-2026-0016`:
+  - Applicant residential address persisted.
+  - LLC principal address persisted with the same values.
+  - `principal_same_as_applicant_address` persisted as `true`.
+  - Two document rows persisted.
 
 Result:
 
@@ -150,7 +171,8 @@ No next task is currently defined. Post-MVP priorities remain owner/operator-dir
 - P8-T13V: Authenticated production admin verification complete.
 - P8-T14: All launch operations confirmed. Email bug fixed (void → await). Production confirmation email received in real inbox (AUS-2026-0014). Controlled MVP launch complete.
 - Phase 8.5 complete:
-  - P8.5-T01: Guided onboarding UX cleanup complete. Choice/card steps auto-advance, input/upload/review steps keep explicit Continue/Confirm, active Articles previews are hidden behind short education cards, sticky footer navigation is implemented, and lint/build/browser verification passed.
+  - P8.5-T01: Guided onboarding UX cleanup complete. Choice/card steps auto-advance, input/upload/review steps keep explicit Continue/Confirm, active Articles previews are hidden behind short education cards, sticky footer navigation is implemented, lint/build/browser verification passed, and `/api/orders` persistence/upload regression check passed with `AUS-2026-0015`.
+  - P8.5-T02: Same-as-residential company address reuse complete. Applicant residential address, copied LLC principal address, and boolean relationship flag persist correctly. Verified with `AUS-2026-0016`.
 
 ## What Is Implemented
 

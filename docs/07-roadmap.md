@@ -1761,6 +1761,65 @@ P8.5-T01 status:
 - `npm run lint` passes.
 - `npm run build` passes after clearing the interrupted `.next` cache.
 - Browser verification passed for auto-advance on service, business activity, and Registered Agent selection, and confirmed sticky navigation is present.
+- Server-side persistence and document upload regression check passed through `/api/orders` with test protocol `AUS-2026-0015`.
+
+## Phase 8.5 Follow-up: Address Reuse UX
+
+Status: Complete.
+
+Task ID: `P8.5-T02`.
+
+Title: Add same-as-residential checkbox to company address flow.
+
+Scope:
+
+- Capture applicant/residential address during the applicant/contact step.
+- Add a checkbox to the LLC/company principal address step: `Usar o mesmo endereço residencial informado anteriormente`.
+- When checked, use the applicant/residential address as the LLC principal address and persist a boolean relationship flag.
+- When unchecked, preserve and use the separately entered LLC/company principal address.
+- Show the address relationship in final review.
+- Show applicant residential address, LLC principal address, and address relationship in admin order detail.
+- Preserve existing Supabase persistence, document upload, and admin review behavior.
+
+Out of scope:
+
+- Payment.
+- Customer dashboard.
+- Sunbiz name availability checking.
+- Real AI OCR.
+- Multi-state orchestration.
+- Registered Agent logic changes unless required by data structure.
+
+Acceptance criteria:
+
+- LLC/company address step includes a checkbox to use the residential/applicant address.
+- Checking the box uses the residential address in the company address payload.
+- Unchecking the box allows a separate company address.
+- Final review shows the correct address behavior.
+- Admin view shows the address relationship clearly.
+- Existing order submission still works.
+- Supabase persistence is not broken.
+- Docs are updated.
+
+P8.5-T02 status:
+
+- Status: Complete.
+- Applicant/contact step now captures residential street, city, state, and ZIP.
+- LLC/company principal address step includes the checkbox `Usar o mesmo endereço residencial informado anteriormente`.
+- When checked, the final LLC principal address payload uses the applicant residential address.
+- When unchecked, the user can enter and preserve a separate LLC/company principal address.
+- Final review shows whether the company address is the same as the residential address or a separate address.
+- Admin order detail shows applicant residential address, LLC principal address, and the address relationship.
+- Supabase schema and migration now include applicant residential address fields and `llcs.principal_same_as_applicant_address`.
+- Remote Supabase migration applied with `npx supabase db push`.
+- `npm run lint` passes.
+- `npm run build` passes.
+- Server-side `/api/orders` persistence and document upload verification passed with test protocol `AUS-2026-0016`.
+- Supabase verification confirmed:
+  - Applicant residential address persisted.
+  - LLC principal address copied from applicant residential address.
+  - `principal_same_as_applicant_address = true`.
+  - Two document records persisted.
 
 Potential additions (post-P8-T02):
 

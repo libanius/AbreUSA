@@ -56,6 +56,10 @@ type ApplicantContactDraft = {
   name: string;
   email: string;
   phone: string;
+  residentialStreet: string;
+  residentialCity: string;
+  residentialState: string;
+  residentialZip: string;
 };
 
 type BusinessActivityOption = {
@@ -146,6 +150,10 @@ type LocalOrderPayload = {
     name: string;
     email: string;
     phone: string;
+    residentialStreet: string;
+    residentialCity: string;
+    residentialState: string;
+    residentialZip: string;
   };
   llc: {
     legalName: string;
@@ -155,6 +163,7 @@ type LocalOrderPayload = {
     principalCity: string;
     principalState: string;
     principalZip: string;
+    principalSameAsApplicantAddress: boolean;
     managementType: "member_managed";
     memberCount: number;
   };
@@ -386,6 +395,7 @@ function StepFrame({
   activeStep,
   businessActivity,
   businessAddress,
+  businessAddressSameAsResidential,
   customBusinessActivity,
   llcName,
   memberCount,
@@ -413,6 +423,7 @@ function StepFrame({
   onChangeApprovalConfirmed,
   onChangeBusinessActivity,
   onChangeBusinessAddress,
+  onChangeBusinessAddressSameAsResidential,
   onChangeCustomBusinessActivity,
   onChangeDocumentExtraction,
   onChangeDocumentFile,
@@ -440,6 +451,7 @@ function StepFrame({
   activeStep: FlowStep;
   businessActivity: BusinessActivityId | null;
   businessAddress: BusinessAddressDraft;
+  businessAddressSameAsResidential: boolean;
   customBusinessActivity: string;
   documents: DocumentCollectionDraft;
   approvalConfirmed: boolean;
@@ -467,6 +479,7 @@ function StepFrame({
   onChangeApprovalConfirmed: (confirmed: boolean) => void;
   onChangeBusinessActivity: (activity: BusinessActivityId) => void;
   onChangeBusinessAddress: (field: keyof BusinessAddressDraft, value: string) => void;
+  onChangeBusinessAddressSameAsResidential: (same: boolean) => void;
   onChangeCustomBusinessActivity: (activity: string) => void;
   onChangeDocumentExtraction: (
     field: keyof DocumentExtractionDraft,
@@ -539,6 +552,26 @@ function StepFrame({
       ? "Próprio sócio"
       : registeredAgent.choice === "other"
       ? registeredAgent.name.trim() || "Outro agente"
+      : "Pendente";
+  const residentialAddress = {
+    street: applicantContact.residentialStreet,
+    city: applicantContact.residentialCity,
+    state: applicantContact.residentialState,
+    zip: applicantContact.residentialZip,
+  };
+  const isResidentialAddressComplete =
+    residentialAddress.street.trim().length > 0 &&
+    residentialAddress.city.trim().length > 0 &&
+    residentialAddress.state.trim().length > 0 &&
+    residentialAddress.zip.trim().length > 0;
+  const effectiveBusinessAddress = businessAddressSameAsResidential
+    ? residentialAddress
+    : businessAddress;
+  const effectiveBusinessAddressSummary =
+    effectiveBusinessAddress.street &&
+    effectiveBusinessAddress.city &&
+    effectiveBusinessAddress.zip
+      ? `${effectiveBusinessAddress.street}, ${effectiveBusinessAddress.city}, ${effectiveBusinessAddress.state} ${effectiveBusinessAddress.zip}`
       : "Pendente";
 
   if (activeStep === "confirmation") {
@@ -674,10 +707,9 @@ function StepFrame({
   }
 
   if (activeStep === "review") {
-    const businessAddressSummary =
-      businessAddress.street && businessAddress.city && businessAddress.zip
-        ? `${businessAddress.street}, ${businessAddress.city}, ${businessAddress.state} ${businessAddress.zip}`
-        : "Pendente";
+    const businessAddressSummary = businessAddressSameAsResidential
+      ? "Mesmo endereço residencial informado"
+      : effectiveBusinessAddressSummary;
     const memberSummary = visibleMembers
       .map((member, index) => {
         const name = member.fullName.trim() || `Sócio ${index + 1}`;
@@ -727,6 +759,12 @@ function StepFrame({
               { label: "Sócios", value: memberSummary || "Pendente" },
               { label: "Participação total", value: `${ownershipTotal}%` },
               { label: "Endereço principal", value: businessAddressSummary },
+              {
+                label: "Relação do endereço",
+                value: businessAddressSameAsResidential
+                  ? "Empresa usa o endereço residencial"
+                  : "Empresa usa endereço próprio",
+              },
               { label: "Registered Agent", value: registeredAgentLabel },
             ]}
             title="LLC e formação na Flórida"
@@ -1545,8 +1583,8 @@ function StepFrame({
               { label: "Nome", value: trimmedLlcName },
               {
                 label: "Endereço",
-                value: businessAddress.city
-                  ? `${businessAddress.city}, FL`
+                value: effectiveBusinessAddress.city
+                  ? `${effectiveBusinessAddress.city}, ${effectiveBusinessAddress.state}`
                   : "Pendente",
               },
               {
@@ -1585,9 +1623,9 @@ function StepFrame({
   }
 
   if (activeStep === "business_address") {
-    const hasStreet = businessAddress.street.trim().length > 0;
-    const hasCity = businessAddress.city.trim().length > 0;
-    const hasZip = businessAddress.zip.trim().length > 0;
+    const hasStreet = effectiveBusinessAddress.street.trim().length > 0;
+    const hasCity = effectiveBusinessAddress.city.trim().length > 0;
+    const hasZip = effectiveBusinessAddress.zip.trim().length > 0;
     const isAddressComplete = hasStreet && hasCity && hasZip;
 
     return (
@@ -1609,48 +1647,81 @@ function StepFrame({
           </StatusMessage>
 
           <FieldGroup title="Endereço da sede (Florida)">
-            <FieldShell
-              hint="Endereço completo da sede principal da LLC nos EUA."
-              label="Rua e número"
-            >
-              <Input
+            <label className="flex gap-3 rounded-md border bg-card p-4 text-sm leading-6 text-foreground">
+              <input
+                checked={businessAddressSameAsResidential}
+                className="mt-1 size-4 shrink-0 accent-emerald-600"
+                disabled={!isResidentialAddressComplete}
                 onChange={(event) =>
-                  onChangeBusinessAddress("street", event.target.value)
+                  onChangeBusinessAddressSameAsResidential(event.target.checked)
                 }
-                placeholder="Ex.: 1000 Brickell Ave, Suite 100"
-                value={businessAddress.street}
+                type="checkbox"
               />
-            </FieldShell>
-            <FieldShell label="Cidade">
-              <Input
-                onChange={(event) =>
-                  onChangeBusinessAddress("city", event.target.value)
-                }
-                placeholder="Ex.: Miami"
-                value={businessAddress.city}
+              <span>
+                Usar o mesmo endereço residencial informado anteriormente
+              </span>
+            </label>
+            {!isResidentialAddressComplete ? (
+              <p className="text-xs text-muted-foreground">
+                Preencha o endereço residencial no passo de contato para usar
+                esta opção.
+              </p>
+            ) : null}
+
+            {businessAddressSameAsResidential ? (
+              <ReviewSummary
+                items={[
+                  { label: "Endereço usado", value: effectiveBusinessAddressSummary },
+                  { label: "Origem", value: "Endereço residencial informado" },
+                ]}
+                title="Endereço da empresa"
               />
-            </FieldShell>
-            <FieldShell
-              hint="Estado fixo: Flórida (FL) para o MVP."
-              label="Estado"
-            >
-              <Input
-                disabled
-                readOnly
-                value={businessAddress.state}
-              />
-            </FieldShell>
-            <FieldShell label="ZIP Code">
-              <Input
-                inputMode="numeric"
-                maxLength={10}
-                onChange={(event) =>
-                  onChangeBusinessAddress("zip", event.target.value)
-                }
-                placeholder="Ex.: 33131"
-                value={businessAddress.zip}
-              />
-            </FieldShell>
+            ) : (
+              <>
+                <FieldShell
+                  hint="Endereço completo da sede principal da LLC nos EUA."
+                  label="Rua e número"
+                >
+                  <Input
+                    onChange={(event) =>
+                      onChangeBusinessAddress("street", event.target.value)
+                    }
+                    placeholder="Ex.: 1000 Brickell Ave, Suite 100"
+                    value={businessAddress.street}
+                  />
+                </FieldShell>
+                <FieldShell label="Cidade">
+                  <Input
+                    onChange={(event) =>
+                      onChangeBusinessAddress("city", event.target.value)
+                    }
+                    placeholder="Ex.: Miami"
+                    value={businessAddress.city}
+                  />
+                </FieldShell>
+                <FieldShell
+                  hint="Estado fixo: Flórida (FL) para o MVP."
+                  label="Estado"
+                >
+                  <Input
+                    disabled
+                    readOnly
+                    value={businessAddress.state}
+                  />
+                </FieldShell>
+                <FieldShell label="ZIP Code">
+                  <Input
+                    inputMode="numeric"
+                    maxLength={10}
+                    onChange={(event) =>
+                      onChangeBusinessAddress("zip", event.target.value)
+                    }
+                    placeholder="Ex.: 33131"
+                    value={businessAddress.zip}
+                  />
+                </FieldShell>
+              </>
+            )}
           </FieldGroup>
 
           <ReviewSummary
@@ -1661,7 +1732,9 @@ function StepFrame({
               {
                 label: "Endereço",
                 value: isAddressComplete
-                  ? `${businessAddress.city}, FL`
+                  ? businessAddressSameAsResidential
+                    ? "Mesmo endereço residencial"
+                    : `${effectiveBusinessAddress.city}, ${effectiveBusinessAddress.state}`
                   : "Pendente",
               },
             ]}
@@ -1867,7 +1940,11 @@ function StepFrame({
     const isContactComplete =
       applicantContact.name.trim().length > 0 &&
       applicantContact.email.trim().includes("@") &&
-      applicantContact.phone.trim().length >= 8;
+      applicantContact.phone.trim().length >= 8 &&
+      applicantContact.residentialStreet.trim().length > 0 &&
+      applicantContact.residentialCity.trim().length > 0 &&
+      applicantContact.residentialState.trim().length > 0 &&
+      applicantContact.residentialZip.trim().length > 0;
     return (
       <StepCard
         badge="Seus dados"
@@ -1898,6 +1975,50 @@ function StepFrame({
               placeholder="+55 11 99999-9999"
             />
           </FieldShell>
+          <FieldShell
+            hint="Esse endereço pode ser reutilizado como endereço principal da LLC se fizer sentido para o pedido."
+            label="Endereço residencial"
+          >
+            <Input
+              value={applicantContact.residentialStreet}
+              onChange={(e) =>
+                onChangeApplicantContact("residentialStreet", e.target.value)
+              }
+              placeholder="Rua e número"
+            />
+          </FieldShell>
+          <div className="grid gap-4 sm:grid-cols-3">
+            <FieldShell label="Cidade">
+              <Input
+                value={applicantContact.residentialCity}
+                onChange={(e) =>
+                  onChangeApplicantContact("residentialCity", e.target.value)
+                }
+                placeholder="Ex.: Miami"
+              />
+            </FieldShell>
+            <FieldShell label="Estado">
+              <Input
+                value={applicantContact.residentialState}
+                onChange={(e) =>
+                  onChangeApplicantContact("residentialState", e.target.value)
+                }
+                maxLength={2}
+                placeholder="FL"
+              />
+            </FieldShell>
+            <FieldShell label="ZIP Code">
+              <Input
+                value={applicantContact.residentialZip}
+                onChange={(e) =>
+                  onChangeApplicantContact("residentialZip", e.target.value)
+                }
+                inputMode="numeric"
+                maxLength={10}
+                placeholder="33131"
+              />
+            </FieldShell>
+          </div>
         </FieldGroup>
         <StepNavigation
           currentStep={currentStep}
@@ -2046,6 +2167,8 @@ export function GuidedIntakeShell() {
     state: "FL",
     zip: "",
   });
+  const [businessAddressSameAsResidential, setBusinessAddressSameAsResidential] =
+    useState(false);
   const [registeredAgent, setRegisteredAgent] = useState<RegisteredAgentDraft>({
     choice: null,
     name: "",
@@ -2067,7 +2190,16 @@ export function GuidedIntakeShell() {
   );
   const [approvalConfirmed, setApprovalConfirmed] = useState(false);
   const [isPersisting, setIsPersisting] = useState(false);
-  const [applicantContact, setApplicantContact] = useState<ApplicantContactDraft>({ name: "", email: "", phone: "" });
+  const [applicantContact, setApplicantContact] =
+    useState<ApplicantContactDraft>({
+      name: "",
+      email: "",
+      phone: "",
+      residentialStreet: "",
+      residentialCity: "",
+      residentialState: "FL",
+      residentialZip: "",
+    });
   const [documentFiles, setDocumentFiles] = useState<{ passport: File | null; addressProof: File | null }>({ passport: null, addressProof: null });
   const [approvedOrderPayload, setApprovedOrderPayload] =
     useState<LocalOrderPayload | null>(null);
@@ -2138,8 +2270,17 @@ export function GuidedIntakeShell() {
     setMemberCount(1);
     setMemberData([{ fullName: "", address: "", ownershipPercentage: "100" }]);
     setBusinessAddress({ street: "", city: "", state: "FL", zip: "" });
+    setBusinessAddressSameAsResidential(false);
     setRegisteredAgent({ choice: null, name: "", address: "", city: "", state: "FL", zip: "" });
-    setApplicantContact({ name: "", email: "", phone: "" });
+    setApplicantContact({
+      name: "",
+      email: "",
+      phone: "",
+      residentialStreet: "",
+      residentialCity: "",
+      residentialState: "FL",
+      residentialZip: "",
+    });
     setDocumentFiles({ passport: null, addressProof: null });
     setEinQuestions({
       reasonForApplying: null,
@@ -2175,6 +2316,19 @@ export function GuidedIntakeShell() {
         customerApproved: true,
       });
     }
+    const principalAddress = businessAddressSameAsResidential
+      ? {
+          street: applicantContact.residentialStreet.trim(),
+          city: applicantContact.residentialCity.trim(),
+          state: applicantContact.residentialState.trim(),
+          zip: applicantContact.residentialZip.trim(),
+        }
+      : {
+          street: businessAddress.street,
+          city: businessAddress.city,
+          state: businessAddress.state,
+          zip: businessAddress.zip,
+        };
 
     return {
       order: {
@@ -2188,15 +2342,20 @@ export function GuidedIntakeShell() {
         name: applicantContact.name.trim(),
         email: applicantContact.email.trim(),
         phone: applicantContact.phone.trim(),
+        residentialStreet: applicantContact.residentialStreet.trim(),
+        residentialCity: applicantContact.residentialCity.trim(),
+        residentialState: applicantContact.residentialState.trim(),
+        residentialZip: applicantContact.residentialZip.trim(),
       },
       llc: {
         legalName: llcName.trim(),
         state: "FL",
         businessActivityLabel,
-        principalStreet: businessAddress.street,
-        principalCity: businessAddress.city,
-        principalState: businessAddress.state,
-        principalZip: businessAddress.zip,
+        principalStreet: principalAddress.street,
+        principalCity: principalAddress.city,
+        principalState: principalAddress.state,
+        principalZip: principalAddress.zip,
+        principalSameAsApplicantAddress: businessAddressSameAsResidential,
         managementType: "member_managed",
         memberCount,
       },
@@ -2336,6 +2495,7 @@ export function GuidedIntakeShell() {
             approvedOrderPayload={approvedOrderPayload}
             businessActivity={businessActivity}
             businessAddress={businessAddress}
+            businessAddressSameAsResidential={businessAddressSameAsResidential}
             customBusinessActivity={customBusinessActivity}
             documents={documents}
             einQuestions={einQuestions}
@@ -2360,6 +2520,9 @@ export function GuidedIntakeShell() {
             onChangeApprovalConfirmed={setApprovalConfirmed}
             onChangeBusinessActivity={setBusinessActivity}
             onChangeBusinessAddress={handleChangeBusinessAddress}
+            onChangeBusinessAddressSameAsResidential={
+              setBusinessAddressSameAsResidential
+            }
             onChangeCustomBusinessActivity={setCustomBusinessActivity}
             onChangeDocumentExtraction={handleChangeDocumentExtraction}
             onChangeDocumentFile={handleChangeDocumentFile}

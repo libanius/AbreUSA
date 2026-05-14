@@ -38,6 +38,7 @@ create table if not exists llcs (
   principal_city          text        not null,
   principal_state         text        not null,
   principal_zip           text        not null,
+  principal_same_as_applicant_address boolean not null default false,
   management_type         text        not null default 'member_managed',
   member_count            integer     not null,
   created_at              timestamptz not null default now()
@@ -91,6 +92,10 @@ create table if not exists applicants (
   name       text        not null,
   email      text        not null,
   phone      text        not null,
+  residential_street text,
+  residential_city   text,
+  residential_state  text,
+  residential_zip    text,
   created_at timestamptz not null default now()
 );
 

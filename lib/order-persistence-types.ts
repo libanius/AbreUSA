@@ -3,6 +3,10 @@ export type PersistOrderPayload = {
     name: string;
     email: string;
     phone: string;
+    residentialStreet?: string;
+    residentialCity?: string;
+    residentialState?: string;
+    residentialZip?: string;
   };
   order: {
     serviceType: string;
@@ -17,6 +21,7 @@ export type PersistOrderPayload = {
     principalCity: string;
     principalState: string;
     principalZip: string;
+    principalSameAsApplicantAddress?: boolean;
     managementType: string;
     memberCount: number;
   };

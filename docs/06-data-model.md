@@ -46,6 +46,11 @@ Status values:
 - email.
 - phone.
 
+Applicant residential address source:
+
+- Captured during the applicant/contact step.
+- May be reused as the LLC/company principal address when the customer selects the same-address checkbox.
+
 Email and phone are not present in the prototype but are likely required for production order handling.
 
 ## LLC
@@ -61,12 +66,19 @@ Email and phone are not present in the prototype but are likely required for pro
 - principalState.
 - principalZip.
 - principalCounty.
+- principalSameAsApplicantAddress.
 - managementType.
 - memberCount.
 
 Initial state:
 
 - Florida.
+
+Address reuse:
+
+- `principalSameAsApplicantAddress` stores whether the customer chose to reuse the applicant/residential address for the LLC/company principal address.
+- When true, the persisted LLC principal address fields still contain the copied address values.
+- When false, the persisted LLC principal address fields contain the separately entered company address.
 
 Management type:
 

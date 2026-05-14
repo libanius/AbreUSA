@@ -55,6 +55,10 @@ export async function persistOrderServer(
     name: payload.applicant.name,
     email: payload.applicant.email,
     phone: payload.applicant.phone,
+    residential_street: payload.applicant.residentialStreet || null,
+    residential_city: payload.applicant.residentialCity || null,
+    residential_state: payload.applicant.residentialState || null,
+    residential_zip: payload.applicant.residentialZip || null,
   });
   if (applicantError) throw applicantError;
 
@@ -67,6 +71,8 @@ export async function persistOrderServer(
     principal_city: payload.llc.principalCity,
     principal_state: payload.llc.principalState,
     principal_zip: payload.llc.principalZip,
+    principal_same_as_applicant_address:
+      payload.llc.principalSameAsApplicantAddress ?? false,
     management_type: payload.llc.managementType,
     member_count: payload.llc.memberCount,
   });
