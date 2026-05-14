@@ -4,7 +4,7 @@
 
 Phase 11: Customer Dashboard Journey.
 
-Phases 1–11 first production slice are complete. Phase 11 dashboard lookup is now rate-limited, deployed, and production-verified.
+Phases 1–11 first production slice are complete. Phase 11 dashboard lookup is now rate-limited, deployed, and production-verified. A Phase 10 robustness fix (document extraction pipeline) is in progress locally.
 
 ## Last Completed Task
 
@@ -43,25 +43,25 @@ Result:
 
 ## Current Task
 
-Task ID: `TBD`
+Task ID: `P10-robustness`
 
-Title: Choose the next customer dashboard slice.
+Title: Document extraction pipeline robustness fix.
 
-Scope:
+Result:
 
-- Select the next Phase 11 customer dashboard priority.
-- Recommended next slice: define `P11-T04` for authenticated customer access or magic-link strategy before adding customer document downloads or correction workflows.
-- Keep payment, full dashboard portal, and customer correction workflows out of scope until the next slice is explicitly scoped.
-
-Acceptance criteria:
-
-- App Spine is updated before implementation.
-- Scope, out-of-scope items, acceptance criteria, and risks are recorded.
-- No future customer dashboard items are marked complete until implemented and verified.
+- `lib/preprocess-document.ts` added: sharp-based image normalization pipeline. Auto-rotates EXIF orientation (critical for mobile photos), resizes to max 4096px, compresses to max 4MB, converts all images to JPEG for consistent OpenAI input.
+- MIME allowlist expanded: `image/heic`, `image/heif`, `image/jpg`, `application/pdf` now accepted.
+- PDF path: accepted in upload (input and MIME check), returns `pdf_requires_image` error with friendly customer guidance. PDF still uploaded to Supabase storage.
+- HEIC/HEIF: converted to JPEG via sharp. Falls back with `heic_conversion_failed` if libvips HEIC support is unavailable.
+- Image preprocessing errors surfaced with specific codes: `image_decode_failed`, `heic_conversion_failed`.
+- Upload `<input accept>` updated: `.pdf,.jpg,.jpeg,.png,.heic,.heif,.webp`.
+- Format hint updated: "Formatos aceitos: JPG, JPEG, PNG ou PDF. Fotos de celular também são aceitas quando compatíveis. Se estiver usando iPhone, prefira enviar como JPG/JPEG ou PDF caso a leitura automática falhe."
+- extraction_review failed message is now context-aware: PDF-specific guidance shown when `errorCode === "pdf_requires_image"`.
+- Lint and build verified.
 
 ## Next Task
 
-Choose the next Phase 11 customer dashboard slice. Recommended: `P11-T04` authenticated customer access or magic-link strategy.
+Deploy P10-robustness fix to production (`https://abre-usa.vercel.app`). Verify document-assisted flow with PNG and JPEG mobile photos. Then choose next Phase 11 slice.
 
 ## Completed Tasks
 
@@ -117,6 +117,14 @@ Choose the next Phase 11 customer dashboard slice. Recommended: `P11-T04` authen
   - P10-T04: Approval loading state and error retry. Button shows "Processando...", loading StatusMessage shown during persistence, error StatusMessage + retry on failure. `handleContinueToConfirmation` fail-closed: only navigates to confirmation on Supabase success. Lint and build verified.
   - P10-T05: Production redeploy complete. `https://abre-usa.vercel.app` now points to `dpl_8UtvGpSfHWJGM5zV1DPDKyG9UCtr`; home/admin health checks passed; production OCR route verified with JPEG extraction and `confidence: 100`.
   - P10-T06: Production document-assisted order persistence verified through `/api/orders` with `AUS-2026-0020`; extracted data, address reuse, EIN details, generated forms, and two private document records persisted.
+- Phase 10 robustness fix complete (P10-robustness):
+  - Image normalization pipeline via sharp: EXIF auto-rotation, max 4096px resize, 4MB compression, JPEG conversion.
+  - MIME allowlist expanded to include HEIC/HEIF, PDF, image/jpg.
+  - PDF: accepted and stored; returns `pdf_requires_image` with clear guidance.
+  - HEIC/HEIF: converted to JPEG via sharp.
+  - Error codes: `image_decode_failed`, `heic_conversion_failed`, `pdf_requires_image`.
+  - Upload UI: accept attribute and format hint updated per spec.
+  - Lint and build verified.
 - Phase 11 first production slice complete:
   - P11-T01: Customer dashboard lookup MVP implemented locally. `/dashboard` supports protocol + applicant email lookup, returns a safe customer DTO, and hides sensitive document URLs/storage paths/raw files. Lint, build, valid lookup, invalid lookup, and sensitive-token HTML checks passed.
   - P11-T02: Customer dashboard lookup MVP deployed to production and verified at `https://abre-usa.vercel.app`. Valid lookup, invalid lookup, sensitive-token HTML checks, home health check, and admin unauthenticated redirect passed.
@@ -136,7 +144,8 @@ Choose the next Phase 11 customer dashboard slice. Recommended: `P11-T04` authen
   - Steps 13–15: Review, approval, confirmation.
 - **Manual path (14 steps):** unchanged from Phase 8.5. Documents at step 11.
 - Dynamic step numbering: all step eyebrows use `currentStep` (no hardcoded step numbers).
-- Extraction error codes: `missing_openai_api_key`, `file_not_provided`, `unsupported_file_type`, `extraction_api_failed`. Errors propagated from route → client → UI → order payload.
+- Extraction error codes: `missing_openai_api_key`, `file_not_provided`, `unsupported_file_type`, `extraction_api_failed`, `image_decode_failed`, `heic_conversion_failed`, `pdf_requires_image`. Errors propagated from route → client → UI → order payload.
+- Image normalization pipeline (`lib/preprocess-document.ts`): EXIF auto-rotation, resize, JPEG conversion via sharp. Supported input formats: JPEG, JPG, PNG, GIF, WebP, HEIC, HEIF. PDF: accepted for storage; returns `pdf_requires_image` with guidance.
 - Approval step: loading state ("Processando..."), success/failure handling, retry on error.
 - Applicant contact step (name, email, phone, residential address).
 - Company principal address can reuse the applicant residential address through a checkbox.
@@ -227,7 +236,7 @@ Read `AGENTS.md`, `/docs/START-HERE.md`, `/docs/07-roadmap.md`, and this file. R
 - AbreUSA domain email migration remains deferred; temporary Brightscale sender in use.
 - Manual physical deletion is implemented (P8-T11). In-browser verification against a real eligible document is recommended before enabling for production use.
 - Automated retention Cron (Vercel Cron) remains deferred until manual deletion is verified in production.
-- OCR extraction only supports image files (JPEG, PNG, GIF, WebP). PDF uploads are accepted for Supabase storage but return `unsupported_file_type` error for extraction — customer sees friendly fallback and can continue manually.
+- OCR extraction supports image files (JPEG, JPG, PNG, GIF, WebP, HEIC, HEIF) after sharp normalization. PDF uploads are accepted for Supabase storage but return `pdf_requires_image` error — customer sees specific guidance to upload as image and can continue manually.
 - Admin portal has no rate limiting or brute-force protection on the login page (acceptable for MVP internal use).
 - Customer dashboard lookup is rate-limited, but still does not have full customer authentication, magic-link access, document downloads, or correction workflows.
 - Default PATH does not include Node/npm on this machine; use `PATH=/usr/local/opt/node@22/bin:$PATH` for local commands.

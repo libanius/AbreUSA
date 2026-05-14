@@ -2022,6 +2022,11 @@ Completed tasks:
 - Title: Prefill EIN Responsible Party from primary member.
 - Result: EIN step shows "Usar o socio principal como responsavel pelo EIN" checkbox when primary member has a name. Prefills `responsiblePartyName` and optionally `responsiblePartyPassportNumber` from extraction. Lint and build verified.
 
+
+- Task ID: `P10-robustness`.
+- Title: Document extraction pipeline robustness fix.
+- Result: `lib/preprocess-document.ts` added — sharp-based normalization (EXIF auto-rotate, max 4096px resize, 4MB compression, JPEG conversion). MIME allowlist expanded to HEIC/HEIF/PDF/JPG. PDF returns `pdf_requires_image` with guidance; HEIC converted to JPEG. Upload UI updated with correct format list and iPhone guidance. Error codes: `image_decode_failed`, `heic_conversion_failed`, `pdf_requires_image`. Lint and build verified.
+
 - Task ID: `P10-T04`.
 - Title: Approval step loading state and error retry.
 - Result: Button shows "Processando..." during persistence. Loading StatusMessage displayed. `handleContinueToConfirmation` is fail-closed: only navigates to confirmation on Supabase success; sets `persistError` and stays on approval step on failure for retry. Lint and build verified.

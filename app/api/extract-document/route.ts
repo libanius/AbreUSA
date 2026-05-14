@@ -1,9 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { extractDocuments } from "@/lib/extract-document";
+import {
+  preprocessFile,
+  ACCEPTED_MIME_TYPES,
+} from "@/lib/preprocess-document";
 
-const SUPPORTED_MIME_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp"];
-
-function extractionError(errorCode: string, message: string, details?: string, status = 422) {
+function extractionError(
+  errorCode: string,
+  message: string,
+  details?: string,
+  status = 422,
+) {
   return NextResponse.json({ error: message, errorCode, details }, { status });
 }
 
@@ -32,48 +39,122 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (passportFile && !SUPPORTED_MIME_TYPES.includes(passportFile.type)) {
-      console.error(
-        `[extract-document] Unsupported passport MIME type: ${passportFile.type}`,
+    // Validate MIME types up front
+    for (const [label, file] of [
+      ["passport", passportFile],
+      ["addressProof", addressFile],
+    ] as const) {
+      if (!file) continue;
+      const mime = (file.type || "application/octet-stream")
+        .toLowerCase()
+        .trim();
+      if (!ACCEPTED_MIME_TYPES.has(mime)) {
+        console.error(
+          `[extract-document] Unsupported MIME type for ${label}: ${mime}`,
+        );
+        return extractionError(
+          "unsupported_file_type",
+          "Tipo de arquivo não suportado para extração automática",
+          `${label}: tipo '${mime}' não suportado. Use JPG, JPEG, PNG, PDF ou HEIC.`,
+        );
+      }
+    }
+
+    // PDF path: accepted for Supabase storage, not yet extractable
+    const passportIsPdf =
+      passportFile?.type?.toLowerCase() === "application/pdf";
+    const addressIsPdf =
+      addressFile?.type?.toLowerCase() === "application/pdf";
+    if (passportIsPdf || addressIsPdf) {
+      const labels = [
+        passportIsPdf && "passaporte",
+        addressIsPdf && "comprovante de endereço",
+      ]
+        .filter(Boolean)
+        .join(" e ");
+      console.log(
+        `[extract-document] PDF received for: ${labels}. Returning pdf_requires_image.`,
       );
       return extractionError(
-        "unsupported_file_type",
-        "Tipo de arquivo não suportado para extração automática",
-        `Passaporte: tipo '${passportFile.type}' não suportado. Use JPEG, PNG ou WebP.`,
+        "pdf_requires_image",
+        "PDF recebido. Para leitura automática, envie como imagem.",
+        `Arquivo(s) em PDF: ${labels}. Envie como JPG ou PNG para ativar a extração automática.`,
       );
     }
 
-    if (addressFile && !SUPPORTED_MIME_TYPES.includes(addressFile.type)) {
-      console.error(
-        `[extract-document] Unsupported address proof MIME type: ${addressFile.type}`,
-      );
-      return extractionError(
-        "unsupported_file_type",
-        "Tipo de arquivo não suportado para extração automática",
-        `Comprovante: tipo '${addressFile.type}' não suportado. Use JPEG, PNG ou WebP.`,
-      );
-    }
-
+    // Read file buffers
     const [passportBuffer, addressBuffer] = await Promise.all([
       passportFile ? Buffer.from(await passportFile.arrayBuffer()) : null,
       addressFile ? Buffer.from(await addressFile.arrayBuffer()) : null,
     ]);
 
+    // Preprocess images: auto-rotate EXIF, resize, convert to JPEG
+    let passportProcessed: { buffer: Buffer; mimeType: string } | null = null;
+    let addressProcessed: { buffer: Buffer; mimeType: string } | null = null;
+
+    if (passportBuffer && passportFile) {
+      try {
+        const result = await preprocessFile(passportBuffer, passportFile.type);
+        if (result.kind === "image") passportProcessed = result;
+      } catch (err) {
+        const code =
+          (err as Error & { errorCode?: string }).errorCode ??
+          "image_decode_failed";
+        const msg = err instanceof Error ? err.message : String(err);
+        console.error(
+          `[extract-document] Passport preprocessing failed [${code}]: ${msg}`,
+        );
+        return extractionError(
+          code,
+          "Não foi possível processar o passaporte.",
+          msg,
+        );
+      }
+    }
+
+    if (addressBuffer && addressFile) {
+      try {
+        const result = await preprocessFile(addressBuffer, addressFile.type);
+        if (result.kind === "image") addressProcessed = result;
+      } catch (err) {
+        const code =
+          (err as Error & { errorCode?: string }).errorCode ??
+          "image_decode_failed";
+        const msg = err instanceof Error ? err.message : String(err);
+        console.error(
+          `[extract-document] Address proof preprocessing failed [${code}]: ${msg}`,
+        );
+        return extractionError(
+          code,
+          "Não foi possível processar o comprovante de endereço.",
+          msg,
+        );
+      }
+    }
+
     const result = await extractDocuments(
-      passportBuffer,
-      passportFile?.type ?? null,
-      addressBuffer,
-      addressFile?.type ?? null,
+      passportProcessed?.buffer ?? null,
+      passportProcessed?.mimeType ?? null,
+      addressProcessed?.buffer ?? null,
+      addressProcessed?.mimeType ?? null,
     );
 
     return NextResponse.json(result);
   } catch (err) {
+    const code =
+      (err as Error & { errorCode?: string }).errorCode ??
+      "extraction_api_failed";
     const message = err instanceof Error ? err.message : String(err);
-    console.error("[extract-document] Extraction failed:", message, err);
+    console.error(
+      "[extract-document] Extraction failed:",
+      code,
+      message,
+      err,
+    );
     return NextResponse.json(
       {
         error: "Falha na extração de documentos",
-        errorCode: "extraction_api_failed",
+        errorCode: code,
         details: message,
       },
       { status: 500 },

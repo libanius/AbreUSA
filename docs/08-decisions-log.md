@@ -917,3 +917,18 @@ Result:
 Reason:
 
 The dashboard intentionally avoids exposing sensitive files, but it is still a public lookup surface. Shared rate limiting reduces enumeration and brute-force risk across Vercel serverless instances without introducing a full account system yet.
+
+## P10-robustness — Document Extraction Pipeline Robustness Fix
+
+Date: 2026-05-14.
+
+Decision:
+
+- Image normalization via sharp added as preprocessing step before OpenAI extraction.
+- EXIF auto-rotation is mandatory to handle mobile photos (root cause of real-user PNG/JPEG failure).
+- PDF accepted in MIME allowlist and upload input, but extraction falls back with `pdf_requires_image` and customer guidance.
+- HEIC/HEIF: converted to JPEG via sharp. Falls back with `heic_conversion_failed` if not supported.
+- New error codes: `image_decode_failed`, `heic_conversion_failed`, `pdf_requires_image`.
+- Upload UI updated with correct format list and iPhone guidance.
+- This is a Phase 10 robustness fix, not a new phase.
+

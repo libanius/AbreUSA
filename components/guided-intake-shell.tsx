@@ -1068,7 +1068,7 @@ function StepFrame({
                 documentos facilitarão o preenchimento dos próximos campos.
               </p>
               <p className="mt-2 text-xs text-muted-foreground">
-                Para extração automática, use imagem (JPEG, PNG, WebP). PDF é aceito mas não pode ser lido automaticamente.
+                Formatos aceitos: JPG, JPEG, PNG ou PDF. Fotos de celular também são aceitas quando compatíveis. Se estiver usando iPhone, prefira enviar como JPG/JPEG ou PDF caso a leitura automática falhe.
               </p>
             </StatusMessage>
           ) : null}
@@ -1129,7 +1129,7 @@ function StepFrame({
                 </div>
 
                 <Input
-                  accept=".pdf,.jpg,.jpeg,.png,.webp"
+                  accept=".pdf,.jpg,.jpeg,.png,.heic,.heif,.webp"
                   onChange={(event) =>
                     onChangeDocumentFile(
                       documentItem.kind,
@@ -1323,12 +1323,13 @@ function StepFrame({
       >
         <div className="grid gap-3">
           {extractionState === "failed" ? (
-            <StatusMessage title="Não foi possível ler os documentos" tone="warning">
+            <StatusMessage title="Não foi possível ler os documentos automaticamente" tone="warning">
               <p>
-                Não conseguimos ler todos os dados automaticamente. Você ainda
-                pode continuar preenchendo manualmente.
+                {extractionError?.errorCode === "pdf_requires_image"
+                  ? "Os documentos foram recebidos como PDF. Envie o passaporte e o comprovante como imagem (JPG ou PNG) para ativar a leitura automática. Você ainda pode continuar preenchendo manualmente."
+                  : "Não conseguimos ler todos os dados automaticamente. Você ainda pode continuar preenchendo manualmente."}
               </p>
-              {extractionError ? (
+              {extractionError && extractionError.errorCode !== "pdf_requires_image" ? (
                 <p className="mt-2 font-mono text-xs text-muted-foreground">
                   Código: {extractionError.errorCode}
                   {extractionError.details
