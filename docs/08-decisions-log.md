@@ -843,3 +843,22 @@ Result:
 Reason:
 
 Phase 8.5 improved onboarding UX. The next product step is preparing deterministic, safe onboarding structure for future AI-assisted flows without making unimplemented AI claims.
+
+### 2026-05-13: Document-Assisted Flow — Documents Collected at Step 3
+
+Decision:
+
+When the customer selects `document_assisted` at step 2 (entry mode), documents (passport + address proof) are collected immediately at step 3, before any other onboarding data. The `manual` path continues to collect documents at step 11 (after all LLC/EIN data), preserving Phase 8.5 behavior.
+
+Result:
+
+- `document_assisted` flow order: service → entry_mode → documents → applicant_contact → llc_name → business_activity → member_count → member_data → business_address → registered_agent → ein_questions → review → approval → confirmation (14 steps, documents at 3).
+- `manual` flow order: service → entry_mode → applicant_contact → llc_name → business_activity → member_count → member_data → business_address → registered_agent → ein_questions → documents → review → approval → confirmation (14 steps, documents at 11).
+- `stepOffset = isDocumentAssisted ? 1 : 0` applied to all middle steps so step numbers are always consistent.
+- Total steps is 14 for both modes.
+- Disclosure message on documents step does not mention OpenAI; informs customer that documents facilitate remaining steps.
+
+Reason:
+
+The purpose of document-assisted mode is to use uploaded documents to pre-facilitate the remaining onboarding steps. Collecting documents first — before asking for applicant name, address, LLC data — makes the intended flow coherent. Collecting them late (as in the manual path) negates the facilitation purpose.
+

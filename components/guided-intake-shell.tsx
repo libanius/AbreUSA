@@ -1012,16 +1012,15 @@ function StepFrame({
     return (
       <StepCard
         badge="Rascunho local"
-        eyebrow="Passo 11 · Documentos"
+        eyebrow={`Passo ${currentStep} · Documentos`}
         title="Envie os documentos necessários"
       >
         <div className="grid gap-3">
           {onboardingEntryMode === "document_assisted" ? (
-            <StatusMessage title="Análise automática de documentos" tone="info">
+            <StatusMessage title="Documentos para facilitar o cadastro" tone="info">
               <p>
-                Após enviar os arquivos, o assistente de IA (OpenAI) irá
-                extrair os dados do passaporte e do comprovante de endereço.
-                Você revisará e confirmará todos os campos antes de continuar.
+                Envie o passaporte e o comprovante de endereço agora. Os
+                documentos facilitarão o preenchimento dos próximos campos.
               </p>
             </StatusMessage>
           ) : null}
@@ -1236,11 +1235,7 @@ function StepFrame({
           backLabel="Voltar"
           nextDisabled={!isDocumentCollectionComplete}
           nextLabel={
-            isDocumentCollectionComplete
-              ? onboardingEntryMode === "document_assisted"
-                ? "Analisar documentos com IA"
-                : "Continuar"
-              : "Anexar documentos"
+            isDocumentCollectionComplete ? "Continuar" : "Anexar documentos"
           }
           onBack={onBackFromDocuments}
           onNext={onContinueFromDocuments}
@@ -2524,37 +2519,36 @@ export function GuidedIntakeShell() {
   const [approvedOrderPayload, setApprovedOrderPayload] =
     useState<LocalOrderPayload | null>(null);
   const isDocumentAssisted = onboardingEntryMode === "document_assisted";
-  const totalSteps = isDocumentAssisted ? 15 : 14;
+  const totalSteps = 14;
   const progressItems = isDocumentAssisted
-    ? ["Serviço", "Modo", "Contato", "Empresa", "Atividade", "Sócios", "Dados", "Endereço", "Agente", "EIN", "Documentos", "Extração IA", "Revisão", "Aprovação", "Confirmação"]
+    ? ["Serviço", "Modo", "Documentos", "Contato", "Empresa", "Atividade", "Sócios", "Dados", "Endereço", "Agente", "EIN", "Revisão", "Aprovação", "Confirmação"]
     : ["Serviço", "Modo", "Contato", "Empresa", "Atividade", "Sócios", "Dados", "Endereço", "Agente", "EIN", "Documentos", "Revisão", "Aprovação", "Confirmação"];
+  const stepOffset = isDocumentAssisted ? 1 : 0;
   const currentStep =
     activeStep === "confirmation"
-      ? totalSteps
+      ? 14
       : activeStep === "approval"
-      ? totalSteps - 1
+      ? 13
       : activeStep === "review"
-      ? totalSteps - 2
-      : activeStep === "extraction_review"
       ? 12
       : activeStep === "documents"
-      ? 11
+      ? (isDocumentAssisted ? 3 : 11)
       : activeStep === "ein_questions"
-      ? 10
+      ? 10 + stepOffset
       : activeStep === "registered_agent"
-      ? 9
+      ? 9 + stepOffset
       : activeStep === "business_address"
-      ? 8
+      ? 8 + stepOffset
       : activeStep === "member_data"
-      ? 7
+      ? 7 + stepOffset
       : activeStep === "member_count"
-      ? 6
+      ? 6 + stepOffset
       : activeStep === "business_activity"
-      ? 5
+      ? 5 + stepOffset
       : activeStep === "llc_name"
-      ? 4
+      ? 4 + stepOffset
       : activeStep === "applicant_contact"
-      ? 3
+      ? 3 + stepOffset
       : activeStep === "entry_mode"
       ? 2
       : 1;
@@ -2596,7 +2590,7 @@ export function GuidedIntakeShell() {
 
   function handleSelectOnboardingEntryMode(mode: OnboardingEntryMode) {
     setOnboardingEntryMode(mode);
-    setActiveStep("applicant_contact");
+    setActiveStep(mode === "document_assisted" ? "documents" : "applicant_contact");
   }
 
   function handleResetService() {
@@ -2730,35 +2724,9 @@ export function GuidedIntakeShell() {
     };
   }
 
-  async function handleContinueFromDocuments() {
+  function handleContinueFromDocuments() {
     if (onboardingEntryMode === "document_assisted") {
-      setExtractionState("loading");
-      setActiveStep("extraction_review");
-      try {
-        const formData = new FormData();
-        if (documentFiles.passport) formData.append("passport", documentFiles.passport);
-        if (documentFiles.addressProof) formData.append("addressProof", documentFiles.addressProof);
-        const response = await fetch("/api/extract-document", { method: "POST", body: formData });
-        if (!response.ok) throw new Error("extraction failed");
-        const result = await response.json();
-        setDocuments((prev) => ({
-          ...prev,
-          extraction: {
-            fullName: result.passport?.fullName ?? "",
-            dateOfBirth: result.passport?.dateOfBirth ?? "",
-            nationality: result.passport?.nationality ?? "",
-            passportNumber: result.passport?.passportNumber ?? "",
-            passportExpiration: result.passport?.passportExpiration ?? "",
-            streetAddress: result.address?.streetAddress ?? "",
-            city: result.address?.city ?? "",
-            state: result.address?.state ?? "",
-            zip: result.address?.zipCode ?? "",
-          },
-        }));
-        setExtractionState("done");
-      } catch {
-        setExtractionState("failed");
-      }
+      setActiveStep("applicant_contact");
     } else {
       setActiveStep("review");
     }
@@ -2885,7 +2853,7 @@ export function GuidedIntakeShell() {
             }
             onContinueToLlcName={() => setActiveStep("llc_name")}
             onBackToApplicantContact={() => setActiveStep("applicant_contact")}
-            onBackToEntryMode={() => setActiveStep("entry_mode")}
+            onBackToEntryMode={() => setActiveStep(isDocumentAssisted ? "documents" : "entry_mode")}
             approvedOrderPayload={approvedOrderPayload}
             businessActivity={businessActivity}
             businessAddress={businessAddress}
@@ -2908,7 +2876,11 @@ export function GuidedIntakeShell() {
             onBackToReview={() => setActiveStep("review")}
             onBackFromDocuments={() =>
               setActiveStep(
-                selectedService === "complete" ? "ein_questions" : "registered_agent",
+                isDocumentAssisted
+                  ? "entry_mode"
+                  : selectedService === "complete"
+                  ? "ein_questions"
+                  : "registered_agent",
               )
             }
             onChangeApprovalConfirmed={setApprovalConfirmed}
@@ -2929,11 +2901,15 @@ export function GuidedIntakeShell() {
             onContinueToBusinessAddress={() => setActiveStep("business_address")}
             onContinueToApproval={() => setActiveStep("approval")}
             onContinueToConfirmation={handleContinueToConfirmation}
-            onContinueToDocuments={() => setActiveStep("documents")}
+            onContinueToDocuments={() => setActiveStep(isDocumentAssisted ? "review" : "documents")}
             onContinueToEinQuestions={() => setActiveStep("ein_questions")}
             onContinueFromDocuments={handleContinueFromDocuments}
             onConfirmExtraction={() => setActiveStep("review")}
-            onBackFromReview={() => setActiveStep(isDocumentAssisted ? "extraction_review" : "documents")}
+            onBackFromReview={() => setActiveStep(
+              isDocumentAssisted
+                ? selectedService === "complete" ? "ein_questions" : "registered_agent"
+                : "documents"
+            )}
             extractionState={extractionState}
             onContinueToMemberData={() => setActiveStep("member_data")}
             onContinueToMemberCount={() => setActiveStep("member_count")}

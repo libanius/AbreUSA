@@ -1950,6 +1950,23 @@ Completed Phase 9 tasks:
   - Admin order detail displays onboarding entry mode and extraction readiness fields.
   - Verification passed: `npm run lint`, `npm run build`, `npx supabase db push`, and `/api/orders` persistence/upload regression with `AUS-2026-0017`.
 
+- Task ID: `P9-T03`.
+- Title: Correct document-assisted flow — documents move to step 3.
+- Result:
+  - App Spine (04-user-flows, 07-roadmap, 09-build-status, 08-decisions-log) updated before code.
+  - `handleSelectOnboardingEntryMode`: document_assisted routes to `documents` step; manual routes to `applicant_contact`.
+  - `handleContinueFromDocuments`: document_assisted continues to `applicant_contact`; manual continues to `review`.
+  - `onBackFromDocuments`: document_assisted backs to `entry_mode`; manual backs to `ein_questions`/`registered_agent`.
+  - `onBackToEntryMode` (registered_agent step): document_assisted backs to `documents`; manual backs to `entry_mode`.
+  - `onBackFromReview`: document_assisted backs to `ein_questions`/`registered_agent`; manual backs to `documents`.
+  - `totalSteps` fixed to 14 for both modes (no more 15-step document_assisted mode).
+  - `progressItems` reordered: document_assisted shows Documentos at position 3; manual shows Documentos at position 11.
+  - `currentStep` mapping uses `stepOffset = isDocumentAssisted ? 1 : 0` for all middle steps.
+  - Documents step disclosure message updated: informs customer that documents facilitate remaining steps (no OpenAI mention).
+  - Documents step Continue button: "Continuar" when collection complete, "Anexar documentos" otherwise.
+  - Documents step eyebrow: dynamic `Passo \${currentStep} · Documentos`.
+  - Verification: `npm run lint`, `npm run build` passed.
+
 Potential additions (post-P8-T02):
 
 - Payment processing.

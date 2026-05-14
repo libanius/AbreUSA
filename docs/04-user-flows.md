@@ -87,9 +87,9 @@ The current prototype branches this service through LLC-style steps. Production 
 
 ## Phase 9: AI-Ready Onboarding Foundation
 
-Status: Current planning and implementation foundation.
+Status: Complete locally (P9-T01 through P9-T03).
 
-Phase 9 prepares AbreUSA for future document-assisted and conversational onboarding without implementing real OCR, OpenAI API calls, autonomous AI decisions, passport parsing, or proof-of-residence parsing.
+Phase 9 implements the entry mode foundation and corrects the document-assisted flow so documents are collected immediately after mode selection.
 
 Post-diagnosis choice:
 
@@ -98,23 +98,25 @@ After the customer selects or receives the recommended service, the flow offers 
 1. `document_assisted`: "Enviar documentos para facilitar o preenchimento".
 2. `manual`: "Preencher manualmente".
 
-Document-assisted path:
+Document-assisted path (P9-T03 corrected flow):
 
+- After selecting `document_assisted` at step 2, the customer immediately proceeds to document upload at step 3.
+- Documents (passport + address proof) are collected before applicant contact and LLC data entry, facilitating the remaining steps.
 - Uses the existing secure document upload and server-side persistence infrastructure.
-- Prepares the UI/data model for future extraction review.
-- Clearly states that automatic OCR is not active yet.
-- Continues to manual and review steps as needed.
-- Requires the customer to review and edit any future extracted values before final submission.
+- A disclosure message informs the customer that documents will facilitate the remaining onboarding steps.
+- After documents, flow continues: applicant contact → LLC name → business activity → members → address → Registered Agent → EIN questions → review → approval → confirmation.
+- Total steps: 14 (documents at step 3, all middle steps offset by +1).
 
 Manual path:
 
-- Continues through the existing guided manual flow.
-- Preserves Phase 8.5 behavior: simple card choices auto-advance, while input/upload/review steps require explicit Continue/Confirm.
+- After selecting `manual` at step 2, the customer proceeds directly to applicant contact at step 3.
+- Follows the standard guided flow: applicant contact → LLC name → business activity → members → address → Registered Agent → EIN questions → documents → review → approval → confirmation.
+- Total steps: 14 (documents at step 11).
 
 Review principle:
 
-- Any future extracted data must be shown in an editable review surface before approval.
 - Customer approval remains required before AbreUSA review and before any government submission.
+- Any extracted data must be shown in an editable review surface before approval (future extraction_review step).
 
 ## Onboarding Architecture Discovery
 

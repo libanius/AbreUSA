@@ -10,25 +10,23 @@ Phase 9 foundation is implemented locally and verified. Source of truth: GitHub 
 
 ## Last Completed Task
 
-Task ID: `P9-T02`
+Task ID: `P9-T03`
 
-Title: Implement real AI OCR document extraction via OpenAI GPT-4o Vision.
+Title: Correct document-assisted flow — documents move to step 3.
 
 Result:
 
-- App Spine updated before implementation: DG-006 confirmed, 03-requirements, 05-platform-strategy, 07-roadmap, 09-build-status updated.
-- New server-side route: `POST /api/extract-document` receives FormData with passport and addressProof files.
-- New lib: `lib/extract-document.ts` calls OpenAI GPT-4o Vision API separately for passport and address proof.
-- Passport extraction targets: full name, date of birth, nationality, passport number, expiration date (YYYY-MM-DD).
-- Address extraction targets: street address, city, US state code, ZIP code.
-- New `extraction_review` step added to the guided flow (document-assisted path only, step 12 of 15).
-- Documents step now shows disclosure message for document-assisted mode instead of "OCR not active" placeholder.
-- Documents step Continue button triggers real OCR for document-assisted path; manual path goes directly to review.
-- extraction_review step shows loading spinner during API call, pre-filled editable fields on success, manual entry on failure.
-- extractionState drives flow: `idle`, `loading`, `done`, `failed`.
-- `buildLocalOrderPayload` sets `documentExtractionStatus`, `extractedApplicantData`, `extractedAddressData`, and `userConfirmedExtractedData` based on extraction outcome.
-- totalSteps is 15 for document-assisted mode, 14 for manual mode. Progress sidebar and step counter reflect mode.
-- `OPENAI_API_KEY` added to `.env.example`.
+- App Spine (04-user-flows, 07-roadmap, 09-build-status, 08-decisions-log) updated before code.
+- When customer selects `document_assisted` at step 2, flow immediately advances to document upload at step 3.
+- After documents, flow continues through applicant contact, LLC data, and review — all middle steps offset by +1.
+- `manual` path unchanged: documents remain at step 11, total 14 steps.
+- `totalSteps` fixed to 14 for both modes (P9-T02 incorrectly set 15 for document_assisted).
+- `progressItems` reordered: document_assisted lists Documentos at position 3; manual lists Documentos at position 11.
+- `stepOffset = isDocumentAssisted ? 1 : 0` applied to all middle steps for consistent numbering.
+- Back navigation corrected for documents, entry_mode, registered_agent, and review steps in both modes.
+- Documents step disclosure message updated to inform customer that documents facilitate remaining steps.
+- Documents step Continue button: "Continuar" / "Anexar documentos" (no OCR trigger in this step).
+- Documents step eyebrow is now dynamic based on currentStep.
 - Verification passed: `npm run lint`, `npm run build`.
 
 ## Current Task
@@ -36,6 +34,8 @@ Result:
 Task ID: `None active`
 
 Title: Awaiting next owner/operator priority.
+
+P9-T03 (flow correction) is complete and locally verified. Phase 9 is complete locally. Next step is to commit and redeploy to production.
 
 ## Next Task
 
@@ -86,12 +86,14 @@ Commit the completed Phase 9 state, then choose the next owner/operator-directed
 - Phase 9 complete locally:
   - P9-T01: AI-ready onboarding entry mode foundation implemented from GitHub issue #2 and verified with `AUS-2026-0017`.
   - P9-T02: Real AI OCR document extraction implemented via OpenAI GPT-4o Vision. Lint and build verified.
+  - P9-T03: Document-assisted flow corrected. Documents now collected at step 3 (immediately after entry mode). totalSteps fixed to 14 for both modes. stepOffset pattern applied to all middle steps. Lint and build verified.
 
 ## What Is Implemented
 
 - Full guided 14-step intake for Complete Package (LLC + EIN) and Florida LLC paths.
 - Post-service onboarding entry mode choice supports `manual` and `document_assisted`.
-- Document-assisted mode prepares the upload/review path for future extraction but does not claim OCR is active.
+- Document-assisted mode collects documents immediately at step 3 (before applicant contact and LLC data). Disclosure message informs customer that documents facilitate the remaining onboarding steps.
+- Manual mode continues through the existing guided flow with documents at step 11.
 - Applicant contact step (name, email, phone, residential address) — step 3.
 - Company principal address can reuse the applicant residential address through a checkbox.
 - Persisted order data stores the copied LLC principal address plus `principal_same_as_applicant_address`.
@@ -210,7 +212,7 @@ Commit the completed Phase 9 state, then choose the next owner/operator-directed
 
 ## Exact Next Step To Resume
 
-Choose the next owner/operator-directed Post-MVP priority. Current candidates include payment, customer dashboard, AI OCR/document extraction, branded sender/domain work, retention Cron automation, EIN-only flow, Registered Agent-only flow, or broader onboarding evolution.
+Commit the completed Phase 9 state (P9-T01 through P9-T03), then choose the next owner/operator-directed Post-MVP priority. Candidates: production redeploy, payment, customer dashboard, branded sender/domain work, retention Cron automation, EIN-only flow, Registered Agent-only flow, or broader onboarding evolution.
 
 ## Blockers And Risks
 
