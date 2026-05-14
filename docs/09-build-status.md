@@ -224,13 +224,13 @@ Verify P10-robustness in production with a real PNG and JPEG mobile photo upload
 
 ## Exact Next Step To Resume
 
-1. Choose the next Phase 11 customer dashboard slice.
-2. Recommended: define `P11-T04` for authenticated customer access or magic-link strategy before adding customer document downloads or correction workflows.
-3. Update `/docs/07-roadmap.md`, `/docs/09-build-status.md`, and `/progress/index.html` before implementation.
+1. Implement `P11-T04`: Full authenticated customer account (email + password) via Supabase Auth.
+2. Scope is documented in `/docs/07-roadmap.md` under Phase 11.
+3. DG-007 is now confirmed for post-approval authenticated access. Draft resume remains deferred.
 
 Resume command prompt:
 
-Read `AGENTS.md`, `/docs/START-HERE.md`, `/docs/07-roadmap.md`, and this file. Resume by choosing and documenting the next Phase 11 customer dashboard slice. Recommended: `P11-T04` authenticated customer access or magic-link strategy.
+Read `AGENTS.md`, `/docs/START-HERE.md`, `/docs/07-roadmap.md`, and this file. Implement `P11-T04`: customer account signup at `/register`, login at `/dashboard/login`, password reset, authenticated `/dashboard` route with Supabase RLS by email, and protocol+email fallback.
 
 ## Blockers And Risks
 

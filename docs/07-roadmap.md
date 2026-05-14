@@ -2172,3 +2172,43 @@ Stop checkpoint:
 - Date: 2026-05-14.
 - Phase 11 customer dashboard lookup MVP is complete, rate-limited, deployed, and production-verified.
 - Exact next roadmap action: choose the next customer dashboard slice. Recommended: define `P11-T04` for authenticated customer access or magic-link strategy before adding customer document downloads or correction workflows.
+
+
+Phase 11 authenticated customer account task:
+
+- Task ID: `P11-T04`.
+- Title: Full authenticated customer account (email + password).
+- Purpose:
+  - Allow customers to create a persistent account linked to their order by email.
+  - Provide session-based dashboard access without re-entering protocol + email on every visit.
+  - Future-proof the dashboard for document download, correction workflows, and multi-order support.
+- Scope:
+  - Customer signup at `/register` (email + password via Supabase Auth).
+  - Customer login at `/dashboard/login`.
+  - Email verification flow (Supabase Auth sends verification email).
+  - Password reset flow.
+  - Authenticated `/dashboard` route:
+    - When authenticated: skip protocol + email form, show orders by email match.
+    - When not authenticated: show existing protocol + email lookup form as fallback.
+  - Orders linked by `applicant_email = auth.email()` via Supabase RLS.
+  - Customer-facing UI Portuguese-first throughout.
+  - Admin portal and service-role routes are unaffected.
+- Out of scope:
+  - Customer document download.
+  - Customer correction or missing-information workflow.
+  - Draft resume (deferred via DG-007).
+  - Social auth (Google, GitHub).
+  - Customer editing approved orders.
+  - Admin-customer messaging within the portal.
+- Acceptance criteria:
+  - Customer can create an account with email + password.
+  - Customer receives and confirms a verification email.
+  - Customer can log in and see their order(s) matched by email.
+  - Customer can reset their password via Supabase Auth.
+  - Authenticated dashboard shows the same safe summary as protocol + email lookup.
+  - Non-authenticated protocol + email fallback still works.
+  - Supabase RLS policies restrict customers to their own orders only.
+  - Admin portal and service-role routes are unaffected.
+  - `npm run lint` and `npm run build` pass.
+  - Production deployment and verification recorded.
+- Status: Planned.

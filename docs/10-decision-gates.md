@@ -167,24 +167,37 @@ P9-T02 confirmation:
 
 Category: UX, persistence, account model.
 
-Status: Proposed.
+Status: Confirmed (post-approval authenticated access). Deferred (draft resume).
 
-Decision needed:
+Decision:
 
-- Whether customers can save drafts and resume later.
-- Whether resume uses account login, secure magic link, protocol lookup, or admin-assisted recovery.
+- Authenticated post-approval customer dashboard: confirmed via full email + password account using Supabase Auth.
+- Customer account is linked to order by applicant email (`applicant_email = auth.email()`).
+- Account signup available at `/register` anytime after order submission.
+- Customer login at `/dashboard/login`.
+- Password reset via Supabase Auth built-in OTP/reset flow.
+- Protocol + email lookup form remains as non-authenticated fallback.
+- Draft resume (save in-progress intake and resume later) remains deferred as a separate future decision.
 
 Blocks:
 
-- Progressive onboarding UX.
-- Draft persistence.
-- Customer dashboard assumptions.
+- Draft persistence (still unresolved).
+- Progressive onboarding UX (still unresolved).
 
 P8-T04 proposed direction:
 
 - If implemented, save/resume should begin after applicant contact is captured.
 - Preferred options to evaluate: secure magic link or authenticated customer account.
 - Protocol lookup alone is not enough for resume access because orders contain sensitive data.
+
+P11-T04 confirmation:
+
+- Full authenticated customer account selected over magic-link OTP.
+- Rationale: better for repeat-access customers; no per-visit email dependency; consistent session model.
+- Supabase Auth (same project as admin, different RLS role) handles customer auth.
+- Admin portal uses service-role key (bypasses RLS) — unaffected by customer RLS policies.
+- Customer RLS restricts order reads to rows where `applicant_email = auth.email()`.
+- Draft resume remains a separate deferred decision.
 
 ### DG-008: State-Based Onboarding Model
 

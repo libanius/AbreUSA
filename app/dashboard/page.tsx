@@ -1,17 +1,19 @@
 import Link from "next/link";
 import { headers } from "next/headers";
+import { createSupabaseServerComponentClient } from "@/lib/supabase-ssr";
 import { checkCustomerDashboardRateLimit } from "@/lib/customer-dashboard-rate-limit";
-import { getCustomerDashboardOrder, type CustomerDashboardOrder } from "@/lib/customer-dashboard";
+import {
+  getCustomerDashboardOrder,
+  getCustomerDashboardOrdersByEmail,
+  type CustomerDashboardOrder,
+} from "@/lib/customer-dashboard";
+import CustomerLogoutButton from "./_components/logout-button";
 
 export const dynamic = "force-dynamic";
 
 type DashboardSearchParams = {
   protocol?: string;
   email?: string;
-};
-
-type RateLimitedLookup = {
-  limited: boolean;
 };
 
 const STATUS_COLORS: Record<string, string> = {
@@ -119,7 +121,6 @@ function getClientIp(requestHeaders: Headers) {
   if (forwardedFor) {
     return forwardedFor.split(",")[0]?.trim() || "unknown";
   }
-
   return requestHeaders.get("x-real-ip") ?? "unknown";
 }
 
@@ -134,9 +135,9 @@ function DashboardSummary({ order }: { order: CustomerDashboardOrder }) {
             <p className="text-xs font-semibold uppercase tracking-wide text-green-700">
               {order.serviceLabel}
             </p>
-            <h1 className="mt-2 font-mono text-2xl font-bold text-gray-950">
+            <h2 className="mt-2 font-mono text-2xl font-bold text-gray-950">
               {order.protocolNumber}
-            </h1>
+            </h2>
             <p className="mt-1 text-sm text-gray-600">
               Pedido recebido em {formatDate(order.createdAt)}
             </p>
@@ -164,7 +165,10 @@ function DashboardSummary({ order }: { order: CustomerDashboardOrder }) {
         {order.documents.length > 0 ? (
           <div className="divide-y divide-gray-100">
             {order.documents.map((document) => (
-              <div key={`${document.type}-${document.label}`} className="flex flex-wrap items-center justify-between gap-3 py-3 first:pt-0 last:pb-0">
+              <div
+                key={`${document.type}-${document.label}`}
+                className="flex flex-wrap items-center justify-between gap-3 py-3 first:pt-0 last:pb-0"
+              >
                 <div>
                   <p className="text-sm font-medium text-gray-950">{document.label}</p>
                   <p className="mt-1 text-xs text-gray-500">{document.retentionLabel}</p>
@@ -188,9 +192,14 @@ function DashboardSummary({ order }: { order: CustomerDashboardOrder }) {
         {order.generatedForms.length > 0 ? (
           <div className="space-y-3">
             {order.generatedForms.map((form) => (
-              <div key={form.type} className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-gray-100 px-3 py-3">
+              <div
+                key={form.type}
+                className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-gray-100 px-3 py-3"
+              >
                 <p className="text-sm font-medium text-gray-950">{form.label}</p>
-                <span className={`rounded-full px-3 py-1 text-xs font-semibold ${form.customerApproved ? "bg-green-50 text-green-800" : "bg-gray-100 text-gray-700"}`}>
+                <span
+                  className={`rounded-full px-3 py-1 text-xs font-semibold ${form.customerApproved ? "bg-green-50 text-green-800" : "bg-gray-100 text-gray-700"}`}
+                >
                   {form.customerApproved ? "Aprovado" : "Em preparacao"}
                 </span>
               </div>
@@ -219,7 +228,11 @@ function DashboardSummary({ order }: { order: CustomerDashboardOrder }) {
               <div>
                 <p className="text-sm font-medium text-gray-950">{item.label}</p>
                 <p className="text-xs text-gray-500">
-                  {item.state === "current" ? "Etapa atual" : item.state === "done" ? "Concluido" : "Proxima etapa"}
+                  {item.state === "current"
+                    ? "Etapa atual"
+                    : item.state === "done"
+                      ? "Concluido"
+                      : "Proxima etapa"}
                 </p>
               </div>
             </li>
@@ -235,11 +248,57 @@ export default async function CustomerDashboardPage({
 }: {
   searchParams: Promise<DashboardSearchParams>;
 }) {
+  // Check authenticated session first
+  const supabaseAuth = await createSupabaseServerComponentClient();
+  const {
+    data: { user },
+  } = await supabaseAuth.auth.getUser();
+
+  // Authenticated path — show all orders for this email
+  if (user?.email) {
+    const orders = await getCustomerDashboardOrdersByEmail(user.email);
+
+    return (
+      <main className="min-h-screen bg-gray-50 px-4 py-6 text-gray-950 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-5xl space-y-5">
+          <header className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wide text-green-700">
+                AbreUSA
+              </p>
+              <h1 className="mt-1 text-2xl font-bold text-gray-950">Dashboard do cliente</h1>
+              <p className="mt-1 text-sm text-gray-500">{user.email}</p>
+            </div>
+            <CustomerLogoutButton />
+          </header>
+
+          {orders.length === 0 ? (
+            <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4 text-sm leading-6 text-yellow-900">
+              Nenhum pedido encontrado para este e-mail. Se voce realizou um pedido, confirme se o
+              e-mail da conta e o mesmo usado no onboarding ou{" "}
+              <Link href="/dashboard" className="font-semibold underline">
+                consulte pelo protocolo
+              </Link>
+              .
+            </div>
+          ) : (
+            <div className="space-y-8">
+              {orders.map((order) => (
+                <DashboardSummary key={order.protocolNumber} order={order} />
+              ))}
+            </div>
+          )}
+        </div>
+      </main>
+    );
+  }
+
+  // Unauthenticated path — show lookup form with rate-limited lookup
   const params = await searchParams;
   const protocol = typeof params.protocol === "string" ? params.protocol.trim() : "";
   const email = typeof params.email === "string" ? params.email.trim() : "";
   const hasLookup = Boolean(protocol && email);
-  let rateLimit: RateLimitedLookup | null = null;
+  let rateLimited = false;
   let order: CustomerDashboardOrder | null = null;
 
   if (hasLookup) {
@@ -253,9 +312,7 @@ export default async function CustomerDashboardPage({
     if (rateLimitResult.allowed) {
       order = await getCustomerDashboardOrder({ protocol, email });
     } else {
-      rateLimit = {
-        limited: true,
-      };
+      rateLimited = true;
     }
   }
 
@@ -272,21 +329,24 @@ export default async function CustomerDashboardPage({
               Acompanhe o status do seu pedido com uma consulta simples e segura.
             </p>
           </div>
-          <Link href="/" className="text-sm font-semibold text-green-700 hover:underline">
-            Voltar ao onboarding
+          <Link
+            href="/dashboard/login"
+            className="text-sm font-semibold text-green-700 hover:underline"
+          >
+            Entrar com conta
           </Link>
         </header>
 
         <LookupForm protocol={protocol} email={email} />
 
-        {rateLimit?.limited ? (
+        {rateLimited ? (
           <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4 text-sm leading-6 text-yellow-900">
             Muitas tentativas de consulta foram feitas em pouco tempo. Aguarde alguns minutos e
             tente novamente.
           </div>
         ) : null}
 
-        {hasLookup && !order && !rateLimit?.limited ? (
+        {hasLookup && !order && !rateLimited ? (
           <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4 text-sm leading-6 text-yellow-900">
             Nao encontramos um pedido com esse protocolo e e-mail. Confira os dados informados ou
             fale com a equipe AbreUSA.
