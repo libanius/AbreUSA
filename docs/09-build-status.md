@@ -8,24 +8,25 @@ Phases 1–9 are complete. Phase 10 is implemented, deployed to production, and 
 
 ## Last Completed Task
 
-Task ID: `P10-T05`
+Task ID: `P10-T06`
 
-Title: Production redeploy and OCR route verification.
+Title: Production document-assisted order persistence verification.
 
 Result:
 
-- Production env now includes `OPENAI_API_KEY`.
-- Local `npm run build` passed before deploy.
-- Vercel production deploy completed successfully.
-- Deployment ID: `dpl_8UtvGpSfHWJGM5zV1DPDKyG9UCtr`.
-- Production deployment URL: `https://abre-oy9dnh2vh-abre-usa-s-projects.vercel.app`.
-- Production alias: `https://abre-usa.vercel.app`.
-- `npx vercel inspect https://abre-usa.vercel.app` reports status `Ready`.
-- Production health checks passed:
-  - `/` returns `200`.
-  - `/admin/login` returns `200`.
-  - `/admin/orders` redirects unauthenticated users to `/admin/login`.
-- Production `/api/extract-document` verified with a generated JPEG test image. GPT-4o Vision returned passport and address fields with `confidence: 100`.
+- Production `/api/orders` verified with a document-assisted Complete Package payload.
+- Test protocol: `AUS-2026-0020`.
+- Persisted order values verified in Supabase:
+  - `onboarding_entry_mode = document_assisted`.
+  - `document_extraction_status = completed`.
+  - `extraction_confidence = 100`.
+  - `user_confirmed_extracted_data = true`.
+  - `extracted_applicant_data` and `extracted_address_data` stored.
+- Applicant residential address persisted.
+- LLC principal address persisted with `principal_same_as_applicant_address = true`.
+- Two private document rows persisted:
+  - `passport` / `phase10-passport.jpg`.
+  - `us_address_proof` / `phase10-address-proof.jpg`.
 
 ## Current Task
 
@@ -99,6 +100,7 @@ Choose the next owner/operator-directed priority. Candidates: payment, customer 
   - P10-T03: Prefill EIN Responsible Party from primary member. EIN step shows "Usar o sócio principal como responsável pelo EIN" checkbox when primary member has a name. Prefills `responsiblePartyName` and optionally `responsiblePartyPassportNumber` from extraction. Lint and build verified.
   - P10-T04: Approval loading state and error retry. Button shows "Processando...", loading StatusMessage shown during persistence, error StatusMessage + retry on failure. `handleContinueToConfirmation` fail-closed: only navigates to confirmation on Supabase success. Lint and build verified.
   - P10-T05: Production redeploy complete. `https://abre-usa.vercel.app` now points to `dpl_8UtvGpSfHWJGM5zV1DPDKyG9UCtr`; home/admin health checks passed; production OCR route verified with JPEG extraction and `confidence: 100`.
+  - P10-T06: Production document-assisted order persistence verified through `/api/orders` with `AUS-2026-0020`; extracted data, address reuse, EIN details, generated forms, and two private document records persisted.
 
 ## What Is Implemented
 

@@ -2026,6 +2026,14 @@ Completed tasks:
 - Title: Approval step loading state and error retry.
 - Result: Button shows "Processando..." during persistence. Loading StatusMessage displayed. `handleContinueToConfirmation` is fail-closed: only navigates to confirmation on Supabase success; sets `persistError` and stays on approval step on failure for retry. Lint and build verified.
 
+- Task ID: `P10-T05`.
+- Title: Production redeploy and OCR route verification.
+- Result: Phase 10 deployed to production at `https://abre-usa.vercel.app` with deployment `dpl_8UtvGpSfHWJGM5zV1DPDKyG9UCtr`. Home/admin health checks passed. Production `/api/extract-document` returned passport/address data from a generated JPEG test image with `confidence: 100`.
+
+- Task ID: `P10-T06`.
+- Title: Production document-assisted order persistence verification.
+- Result: Production `/api/orders` persisted a document-assisted Complete Package test order with protocol `AUS-2026-0020`. Supabase verification confirmed `document_extraction_status = completed`, `extraction_confidence = 100`, extracted applicant/address JSON, applicant residential address, reused LLC principal address, EIN details, generated forms, and two private document records.
+
 Stop checkpoint:
 
 - Date: 2026-05-14.
@@ -2037,4 +2045,5 @@ Stop checkpoint:
   - `/admin/login` returns `200`.
   - `/admin/orders` redirects unauthenticated users to `/admin/login`.
   - `/api/extract-document` returns extracted passport/address data from a generated JPEG test image with `confidence: 100`.
+  - `/api/orders` persists a document-assisted Complete Package order with private document uploads (`AUS-2026-0020`).
 - Exact next roadmap action: choose the next owner/operator-directed Post-MVP priority and update the App Spine before implementation.
