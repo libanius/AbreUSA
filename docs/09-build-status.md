@@ -31,15 +31,16 @@ Result:
 
 ## Current Task
 
-Task ID: `P10-T03`
+Task ID: `P10-T04`
 
-Title: Prefill EIN Responsible Party from primary member/sócio data.
+Title: Approval step loading state, "Processando..." feedback, and error retry.
 
 Scope:
-- In ein_questions step: when primary member has a name, show "Usar o sócio principal como responsável pelo EIN" checkbox.
-- On check: prefill responsiblePartyName from memberData[0].fullName; prefill responsiblePartyPassportNumber from documents.extraction.passportNumber if available.
-- Data remains editable; fallback to manual form when no member data.
-- Source of truth: GitHub issue #3, comment 2026-05-14T03:59:35Z.
+- handleContinueToConfirmation: on failure, set persistError state and stay on approval step (do not navigate to confirmation); on success, navigate as before.
+- Approval step: show loading StatusMessage when isPersisting; show error StatusMessage with retry option when persistError is set.
+- nextLabel: "Processando..." when isPersisting, else existing labels.
+- Prevents double-submit; re-enables button on error for retry.
+- Source of truth: GitHub issue #3, comment 2026-05-14T04:06:52Z.
 
 ## Next Task
 

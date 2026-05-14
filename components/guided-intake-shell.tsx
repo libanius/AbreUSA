@@ -517,6 +517,7 @@ function StepFrame({
   onBackFromReview,
   extractionState,
   extractionError,
+  persistError,
   onContinueToMemberData,
   onContinueToMemberCount,
   onContinueToRegisteredAgent,
@@ -587,6 +588,7 @@ function StepFrame({
   onBackFromReview: () => void;
   extractionState: ExtractionState;
   extractionError: { errorCode: string; message: string; details?: string } | null;
+  persistError: string | null;
   onContinueToMemberData: () => void;
   onContinueToMemberCount: () => void;
   onContinueToRegisteredAgent: () => void;
@@ -755,6 +757,21 @@ function StepFrame({
             </p>
           </StatusMessage>
 
+          {isPersisting ? (
+            <StatusMessage title="Estamos finalizando seu pedido" tone="info">
+              <p>Estamos finalizando seu pedido e gerando sua confirmação.</p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Isso pode levar alguns segundos. Não feche esta página.
+              </p>
+            </StatusMessage>
+          ) : null}
+
+          {persistError ? (
+            <StatusMessage title="Erro ao finalizar pedido" tone="warning">
+              <p>{persistError}</p>
+            </StatusMessage>
+          ) : null}
+
           <ReviewSummary
             items={[
               { label: "Serviço", value: selectedLabel ?? "Pendente" },
@@ -796,7 +813,11 @@ function StepFrame({
           backLabel="Voltar"
           nextDisabled={!approvalConfirmed || isPersisting}
           nextLabel={
-            approvalConfirmed ? "Gerar protocolo" : "Confirmar revisão"
+            isPersisting
+              ? "Processando..."
+              : approvalConfirmed
+                ? "Gerar protocolo"
+                : "Confirmar revisão"
           }
           onBack={onBackToReview}
           onNext={onContinueToConfirmation}
@@ -2610,6 +2631,7 @@ export function GuidedIntakeShell() {
   );
   const [approvalConfirmed, setApprovalConfirmed] = useState(false);
   const [isPersisting, setIsPersisting] = useState(false);
+  const [persistError, setPersistError] = useState<string | null>(null);
   const [applicantContact, setApplicantContact] =
     useState<ApplicantContactDraft>({
       name: "",
@@ -2736,6 +2758,7 @@ export function GuidedIntakeShell() {
     setApprovalConfirmed(false);
     setExtractionState("idle");
     setExtractionError(null);
+    setPersistError(null);
     setApprovedOrderPayload(null);
   }
 
@@ -2896,22 +2919,25 @@ export function GuidedIntakeShell() {
   }
 
   async function handleContinueToConfirmation() {
+    setPersistError(null);
     const payload = buildLocalOrderPayload();
     setIsPersisting(true);
-    let protocolNumber = payload.order.protocolNumber;
     try {
       const result = await persistOrder(payload, documentFiles);
-      protocolNumber = result.protocolNumber;
+      const protocolNumber = result.protocolNumber;
+      setApprovedOrderPayload({
+        ...payload,
+        order: { ...payload.order, protocolNumber },
+      });
+      setActiveStep("confirmation");
     } catch (err) {
       console.error("Supabase persist failed:", err);
+      setPersistError(
+        "Ocorreu um erro ao finalizar o pedido. Verifique sua conexão e tente novamente.",
+      );
     } finally {
       setIsPersisting(false);
     }
-    setApprovedOrderPayload({
-      ...payload,
-      order: { ...payload.order, protocolNumber },
-    });
-    setActiveStep("confirmation");
   }
 
   function handleChangeMemberCount(count: number) {
@@ -3086,6 +3112,7 @@ export function GuidedIntakeShell() {
             )}
             extractionState={extractionState}
             extractionError={extractionError}
+            persistError={persistError}
             onContinueToMemberData={() => setActiveStep("member_data")}
             onContinueToMemberCount={() => setActiveStep("member_count")}
             onContinueToRegisteredAgent={() => setActiveStep("registered_agent")}
