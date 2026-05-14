@@ -266,17 +266,17 @@
       <section class="grid overview">
         <article class="card">
           <span class="pill done" data-en="Current phase" data-pt="Fase atual">Current phase</span>
-          <p class="phase" data-en="Phase 9: AI-Ready Onboarding Foundation" data-pt="Fase 9: Fundação de onboarding pronta para IA">Phase 9: AI-Ready Onboarding Foundation</p>
+          <p class="phase" data-en="Phase 10: AI Document Extraction / OCR" data-pt="Fase 10: Extração de Documentos / OCR por IA">Phase 10: AI Document Extraction / OCR</p>
           <p
-            data-en="Phase 9 foundation is implemented locally. The app now supports manual vs document-assisted onboarding readiness without real OCR, OpenAI API calls, or autonomous AI behavior."
-            data-pt="A fundação da Fase 9 está implementada localmente. O app agora suporta readiness de onboarding manual vs assistido por documentos sem OCR real, chamadas OpenAI ou comportamento autônomo de IA."
+            data-en="Phase 10 is complete locally. Real OCR extraction via OpenAI GPT-4o Vision is live for the document-assisted path. Production redeploy is the next step."
+            data-pt="A Fase 10 está concluída localmente. Extração real com OCR via OpenAI GPT-4o Vision está ativa para o fluxo document-assisted. O próximo passo é o redeploy em produção."
           >
-            Phase 9 foundation is implemented locally. The app now supports manual vs document-assisted onboarding readiness without real OCR, OpenAI API calls, or autonomous AI behavior.
+            Phase 10 is complete locally. Real OCR extraction via OpenAI GPT-4o Vision is live for the document-assisted path. Production redeploy is the next step.
           </p>
           <div class="progress-wrap" aria-label="Project progress">
             <div class="progress-label">
               <span data-en="Roadmap progress" data-pt="Progresso do roadmap">Roadmap progress</span>
-              <span data-en="Phase 9 local complete" data-pt="Fase 9 concluída localmente">Phase 9 local complete</span>
+              <span data-en="Phase 10 local complete" data-pt="Fase 10 concluída localmente">Phase 10 local complete</span>
             </div>
             <div class="progress-track">
               <div class="progress-fill"></div>
@@ -410,29 +410,36 @@
             <li data-en="P8.5-T03 complete: Phase 8.5 deployed to production at https://abre-usa.vercel.app and health checks passed." data-pt="P8.5-T03 concluído: Phase 8.5 publicada em produção em https://abre-usa.vercel.app e health checks aprovados.">P8.5-T03 complete: Phase 8.5 deployed to production at https://abre-usa.vercel.app and health checks passed.</li>
             <li data-en="P8.5-T04 complete: committed Phase 8.5 state redeployed to production; alias now points to dpl_49uw5re5UDZQnVBDPJPPwqDufjSn." data-pt="P8.5-T04 concluído: estado commitado da Phase 8.5 republicado em produção; alias agora aponta para dpl_49uw5re5UDZQnVBDPJPPwqDufjSn.">P8.5-T04 complete: committed Phase 8.5 state redeployed to production; alias now points to dpl_49uw5re5UDZQnVBDPJPPwqDufjSn.</li>
             <li data-en="P9-T01 complete: manual vs document-assisted onboarding foundation implemented; Supabase persistence/upload verified with AUS-2026-0017." data-pt="P9-T01 concluído: fundação de onboarding manual vs assistido por documentos implementada; persistência/upload Supabase verificados com AUS-2026-0017.">P9-T01 complete: manual vs document-assisted onboarding foundation implemented; Supabase persistence/upload verified with AUS-2026-0017.</li>
+            <li data-en="P9-T02 complete: real AI OCR extraction implemented via OpenAI GPT-4o Vision. Lint and build verified." data-pt="P9-T02 concluído: extração OCR real implementada via OpenAI GPT-4o Vision. Lint e build verificados.">P9-T02 complete: real AI OCR extraction implemented via OpenAI GPT-4o Vision. Lint and build verified.</li>
+            <li data-en="P9-T03 complete: document-assisted flow corrected. Documents at step 3. totalSteps fixed to 14/15 for both modes. stepOffset pattern applied. Lint and build verified." data-pt="P9-T03 concluído: fluxo document-assisted corrigido. Documentos no passo 3. totalSteps corrigido para 14/15. Padrão stepOffset aplicado. Lint e build verificados.">P9-T03 complete: document-assisted flow corrected. Documents at step 3. totalSteps fixed to 14/15 for both modes. stepOffset pattern applied. Lint and build verified.</li>
+            <li data-en="P10-T01 complete: real OCR wired into document-assisted flow. Extraction review at step 4. Editable prefill fields. applicantContact prefilled from confirmed extraction. Lint and build verified." data-pt="P10-T01 concluído: OCR real integrado ao fluxo document-assisted. Revisão de extração no passo 4. Campos editáveis pré-preenchidos. applicantContact prefilled da extração confirmada. Lint e build verificados.">P10-T01 complete: real OCR wired into document-assisted flow. Extraction review at step 4. Editable prefill fields. applicantContact prefilled from confirmed extraction. Lint and build verified.</li>
+            <li data-en="P10-debug complete: MIME type allowlist enforced. Structured error codes (unsupported_file_type, extraction_api_failed, etc.). Errors propagated to UI and order payload. Image format hint shown in documents step." data-pt="P10-debug concluído: allowlist de MIME types aplicada. Códigos de erro estruturados. Erros propagados para UI e payload. Hint de formato de imagem exibido.">P10-debug complete: MIME type allowlist enforced. Structured error codes. Errors propagated to UI and order payload. Image format hint shown in documents step.</li>
+            <li data-en="P10-T02 complete: member step shows prefill checkbox when extraction confirmed. All 12 hardcoded step eyebrows replaced with dynamic currentStep. Lint and build verified." data-pt="P10-T02 concluído: passo de sócio exibe checkbox de prefill quando extração confirmada. 12 eyebrows hardcoded substituídos por currentStep dinâmico. Lint e build verificados.">P10-T02 complete: member step shows prefill checkbox when extraction confirmed. All 12 hardcoded step eyebrows replaced with dynamic currentStep. Lint and build verified.</li>
+            <li data-en="P10-T03 complete: EIN step shows Responsible Party prefill checkbox when primary member has a name. Prefills from primary member and OCR passport number. Lint and build verified." data-pt="P10-T03 concluído: passo EIN exibe checkbox de prefill do Responsible Party quando sócio principal tem nome. Preenche do sócio e número de passaporte OCR. Lint e build verificados.">P10-T03 complete: EIN step shows Responsible Party prefill checkbox when primary member has a name. Prefills from primary member and OCR passport number. Lint and build verified.</li>
+            <li data-en="P10-T04 complete: approval step shows loading state, Processando... button, and error retry on Supabase failure. handleContinueToConfirmation is fail-closed. Lint and build verified." data-pt="P10-T04 concluído: passo de aprovação exibe estado de carregamento, botão Processando... e retry em falha do Supabase. handleContinueToConfirmation é fail-closed. Lint e build verificados.">P10-T04 complete: approval step shows loading state, Processando... button, and error retry on Supabase failure. handleContinueToConfirmation is fail-closed. Lint and build verified.</li>
             <li data-en="Payment, customer dashboard, branded AbreUSA sender migration, retention automation, and onboarding evolution implementations remain not implemented." data-pt="Pagamento, dashboard do cliente, migração para remetente AbreUSA, automação de retenção e implementações de evolução de onboarding ainda não foram implementados.">Payment, customer dashboard, branded AbreUSA sender migration, retention automation, and onboarding evolution implementations remain not implemented.</li>
           </ul>
         </article>
 
         <article class="card task">
           <span class="pill done" data-en="Last completed" data-pt="Última concluída">Last completed</span>
-          <h2 data-en="P9-T01 — AI-Ready Foundation" data-pt="P9-T01 — Fundação pronta para IA">P9-T01 — AI-Ready Foundation</h2>
+          <h2 data-en="P10-T04 — Approval Loading State and Retry" data-pt="P10-T04 — Estado de carregamento e retry na aprovação">P10-T04 — Approval Loading State and Retry</h2>
           <p
-            data-en="The local app now supports the post-service choice between manual and document-assisted onboarding, persists Phase 9 readiness fields, and keeps OCR explicitly inactive."
-            data-pt="O app local agora suporta a escolha pós-serviço entre onboarding manual e assistido por documentos, persiste campos de readiness da Fase 9 e mantém OCR explicitamente inativo."
+            data-en="Approval step shows Processando... while persisting. fail-closed: only navigates to confirmation on Supabase success; stays on approval step with retry button on failure. Lint and build verified."
+            data-pt="Aprovação mostra Processando... durante a persistência. fail-closed: navega para confirmação apenas no sucesso do Supabase; em falha permanece na tela de aprovação com botão de retry. Lint e build verificados."
           >
-            The local app now supports the post-service choice between manual and document-assisted onboarding, persists Phase 9 readiness fields, and keeps OCR explicitly inactive.
+            Approval step shows Processando... while persisting. fail-closed: only navigates to confirmation on Supabase success; stays on approval step with retry button on failure. Lint and build verified.
           </p>
         </article>
 
         <article class="card next">
           <span class="pill needed" data-en="Next task" data-pt="Próxima tarefa">Next task</span>
-          <h2 data-en="Choose Next Phase" data-pt="Escolher próxima fase">Choose Next Phase</h2>
+          <h2 data-en="Production Redeploy of Phase 10" data-pt="Redeploy em produção da Fase 10">Production Redeploy of Phase 10</h2>
           <p
-            data-en="Commit the completed Phase 9 state, then choose whether to redeploy, start payment, customer dashboard, real OCR, branded sender/domain work, retention Cron, or a dedicated service flow."
-            data-pt="Commitar o estado concluído da Fase 9, depois escolher entre redeploy, pagamento, dashboard do cliente, OCR real, remetente/domínio da marca, Cron de retenção ou fluxo dedicado de serviço."
+            data-en="Deploy Phase 10 to abre-usa.vercel.app, verify the document-assisted path end-to-end in production, then choose the next Post-MVP priority: payment, customer dashboard, branded sender, retention Cron, or admin enhancements."
+            data-pt="Fazer o deploy da Fase 10 em abre-usa.vercel.app, verificar o fluxo document-assisted em produção, e escolher a próxima prioridade pós-MVP: pagamento, dashboard do cliente, remetente da marca, Cron de retenção ou melhorias no admin."
           >
-            Commit the completed Phase 9 state, then choose whether to redeploy, start payment, customer dashboard, real OCR, branded sender/domain work, retention Cron, or a dedicated service flow.
+            Deploy Phase 10 to abre-usa.vercel.app, verify the document-assisted path end-to-end in production, then choose the next Post-MVP priority: payment, customer dashboard, branded sender, retention Cron, or admin enhancements.
           </p>
         </article>
       </section>
@@ -443,7 +450,6 @@
         <ul>
           <li data-en="EIN-only dedicated flow requirements." data-pt="Requisitos do fluxo dedicado de EIN-only.">EIN-only dedicated flow requirements.</li>
           <li data-en="Registered Agent-only dedicated flow requirements." data-pt="Requisitos do fluxo dedicado de Registered Agent-only.">Registered Agent-only dedicated flow requirements.</li>
-          <li data-en="Real AI extraction provider." data-pt="Fornecedor real para extração com IA.">Real AI extraction provider.</li>
           <li data-en="Payment timing if payment is added later." data-pt="Momento do pagamento caso pagamento seja adicionado depois.">Payment timing if payment is added later.</li>
           <li data-en="PDF/export strategy beyond HTML preview." data-pt="Estratégia de PDF/exportação além do preview em HTML.">PDF/export strategy beyond HTML preview.</li>
           <li data-en="Draft persistence and resume behavior." data-pt="Persistência de rascunho e retomada do fluxo.">Draft persistence and resume behavior.</li>

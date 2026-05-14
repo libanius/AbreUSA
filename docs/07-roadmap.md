@@ -1977,7 +1977,7 @@ Potential additions (post-Phase 9):
 
 ## Phase 10: AI Document Extraction / OCR
 
-Status: Current phase.
+Status: Complete locally. Production redeploy pending.
 
 Source of truth: GitHub issue #3.
 
@@ -2004,8 +2004,24 @@ Out of scope:
 - Legal/tax advice.
 - Payment, customer dashboard, multi-state.
 
-In-progress tasks:
+Completed tasks:
 
 - Task ID: `P10-T01`.
 - Title: Wire real OCR extraction into document-assisted flow; implement editable review and prefill.
-- Status: In progress.
+- Result: `handleContinueFromDocuments` triggers OpenAI GPT-4o Vision, navigates to `extraction_review` at step 4, populates editable fields on success, shows fallback on failure. `onConfirmExtraction` prefills `applicantContact` (name + residential address). `totalSteps` = 15 for doc_assisted, 14 for manual. `stepOffset` = 2 for doc_assisted, 0 for manual. Lint and build verified.
+
+- Task ID: `P10-debug`.
+- Title: Structured extraction error codes and MIME type allowlist.
+- Result: MIME type allowlist (`image/jpeg`, `image/png`, `image/gif`, `image/webp`) — PDF now returns `unsupported_file_type` error code instead of silent 500. Error code shown in extraction_review failure block. `extractionErrors` stored in order payload for admin visibility. Documents step shows image format hint for doc_assisted mode. Lint and build verified.
+
+- Task ID: `P10-T02`.
+- Title: Prefill socio from extraction data.
+- Result: Member/owner step shows "Usar meus dados como socio da LLC" checkbox when doc_assisted extraction is confirmed. Prefills first member fullName and address from confirmed applicant data. All 12 hardcoded "Passo N" eyebrows replaced with dynamic `currentStep`. Lint and build verified.
+
+- Task ID: `P10-T03`.
+- Title: Prefill EIN Responsible Party from primary member.
+- Result: EIN step shows "Usar o socio principal como responsavel pelo EIN" checkbox when primary member has a name. Prefills `responsiblePartyName` and optionally `responsiblePartyPassportNumber` from extraction. Lint and build verified.
+
+- Task ID: `P10-T04`.
+- Title: Approval step loading state and error retry.
+- Result: Button shows "Processando..." during persistence. Loading StatusMessage displayed. `handleContinueToConfirmation` is fail-closed: only navigates to confirmation on Supabase success; sets `persistError` and stays on approval step on failure for retry. Lint and build verified.
