@@ -89,21 +89,47 @@ type StepNavigationProps = {
   backLabel: string;
   nextLabel: string;
   backDisabled?: boolean;
+  hideNext?: boolean;
   nextDisabled?: boolean;
   onBack?: () => void;
   onNext?: () => void;
+  currentStep?: number;
+  totalSteps?: number;
 };
 
 export function StepNavigation({
   backLabel,
   nextLabel,
   backDisabled = true,
+  hideNext = false,
   nextDisabled = true,
   onBack,
   onNext,
+  currentStep,
+  totalSteps,
 }: StepNavigationProps) {
+  const progressLabel =
+    currentStep && totalSteps ? `Etapa ${currentStep} de ${totalSteps}` : null;
+  const progressPercent =
+    currentStep && totalSteps ? Math.round((currentStep / totalSteps) * 100) : 0;
+
   return (
-    <div className="mt-6 flex flex-col-reverse gap-3 border-t pt-5 sm:flex-row sm:items-center sm:justify-between">
+    <div className="sticky bottom-0 -mx-6 mt-6 border-t bg-card/95 px-6 py-4 backdrop-blur sm:-mx-8 sm:px-8">
+      {progressLabel ? (
+        <div className="mb-3">
+          <div className="mb-1 flex items-center justify-between gap-3 text-xs font-medium text-muted-foreground">
+            <span>{progressLabel}</span>
+            <span>{progressPercent}%</span>
+          </div>
+          <div className="h-1.5 overflow-hidden rounded-full bg-muted">
+            <div
+              className="h-full rounded-full bg-emerald-600"
+              style={{ width: `${progressPercent}%` }}
+            />
+          </div>
+        </div>
+      ) : null}
+      <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
       <button
         className="inline-flex h-9 items-center justify-center rounded-lg border bg-background px-4 text-sm font-medium text-muted-foreground"
         disabled={backDisabled}
@@ -112,14 +138,17 @@ export function StepNavigation({
       >
         {backLabel}
       </button>
-      <button
-        className="inline-flex h-9 items-center justify-center rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground disabled:opacity-60"
-        disabled={nextDisabled}
-        onClick={onNext}
-        type="button"
-      >
-        {nextLabel}
-      </button>
+      {hideNext ? null : (
+        <button
+          className="inline-flex h-9 items-center justify-center rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground disabled:opacity-60"
+          disabled={nextDisabled}
+          onClick={onNext}
+          type="button"
+        >
+          {nextLabel}
+        </button>
+      )}
+      </div>
     </div>
   );
 }

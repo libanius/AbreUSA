@@ -1696,6 +1696,72 @@ P8-T14 status:
 - Temporary sender `noreply@notifications.brightscalegroup.com` confirmed for controlled launch.
 - All acceptance criteria met. P8-T14 closed.
 
+## Phase 8.5: Onboarding UX Cleanup
+
+Status: Complete.
+
+Purpose:
+
+Improve the current onboarding experience before payment, customer dashboard, OCR, or full conversational AI.
+
+Scope:
+
+- Remove inline Articles of Organization friction from the main question path.
+- Add auto-advance for choice/card questions.
+- Keep Continue only for input, upload, and review/confirmation steps.
+- Add sticky footer/navigation behavior by step type.
+- Move document previews to review, accordion, modal, or a hidden-by-default detail area.
+- Preserve Supabase persistence, document upload, and admin review.
+
+Current Phase 8.5 task:
+
+- Task ID: `P8.5-T01`.
+- Title: Implement guided concierge onboarding cleanup.
+- Scope:
+  - Auto-advance simple predefined option/card selections.
+  - Keep explicit Continue for typed input, uploads, mixed input choices, review, approval, and submission confirmation.
+  - Replace inline Articles of Organization previews in the active onboarding path with a short educational card and hidden-by-default details.
+  - Keep full generated preview content in the review stage.
+  - Make the bottom step navigation sticky so users do not need to scroll to continue.
+  - Preserve existing Supabase persistence, private document upload, confirmation email, and admin review behavior.
+- Out of scope:
+  - Payment.
+  - Real AI OCR.
+  - Customer dashboard.
+  - Multi-state orchestration.
+  - Full conversational AI.
+  - Business model changes.
+  - Removing existing Supabase persistence, document upload, or admin review.
+- Acceptance criteria:
+  - Option/card-based answers advance automatically after click.
+  - Text input steps still require Continue.
+  - Upload steps still require Continue.
+  - Final review and approval still require explicit confirmation.
+  - Articles of Organization full content is no longer inline between a question and Continue.
+  - Continue button is not required for simple choice steps.
+  - Sticky navigation/footer works appropriately based on step type.
+  - Existing data persistence and order submission behavior remain working.
+  - No regression to Supabase order persistence.
+  - No regression to document upload.
+  - No regression to admin order review.
+  - Build status and progress page are updated.
+
+P8.5-T01 status:
+
+- Status: Complete.
+- Simple predefined option/card selections now auto-advance:
+  - Service selection advances to applicant contact.
+  - Business activity selections advance to member count, except `Other`, which keeps Continue for custom text.
+  - Registered Agent selections advance to EIN questions or documents, except `other`, which keeps Continue for agent details.
+- Text input, upload, review, approval, and protocol-generation steps keep explicit Continue/Confirm behavior.
+- Bottom step navigation is sticky and includes the current step progress indicator.
+- Inline Articles of Organization previews were removed from active question steps and replaced with a short educational card plus hidden-by-default example details.
+- Full Florida Articles and IRS SS-4 previews remain in the review stage.
+- Supabase persistence, document upload, confirmation email, and admin review paths were not removed or structurally changed.
+- `npm run lint` passes.
+- `npm run build` passes after clearing the interrupted `.next` cache.
+- Browser verification passed for auto-advance on service, business activity, and Registered Agent selection, and confirmed sticky navigation is present.
+
 Potential additions (post-P8-T02):
 
 - Payment processing.

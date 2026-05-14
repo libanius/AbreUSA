@@ -788,3 +788,20 @@ Result:
 Reason:
 
 All P8-T14 acceptance criteria are now met. The MVP product is live, verified, and operational. Next steps are Post-MVP priorities as directed by the owner/operator.
+
+### 2026-05-13: Choice Steps Auto-Advance In Onboarding
+
+Decision:
+
+Choice/card steps auto-advance; input/upload/review steps require explicit Continue/Confirm.
+
+Result:
+
+- Simple predefined option selections should save the answer and advance immediately.
+- Typed inputs, uploads, review, approval, and submission confirmation retain explicit user action.
+- Mixed choice/input cases, such as selecting `Other`, remain explicit until required details are entered.
+- Full Articles of Organization content should not sit inline between a question and Continue; it belongs in review or hidden-by-default detail UI.
+
+Reason:
+
+AbreUSA should feel like a Portuguese guided concierge experience, with one clear question at a time and less form-like friction before larger Post-MVP work.

@@ -2,9 +2,11 @@
 
 ## Current Phase
 
-Phase 8: Post-MVP Expansion and strategic evolution.
+Phase 8.5: Onboarding UX Cleanup.
 
 Phases 1–7 are complete. P8-T01 through P8-T14 are complete. Controlled MVP launch is fully verified: production deployment, authenticated admin portal, and production email confirmation are all confirmed.
+
+Phase 8.5 is complete. The guided onboarding UX cleanup is implemented before payment, customer dashboard, OCR, or full conversational AI.
 
 ## Last Completed Task
 
@@ -25,7 +27,20 @@ Result:
 
 ## Current Task
 
-None. P8-T14 is complete. Controlled MVP launch is verified. The next task will be defined by the owner/operator based on Post-MVP priorities.
+None. P8.5-T01 is complete.
+
+Result:
+
+- Simple predefined option/card selections now auto-advance.
+- Text input, upload, review, approval, and protocol-generation steps still require explicit Continue/Confirm.
+- Inline Articles of Organization previews were removed from active question steps.
+- Active question steps now use a short Articles education card with hidden-by-default example details.
+- Full generated previews remain in the review stage.
+- Sticky bottom navigation now includes step progress.
+- Existing Supabase persistence, document upload, confirmation email, and admin review code paths were preserved.
+- `npm run lint` passes.
+- `npm run build` passes after clearing the interrupted `.next` cache.
+- Browser verification passed for service, business activity, and Registered Agent auto-advance behavior.
 
 Result:
 
@@ -95,7 +110,7 @@ Result:
 
 ## Next Task
 
-No next task is currently defined. The controlled MVP launch is complete. Post-MVP priorities (payment, customer dashboard, AI extraction, multi-state, branded sender domain, Vercel Cron retention automation) are tracked in the roadmap and remain pending owner/operator direction.
+No next task is currently defined. Post-MVP priorities remain owner/operator-directed.
 
 ## Completed Tasks
 
@@ -117,7 +132,7 @@ No next task is currently defined. The controlled MVP launch is complete. Post-M
   - P7-T03: Production credential and RLS/storage lockdown plan.
   - P7-T04: Service-role enforcement and lockdown SQL artifact (`supabase/rls-storage-lockdown.sql`).
   - P7-T05: Supabase RLS and storage lockdown applied and verified (AUS-2026-0009).
-- Phase 8 in progress:
+- Phase 8 complete:
   - P8-T01: Resend email integration live. Confirmation email delivered to applicant after order approval. Verified with AUS-2026-0010.
   - P8-T02: Admin review portal live and verified.
   - P8-T03: Strategic evolution system synchronization complete.
@@ -134,6 +149,8 @@ No next task is currently defined. The controlled MVP launch is complete. Post-M
 - P8-T13: Production deployment and customer flow verification complete.
 - P8-T13V: Authenticated production admin verification complete.
 - P8-T14: All launch operations confirmed. Email bug fixed (void → await). Production confirmation email received in real inbox (AUS-2026-0014). Controlled MVP launch complete.
+- Phase 8.5 complete:
+  - P8.5-T01: Guided onboarding UX cleanup complete. Choice/card steps auto-advance, input/upload/review steps keep explicit Continue/Confirm, active Articles previews are hidden behind short education cards, sticky footer navigation is implemented, and lint/build/browser verification passed.
 
 ## What Is Implemented
 
@@ -253,7 +270,7 @@ No next task is currently defined. The controlled MVP launch is complete. Post-M
 
 ## Exact Next Step To Resume
 
-Controlled MVP launch is complete. No blocking tasks remain. Next steps are owner/operator-directed Post-MVP priorities.
+Choose the next owner/operator-directed Post-MVP priority. Current candidates include payment, customer dashboard, AI OCR/document extraction, branded sender/domain work, retention Cron automation, EIN-only flow, Registered Agent-only flow, or broader onboarding evolution.
 
 ## Blockers And Risks
 

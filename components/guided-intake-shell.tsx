@@ -292,6 +292,32 @@ const emptyDocumentCollection: DocumentCollectionDraft = {
   },
 };
 
+function ArticlesEducationCard() {
+  return (
+    <div className="rounded-md border bg-emerald-50 p-4 text-emerald-950">
+      <p className="text-sm font-semibold">What are Articles of Organization?</p>
+      <p className="mt-2 text-sm leading-6">
+        Articles of Organization are the document used to officially register
+        your LLC with the State of Florida. You do not need to fill this
+        document manually now. AbreUSA uses your answers to prepare the
+        required information for review.
+      </p>
+      <details className="mt-3 rounded-md border border-emerald-200 bg-white/70 p-3">
+        <summary className="cursor-pointer text-sm font-semibold">
+          View example
+        </summary>
+        <div className="mt-3">
+          <FormPreviewShell
+            sections={["Article I", "Article II", "Article III"]}
+            subtitle="State of Florida · Division of Corporations"
+            title="Articles of Organization"
+          />
+        </div>
+      </details>
+    </div>
+  );
+}
+
 function formatFileSize(size: number) {
   if (size >= 1024 * 1024) {
     return `${(size / (1024 * 1024)).toFixed(1)} MB`;
@@ -408,6 +434,8 @@ function StepFrame({
   onResetService,
   selectedService,
   onSelectService,
+  currentStep,
+  totalSteps,
 }: {
   activeStep: FlowStep;
   businessActivity: BusinessActivityId | null;
@@ -467,6 +495,8 @@ function StepFrame({
   onResetService: () => void;
   selectedService: ServiceId | null;
   onSelectService: (service: ServiceId) => void;
+  currentStep: number;
+  totalSteps: number;
 }) {
   const selectedLabel = useMemo(() => {
     return serviceOptions.find((service) => service.id === selectedService)
@@ -532,7 +562,7 @@ function StepFrame({
                 approvedOrderPayload?.order.protocolNumber ?? "AUS-YYYY-XXXX"
               }
               status="Aprovado localmente"
-              timeline="Próxima etapa: revisão interna da AbreUSA. Este shell não envia documentos, não grava em banco de dados e não inicia protocolo governamental."
+              timeline="Próxima etapa: revisão interna da AbreUSA. O pedido foi registrado para análise, mas ainda não foi submetido a órgãos governamentais."
             />
           </ConfirmationShell>
 
@@ -552,12 +582,12 @@ function StepFrame({
             title="Resumo da confirmação"
           />
 
-          <FieldGroup title="Payload interno local">
-            <StatusMessage title="Sem persistência nesta etapa" tone="info">
+          <FieldGroup title="Payload interno">
+            <StatusMessage title="Dados preparados para revisão" tone="info">
               <p>
-                Este payload é montado apenas no navegador para validar o
-                formato do pedido. Supabase, storage privado, e-mail e envio
-                oficial permanecem fora deste slice.
+                Este payload representa os dados revisados pelo cliente e
+                enviados para a trilha interna da AbreUSA. A submissão oficial
+                para órgãos externos depende de revisão humana.
               </p>
             </StatusMessage>
             <pre className="max-h-72 overflow-auto rounded-md border bg-card p-3 text-xs leading-5 text-card-foreground">
@@ -566,6 +596,8 @@ function StepFrame({
           </FieldGroup>
         </div>
         <StepNavigation
+          currentStep={currentStep}
+          totalSteps={totalSteps}
           backDisabled={false}
           backLabel="Voltar"
           nextDisabled
@@ -626,13 +658,13 @@ function StepFrame({
           </FieldGroup>
         </div>
         <StepNavigation
+          currentStep={currentStep}
+          totalSteps={totalSteps}
           backDisabled={false}
           backLabel="Voltar"
           nextDisabled={!approvalConfirmed || isPersisting}
           nextLabel={
-            approvalConfirmed
-              ? "Continuar (próxima fase)"
-              : "Confirmar revisão"
+            approvalConfirmed ? "Gerar protocolo" : "Confirmar revisão"
           }
           onBack={onBackToReview}
           onNext={onContinueToConfirmation}
@@ -819,6 +851,8 @@ function StepFrame({
           ) : null}
         </div>
         <StepNavigation
+          currentStep={currentStep}
+          totalSteps={totalSteps}
           backDisabled={false}
           backLabel="Voltar"
           nextDisabled={false}
@@ -1044,6 +1078,8 @@ function StepFrame({
           />
         </div>
         <StepNavigation
+          currentStep={currentStep}
+          totalSteps={totalSteps}
           backDisabled={false}
           backLabel="Voltar"
           nextDisabled={!isDocumentCollectionComplete}
@@ -1143,13 +1179,11 @@ function StepFrame({
             title="Resumo"
           />
 
-          <FormPreviewShell
-            sections={["Article I", "Article II", "Article III"]}
-            subtitle="State of Florida · Division of Corporations"
-            title="Articles of Organization"
-          />
+          <ArticlesEducationCard />
         </div>
         <StepNavigation
+          currentStep={currentStep}
+          totalSteps={totalSteps}
           backDisabled={false}
           backLabel="Voltar"
           nextDisabled={!ownershipMatches}
@@ -1349,13 +1383,16 @@ function StepFrame({
             title="Resumo"
           />
 
-          <FormPreviewShell
-            sections={["Line 1 — Legal name", "Line 7b — SSN/ITIN/EIN", "Line 10 — Reason"]}
-            subtitle="Department of the Treasury · Internal Revenue Service"
-            title="Form SS-4"
-          />
+          <StatusMessage title="Preview na revisão final" tone="info">
+            <p>
+              O preview do Form SS-4 aparecerá na etapa de revisão, depois que
+              os dados essenciais estiverem completos.
+            </p>
+          </StatusMessage>
         </div>
         <StepNavigation
+          currentStep={currentStep}
+          totalSteps={totalSteps}
           backDisabled={false}
           backLabel="Voltar"
           nextDisabled={!isEinComplete}
@@ -1414,7 +1451,16 @@ function StepFrame({
                         : "hover:border-emerald-300 hover:bg-emerald-50/40",
                     )}
                     key={option.id}
-                    onClick={() => onChangeRegisteredAgent("choice", option.id)}
+                    onClick={() => {
+                      onChangeRegisteredAgent("choice", option.id);
+                      if (option.id !== "other") {
+                        if (selectedService === "complete") {
+                          onContinueToEinQuestions();
+                        } else {
+                          onContinueToDocuments();
+                        }
+                      }
+                    }}
                     type="button"
                   >
                     <div className="flex gap-4">
@@ -1511,15 +1557,14 @@ function StepFrame({
             title="Resumo"
           />
 
-          <FormPreviewShell
-            sections={["Article I", "Article II", "Article III"]}
-            subtitle="State of Florida · Division of Corporations"
-            title="Articles of Organization"
-          />
+          <ArticlesEducationCard />
         </div>
         <StepNavigation
+          currentStep={currentStep}
+          totalSteps={totalSteps}
           backDisabled={false}
           backLabel="Voltar"
+          hideNext={!isOther}
           nextDisabled={!isAgentComplete}
           nextLabel={
             !isAgentComplete
@@ -1623,13 +1668,11 @@ function StepFrame({
             title="Resumo"
           />
 
-          <FormPreviewShell
-            sections={["Article I", "Article II", "Article III"]}
-            subtitle="State of Florida · Division of Corporations"
-            title="Articles of Organization"
-          />
+          <ArticlesEducationCard />
         </div>
         <StepNavigation
+          currentStep={currentStep}
+          totalSteps={totalSteps}
           backDisabled={false}
           backLabel="Voltar"
           nextDisabled={!isAddressComplete}
@@ -1709,13 +1752,11 @@ function StepFrame({
             title="Resumo"
           />
 
-          <FormPreviewShell
-            sections={["Article I", "Article II", "Article III"]}
-            subtitle="State of Florida · Division of Corporations"
-            title="Articles of Organization"
-          />
+          <ArticlesEducationCard />
         </div>
         <StepNavigation
+          currentStep={currentStep}
+          totalSteps={totalSteps}
           backDisabled={false}
           backLabel="Voltar"
           nextDisabled={false}
@@ -1762,7 +1803,12 @@ function StepFrame({
                         : "text-foreground hover:border-emerald-300 hover:bg-emerald-50/40",
                     )}
                     key={activity.id}
-                    onClick={() => onChangeBusinessActivity(activity.id)}
+                    onClick={() => {
+                      onChangeBusinessActivity(activity.id);
+                      if (activity.id !== "other") {
+                        onContinueToMemberCount();
+                      }
+                    }}
                     type="button"
                   >
                     {activity.label}
@@ -1800,15 +1846,14 @@ function StepFrame({
             title="Resumo"
           />
 
-          <FormPreviewShell
-            sections={["Article I", "Article II", "Article III"]}
-            subtitle="State of Florida · Division of Corporations"
-            title="Articles of Organization"
-          />
+          <ArticlesEducationCard />
         </div>
         <StepNavigation
+          currentStep={currentStep}
+          totalSteps={totalSteps}
           backDisabled={false}
           backLabel="Voltar"
+          hideNext={businessActivity !== "other"}
           nextDisabled={!selectedActivityLabel}
           nextLabel={selectedActivityLabel ? "Continuar" : "Selecionar atividade"}
           onBack={onBackToLlcName}
@@ -1855,6 +1900,8 @@ function StepFrame({
           </FieldShell>
         </FieldGroup>
         <StepNavigation
+          currentStep={currentStep}
+          totalSteps={totalSteps}
           backDisabled={false}
           backLabel="Voltar"
           nextDisabled={!isContactComplete}
@@ -1924,13 +1971,11 @@ function StepFrame({
             title="Resumo"
           />
 
-          <FormPreviewShell
-            sections={["Article I", "Article II", "Article III"]}
-            subtitle="State of Florida · Division of Corporations"
-            title="Articles of Organization"
-          />
+          <ArticlesEducationCard />
         </div>
         <StepNavigation
+          currentStep={currentStep}
+          totalSteps={totalSteps}
           backDisabled={false}
           backLabel="Voltar"
           nextDisabled={!hasValidSuffix}
@@ -1959,11 +2004,6 @@ function StepFrame({
           onSelect={onSelectService}
           selectedService={selectedService}
         />
-        <FieldGroup title="Próxima etapa">
-          <FieldShell hint="Será habilitado no próximo slice" label="Empresa">
-            <div className="h-10 rounded-md border bg-card" />
-          </FieldShell>
-        </FieldGroup>
         <ReviewSummary
           items={[
             { label: "Serviço", value: selectedLabel ?? "Pendente" },
@@ -1976,14 +2016,13 @@ function StepFrame({
           ]}
           title="Resumo"
         />
-        <FormPreviewShell
-          sections={["Article I", "Article II", "Article III"]}
-          subtitle="State of Florida · Division of Corporations"
-          title="Articles of Organization"
-        />
+        <ArticlesEducationCard />
       </div>
       <StepNavigation
+        currentStep={currentStep}
+        totalSteps={totalSteps}
         backLabel="Voltar"
+        hideNext
         nextLabel="Selecionar serviço"
       />
     </StepCard>
@@ -2342,6 +2381,8 @@ export function GuidedIntakeShell() {
             onResetService={handleResetService}
             onSelectService={handleSelectService}
             selectedService={selectedService}
+            currentStep={currentStep}
+            totalSteps={13}
           />
 
           <aside className="h-fit rounded-lg border bg-card p-5 shadow-sm">
