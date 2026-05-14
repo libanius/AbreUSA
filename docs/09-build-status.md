@@ -31,18 +31,16 @@ Result:
 
 ## Current Task
 
-Task ID: `P10-T01`
+Task ID: `P10-T02`
 
-Title: Wire real OCR extraction into document-assisted flow; implement editable review and prefill.
+Title: Prefill member/sócio step from confirmed applicant extraction data; fix step eyebrows.
 
 Scope:
-- `handleContinueFromDocuments` (document_assisted): trigger OpenAI extraction → navigate to extraction_review.
-- extraction_review step: now reachable at step 4; loading spinner, editable pre-filled fields, failure fallback.
-- `onConfirmExtraction`: prefill applicant_contact (name + address) from confirmed extraction data, navigate to applicant_contact.
-- totalSteps: 15 for document_assisted (adds extraction_review); 14 for manual.
-- progressItems for document_assisted: 15 items with "Extração" at position 4.
-- stepOffset: 2 for document_assisted (all middle steps shift +2); 0 for manual.
-- Admin view updated to show extraction status, extracted data, and whether customer confirmed.
+- In member_data step: when extraction was confirmed (document_assisted + extractionState === "done"), show "Usar meus dados como sócio da LLC" checkbox.
+- On check: prefill first member fullName from applicantContact.name, prefill address from residential address fields.
+- Data remains editable; additional members still manual; fallback to blank form when no extraction.
+- Fix all hardcoded "Passo N" eyebrows in StepFrame to use dynamic currentStep (affects all steps in document_assisted mode where stepOffset=2).
+- Source of truth: GitHub issue #3, latest comment (2026-05-14).
 
 ## Next Task
 

@@ -632,6 +632,11 @@ function StepFrame({
     (member) => member.ownershipPercentage.trim().length > 0,
   );
   const ownershipMatches = ownershipTotal === 100;
+  const [useApplicantAsMember, setUseApplicantAsMember] = useState(false);
+  const isExtractionConfirmed =
+    onboardingEntryMode === "document_assisted" &&
+    extractionState === "done" &&
+    applicantContact.name.trim() !== "";
   const selectedReasonLabel =
     einReasonOptions.find((o) => o.id === einQuestions.reasonForApplying)?.label ??
     null;
@@ -675,7 +680,7 @@ function StepFrame({
     return (
       <StepCard
         badge="Protocolo local"
-        eyebrow="Passo 14 · Confirmação"
+        eyebrow={`Passo ${currentStep} · Confirmação`}
         title="Pedido preparado para revisão"
       >
         <div className="grid gap-3">
@@ -738,7 +743,7 @@ function StepFrame({
     return (
       <StepCard
         badge="Aprovação local"
-        eyebrow="Passo 13 · Aprovação"
+        eyebrow={`Passo ${currentStep} · Aprovação`}
         title="Confirme a revisão do pedido"
       >
         <div className="grid gap-3">
@@ -1422,7 +1427,7 @@ function StepFrame({
     return (
       <StepCard
         badge="Rascunho local"
-        eyebrow="Passo 7 · Dados dos sócios"
+        eyebrow={`Passo ${currentStep} · Dados dos sócios`}
         title="Dados de cada sócio"
       >
         <div className="grid gap-3">
@@ -1436,6 +1441,49 @@ function StepFrame({
                 : `A soma atual é ${ownershipTotal}%. Ajuste os percentuais para totalizar 100%.`}
             </p>
           </StatusMessage>
+
+          {isExtractionConfirmed ? (
+            <div className="rounded-md border bg-card p-4">
+              <label className="flex cursor-pointer items-start gap-3">
+                <input
+                  checked={useApplicantAsMember}
+                  className="mt-0.5 h-4 w-4 accent-primary"
+                  type="checkbox"
+                  onChange={(e) => {
+                    const checked = e.target.checked;
+                    setUseApplicantAsMember(checked);
+                    if (checked) {
+                      const formattedAddress = [
+                        applicantContact.residentialStreet,
+                        applicantContact.residentialCity,
+                        applicantContact.residentialState,
+                        applicantContact.residentialZip,
+                      ]
+                        .filter(Boolean)
+                        .join(", ");
+                      onChangeMemberData(0, "fullName", applicantContact.name);
+                      onChangeMemberData(0, "address", formattedAddress);
+                    }
+                  }}
+                />
+                <div className="grid gap-1">
+                  <p className="text-sm font-semibold text-foreground">
+                    Usar meus dados como sócio da LLC
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Vamos usar o nome e endereço confirmados a partir do seu
+                    passaporte/comprovante de residência. Você poderá revisar e
+                    alterar se necessário.
+                  </p>
+                  {useApplicantAsMember ? (
+                    <p className="mt-1 text-xs font-medium text-emerald-700">
+                      ✓ {applicantContact.name}
+                    </p>
+                  ) : null}
+                </div>
+              </label>
+            </div>
+          ) : null}
 
           <FieldGroup title="Informações dos sócios">
             {visibleMembers.map((member, index) => {
@@ -1530,7 +1578,7 @@ function StepFrame({
     return (
       <StepCard
         badge="Rascunho local"
-        eyebrow="Passo 10 · EIN / IRS SS-4"
+        eyebrow={`Passo ${currentStep} · EIN / IRS SS-4`}
         title="Informações para o EIN"
       >
         <div className="grid gap-3">
@@ -1743,7 +1791,7 @@ function StepFrame({
     return (
       <StepCard
         badge="Rascunho local"
-        eyebrow="Passo 9 · Registered Agent"
+        eyebrow={`Passo ${currentStep} · Registered Agent`}
         title="Quem será o Registered Agent?"
       >
         <div className="grid gap-3">
@@ -1916,7 +1964,7 @@ function StepFrame({
     return (
       <StepCard
         badge="Rascunho local"
-        eyebrow="Passo 8 · Endereço"
+        eyebrow={`Passo ${currentStep} · Endereço`}
         title="Endereço principal da empresa"
       >
         <div className="grid gap-3">
@@ -2048,7 +2096,7 @@ function StepFrame({
     return (
       <StepCard
         badge="Rascunho local"
-        eyebrow="Passo 6 · Sócios"
+        eyebrow={`Passo ${currentStep} · Sócios`}
         title="Quantos sócios terá a LLC?"
       >
         <div className="grid gap-3">
@@ -2130,7 +2178,7 @@ function StepFrame({
     return (
       <StepCard
         badge="Rascunho local"
-        eyebrow="Passo 5 · Atividade"
+        eyebrow={`Passo ${currentStep} · Atividade`}
         title="Qual é o ramo do negócio?"
       >
         <div className="grid gap-3">
@@ -2233,7 +2281,7 @@ function StepFrame({
     return (
       <StepCard
         badge="Seus dados"
-        eyebrow="Passo 3 · Contato"
+        eyebrow={`Passo ${currentStep} · Contato`}
         title="Como podemos entrar em contato com você?"
       >
         <FieldGroup title="Dados de contato">
@@ -2323,7 +2371,7 @@ function StepFrame({
     return (
       <StepCard
         badge="Rascunho local"
-        eyebrow="Passo 4 · Empresa"
+        eyebrow={`Passo ${currentStep} · Empresa`}
         title="Qual será o nome da LLC?"
       >
         <div className="grid gap-3">
@@ -2397,7 +2445,7 @@ function StepFrame({
     return (
       <StepCard
         badge="Caminho de entrada"
-        eyebrow="Passo 2 · Modo"
+        eyebrow={`Passo ${currentStep} · Modo`}
         title="Como você quer continuar?"
       >
         <div className="grid gap-3">
@@ -2437,7 +2485,7 @@ function StepFrame({
   return (
     <StepCard
       badge="Fluxo guiado"
-      eyebrow="Passo 1 · Serviço"
+      eyebrow={`Passo ${currentStep} · Serviço`}
       title="O que você precisa?"
     >
       <div className="grid gap-3">
