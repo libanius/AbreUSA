@@ -1977,7 +1977,7 @@ Potential additions (post-Phase 9):
 
 ## Phase 10: AI Document Extraction / OCR
 
-Status: Complete locally. Production redeploy pending.
+Status: Complete and deployed to production.
 
 Source of truth: GitHub issue #3.
 
@@ -2029,5 +2029,12 @@ Completed tasks:
 Stop checkpoint:
 
 - Date: 2026-05-14.
-- Phase 10 is complete locally and production redeploy is pending.
-- Exact next roadmap action: deploy current `main` to `https://abre-usa.vercel.app`, then verify the document-assisted OCR path end-to-end in production.
+- Phase 10 is complete and deployed to production.
+- Production deployment ID: `dpl_8UtvGpSfHWJGM5zV1DPDKyG9UCtr`.
+- Production alias: `https://abre-usa.vercel.app`.
+- Production verification passed:
+  - `/` returns `200`.
+  - `/admin/login` returns `200`.
+  - `/admin/orders` redirects unauthenticated users to `/admin/login`.
+  - `/api/extract-document` returns extracted passport/address data from a generated JPEG test image with `confidence: 100`.
+- Exact next roadmap action: choose the next owner/operator-directed Post-MVP priority and update the App Spine before implementation.

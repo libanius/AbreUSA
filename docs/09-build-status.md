@@ -4,21 +4,28 @@
 
 Phase 10: AI Document Extraction / OCR.
 
-Phases 1–9 are complete. Phase 10 is implemented locally and verified. Source of truth: GitHub issue #3, `Phase 10 — AI Document Extraction / OCR`.
+Phases 1–9 are complete. Phase 10 is implemented, deployed to production, and verified. Source of truth: GitHub issue #3, `Phase 10 — AI Document Extraction / OCR`.
 
 ## Last Completed Task
 
-Task ID: `P10-T04`
+Task ID: `P10-T05`
 
-Title: Approval step loading state, "Processando..." feedback, and error retry.
+Title: Production redeploy and OCR route verification.
 
 Result:
 
-- `handleContinueToConfirmation` is now fail-closed: on Supabase persistence failure, sets `persistError` state and stays on approval step so the user can retry. Only navigates to confirmation on success.
-- Approval step shows "Estamos finalizando seu pedido e gerando sua confirmação." StatusMessage with "Isso pode levar alguns segundos. Não feche esta página." while `isPersisting` is true.
-- Error StatusMessage shown on failure; button re-enabled for retry.
-- `nextLabel` changes to "Processando..." while persisting — prevents double-submit confusion.
-- Verification passed: `npm run lint`, `npm run build`.
+- Production env now includes `OPENAI_API_KEY`.
+- Local `npm run build` passed before deploy.
+- Vercel production deploy completed successfully.
+- Deployment ID: `dpl_8UtvGpSfHWJGM5zV1DPDKyG9UCtr`.
+- Production deployment URL: `https://abre-oy9dnh2vh-abre-usa-s-projects.vercel.app`.
+- Production alias: `https://abre-usa.vercel.app`.
+- `npx vercel inspect https://abre-usa.vercel.app` reports status `Ready`.
+- Production health checks passed:
+  - `/` returns `200`.
+  - `/admin/login` returns `200`.
+  - `/admin/orders` redirects unauthenticated users to `/admin/login`.
+- Production `/api/extract-document` verified with a generated JPEG test image. GPT-4o Vision returned passport and address fields with `confidence: 100`.
 
 ## Current Task
 
@@ -26,18 +33,18 @@ Task ID: `None active`
 
 Title: Awaiting next owner/operator priority.
 
-Phase 10 is complete locally. Next step is production redeploy, then choose next Post-MVP priority.
+Phase 10 is complete and deployed. Next step is choosing the next Post-MVP priority.
 
 Stop checkpoint:
 
 - Date: 2026-05-14.
-- Latest commit: `efc4fd4` — Update roadmap and build status for Phase 10 completion; implement OCR extraction and approval step enhancements.
+- Latest deployment: `dpl_8UtvGpSfHWJGM5zV1DPDKyG9UCtr`.
 - Local docs reviewed before stopping: `/docs/09-build-status.md`, `/docs/07-roadmap.md`, `/progress/index.html`.
 - No implementation task is currently in progress.
 
 ## Next Task
 
-Production redeploy of Phase 10 to `https://abre-usa.vercel.app`, then choose the next owner/operator-directed priority. Candidates: payment, customer dashboard, branded sender/domain, retention Cron automation, EIN-only flow, Registered Agent-only flow, admin audit enhancements, or broader onboarding evolution.
+Choose the next owner/operator-directed priority. Candidates: payment, customer dashboard, branded sender/domain, retention Cron automation, EIN-only flow, Registered Agent-only flow, admin audit enhancements, or broader onboarding evolution.
 
 ## Completed Tasks
 
@@ -85,12 +92,13 @@ Production redeploy of Phase 10 to `https://abre-usa.vercel.app`, then choose th
   - P9-T01: AI-ready onboarding entry mode foundation implemented from GitHub issue #2 and verified with `AUS-2026-0017`.
   - P9-T02: Real AI OCR document extraction implemented via OpenAI GPT-4o Vision. Lint and build verified.
   - P9-T03: Document-assisted flow corrected. Documents now collected at step 3 (immediately after entry mode). `totalSteps` fixed to 14 for both modes. `stepOffset` pattern applied to all middle steps. Lint and build verified.
-- Phase 10 complete locally:
+- Phase 10 complete and deployed:
   - P10-T01: Real OCR extraction wired into document-assisted flow. `handleContinueFromDocuments` (doc_assisted) triggers OpenAI GPT-4o Vision, navigates to `extraction_review` at step 4, populates editable fields on success, shows fallback on failure. `onConfirmExtraction` prefills `applicantContact` (name + residential address). `totalSteps` = 15 for doc_assisted, 14 for manual. `stepOffset` = 2 for doc_assisted, 0 for manual. Lint and build verified.
   - P10 debug: Structured extraction errors. MIME type allowlist (`image/jpeg`, `image/png`, `image/gif`, `image/webp`) — PDF now returns `unsupported_file_type` error code instead of silent 500. Error code shown in extraction_review failure block. `extractionErrors` stored in order payload for admin visibility. Documents step shows image format hint for doc_assisted mode. Lint and build verified.
   - P10-T02: Prefill sócio from extraction data. Member/owner step shows "Usar meus dados como sócio da LLC" checkbox when doc_assisted extraction confirmed. Prefills first member fullName and address from confirmed applicant data. All 12 hardcoded "Passo N" eyebrows replaced with dynamic `currentStep`. Lint and build verified.
   - P10-T03: Prefill EIN Responsible Party from primary member. EIN step shows "Usar o sócio principal como responsável pelo EIN" checkbox when primary member has a name. Prefills `responsiblePartyName` and optionally `responsiblePartyPassportNumber` from extraction. Lint and build verified.
   - P10-T04: Approval loading state and error retry. Button shows "Processando...", loading StatusMessage shown during persistence, error StatusMessage + retry on failure. `handleContinueToConfirmation` fail-closed: only navigates to confirmation on Supabase success. Lint and build verified.
+  - P10-T05: Production redeploy complete. `https://abre-usa.vercel.app` now points to `dpl_8UtvGpSfHWJGM5zV1DPDKyG9UCtr`; home/admin health checks passed; production OCR route verified with JPEG extraction and `confidence: 100`.
 
 ## What Is Implemented
 
@@ -169,20 +177,20 @@ Production redeploy of Phase 10 to `https://abre-usa.vercel.app`, then choose th
 
 ## Exact Next Step To Resume
 
-1. Production redeploy of Phase 10 to `https://abre-usa.vercel.app` (push current `main` to Vercel).
-2. Verify customer flow end-to-end in production (document_assisted path with real image upload).
-3. Choose next owner/operator-directed Post-MVP priority.
+1. Choose the next owner/operator-directed Post-MVP priority.
+2. Recommended candidates: payment, customer dashboard, branded sender/domain, retention Cron automation, EIN-only flow, Registered Agent-only flow, admin audit enhancements, or broader onboarding evolution.
+3. Before starting the next phase, update `/docs/07-roadmap.md`, `/docs/09-build-status.md`, and `/progress/index.html` with the new phase/task.
 
 Resume command prompt:
 
-Read `AGENTS.md`, `/docs/START-HERE.md`, `/docs/07-roadmap.md`, and this file. Resume with production redeploy of Phase 10, then verify the document-assisted OCR path in production.
+Read `AGENTS.md`, `/docs/START-HERE.md`, `/docs/07-roadmap.md`, and this file. Select the next owner/operator-directed priority and update the App Spine before implementation.
 
 ## Blockers And Risks
 
 - Production confirmation email verified: `AUS-2026-0014` received at `brightscalegroup@gmail.com` on 2026-05-09.
 - Permanent admin user exists, is email-confirmed, and owner/operator confirmed access.
 - Correct AbreUSA Vercel account is authenticated as `abreusaonline-7459`.
-- Vercel project is linked. Last production deployment: `dpl_49uw5re5UDZQnVBDPJPPwqDufjSn` (Phase 8.5). Phase 10 is not yet deployed to production.
+- Vercel project is linked. Current production deployment: `dpl_8UtvGpSfHWJGM5zV1DPDKyG9UCtr` (Phase 10).
 - Custom domain is deferred; controlled launch continues on `https://abre-usa.vercel.app`.
 - AbreUSA domain email migration remains deferred; temporary Brightscale sender in use.
 - Manual physical deletion is implemented (P8-T11). In-browser verification against a real eligible document is recommended before enabling for production use.

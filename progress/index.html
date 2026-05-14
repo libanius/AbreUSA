@@ -268,15 +268,15 @@
           <span class="pill done" data-en="Current phase" data-pt="Fase atual">Current phase</span>
           <p class="phase" data-en="Phase 10: AI Document Extraction / OCR" data-pt="Fase 10: Extração de Documentos / OCR por IA">Phase 10: AI Document Extraction / OCR</p>
           <p
-            data-en="Phase 10 is complete locally. Real OCR extraction via OpenAI GPT-4o Vision is live for the document-assisted path. Production redeploy is the next step."
-            data-pt="A Fase 10 está concluída localmente. Extração real com OCR via OpenAI GPT-4o Vision está ativa para o fluxo document-assisted. O próximo passo é o redeploy em produção."
+            data-en="Phase 10 is deployed to production. Real OCR extraction via OpenAI GPT-4o Vision is live for the document-assisted path at abre-usa.vercel.app."
+            data-pt="A Fase 10 está em produção. Extração real com OCR via OpenAI GPT-4o Vision está ativa para o fluxo document-assisted em abre-usa.vercel.app."
           >
-            Phase 10 is complete locally. Real OCR extraction via OpenAI GPT-4o Vision is live for the document-assisted path. Production redeploy is the next step.
+            Phase 10 is deployed to production. Real OCR extraction via OpenAI GPT-4o Vision is live for the document-assisted path at abre-usa.vercel.app.
           </p>
           <div class="progress-wrap" aria-label="Project progress">
             <div class="progress-label">
               <span data-en="Roadmap progress" data-pt="Progresso do roadmap">Roadmap progress</span>
-              <span data-en="Phase 10 local complete" data-pt="Fase 10 concluída localmente">Phase 10 local complete</span>
+              <span data-en="Phase 10 production" data-pt="Fase 10 em produção">Phase 10 production</span>
             </div>
             <div class="progress-track">
               <div class="progress-fill"></div>
@@ -417,35 +417,36 @@
             <li data-en="P10-T02 complete: member step shows prefill checkbox when extraction confirmed. All 12 hardcoded step eyebrows replaced with dynamic currentStep. Lint and build verified." data-pt="P10-T02 concluído: passo de sócio exibe checkbox de prefill quando extração confirmada. 12 eyebrows hardcoded substituídos por currentStep dinâmico. Lint e build verificados.">P10-T02 complete: member step shows prefill checkbox when extraction confirmed. All 12 hardcoded step eyebrows replaced with dynamic currentStep. Lint and build verified.</li>
             <li data-en="P10-T03 complete: EIN step shows Responsible Party prefill checkbox when primary member has a name. Prefills from primary member and OCR passport number. Lint and build verified." data-pt="P10-T03 concluído: passo EIN exibe checkbox de prefill do Responsible Party quando sócio principal tem nome. Preenche do sócio e número de passaporte OCR. Lint e build verificados.">P10-T03 complete: EIN step shows Responsible Party prefill checkbox when primary member has a name. Prefills from primary member and OCR passport number. Lint and build verified.</li>
             <li data-en="P10-T04 complete: approval step shows loading state, Processando... button, and error retry on Supabase failure. handleContinueToConfirmation is fail-closed. Lint and build verified." data-pt="P10-T04 concluído: passo de aprovação exibe estado de carregamento, botão Processando... e retry em falha do Supabase. handleContinueToConfirmation é fail-closed. Lint e build verificados.">P10-T04 complete: approval step shows loading state, Processando... button, and error retry on Supabase failure. handleContinueToConfirmation is fail-closed. Lint and build verified.</li>
+            <li data-en="P10-T05 complete: Phase 10 deployed to production at https://abre-usa.vercel.app. Deployment dpl_8UtvGpSfHWJGM5zV1DPDKyG9UCtr is Ready. OCR route verified with JPEG extraction and confidence 100." data-pt="P10-T05 concluído: Fase 10 publicada em produção em https://abre-usa.vercel.app. Deployment dpl_8UtvGpSfHWJGM5zV1DPDKyG9UCtr está Ready. Rota OCR verificada com extração JPEG e confiança 100.">P10-T05 complete: Phase 10 deployed to production at https://abre-usa.vercel.app. Deployment dpl_8UtvGpSfHWJGM5zV1DPDKyG9UCtr is Ready. OCR route verified with JPEG extraction and confidence 100.</li>
             <li data-en="Payment, customer dashboard, branded AbreUSA sender migration, retention automation, and onboarding evolution implementations remain not implemented." data-pt="Pagamento, dashboard do cliente, migração para remetente AbreUSA, automação de retenção e implementações de evolução de onboarding ainda não foram implementados.">Payment, customer dashboard, branded AbreUSA sender migration, retention automation, and onboarding evolution implementations remain not implemented.</li>
           </ul>
         </article>
 
         <article class="card task">
           <span class="pill done" data-en="Last completed" data-pt="Última concluída">Last completed</span>
-          <h2 data-en="P10-T04 — Approval Loading State and Retry" data-pt="P10-T04 — Estado de carregamento e retry na aprovação">P10-T04 — Approval Loading State and Retry</h2>
+          <h2 data-en="P10-T05 — Production Deploy" data-pt="P10-T05 — Deploy em produção">P10-T05 — Production Deploy</h2>
           <p
-            data-en="Approval step shows Processando... while persisting. fail-closed: only navigates to confirmation on Supabase success; stays on approval step with retry button on failure. Lint and build verified."
-            data-pt="Aprovação mostra Processando... durante a persistência. fail-closed: navega para confirmação apenas no sucesso do Supabase; em falha permanece na tela de aprovação com botão de retry. Lint e build verificados."
+            data-en="Phase 10 is live at https://abre-usa.vercel.app. Home/admin health checks passed, and the production OCR API extracted passport/address data from a JPEG test image."
+            data-pt="A Fase 10 está ao vivo em https://abre-usa.vercel.app. Health checks de home/admin passaram, e a API OCR de produção extraiu dados de passaporte/endereço de uma imagem JPEG de teste."
           >
-            Approval step shows Processando... while persisting. fail-closed: only navigates to confirmation on Supabase success; stays on approval step with retry button on failure. Lint and build verified.
+            Phase 10 is live at https://abre-usa.vercel.app. Home/admin health checks passed, and the production OCR API extracted passport/address data from a JPEG test image.
           </p>
         </article>
 
         <article class="card next">
           <span class="pill needed" data-en="Next task" data-pt="Próxima tarefa">Next task</span>
-          <h2 data-en="Production Redeploy of Phase 10" data-pt="Redeploy em produção da Fase 10">Production Redeploy of Phase 10</h2>
+          <h2 data-en="Choose Next Priority" data-pt="Escolher próxima prioridade">Choose Next Priority</h2>
           <p
-            data-en="Deploy Phase 10 to abre-usa.vercel.app, verify the document-assisted path end-to-end in production, then choose the next Post-MVP priority: payment, customer dashboard, branded sender, retention Cron, or admin enhancements."
-            data-pt="Fazer o deploy da Fase 10 em abre-usa.vercel.app, verificar o fluxo document-assisted em produção, e escolher a próxima prioridade pós-MVP: pagamento, dashboard do cliente, remetente da marca, Cron de retenção ou melhorias no admin."
+            data-en="Choose the next Post-MVP priority: payment, customer dashboard, branded sender/domain, retention Cron, EIN-only flow, Registered Agent-only flow, admin audit enhancements, or broader onboarding evolution."
+            data-pt="Escolher a próxima prioridade pós-MVP: pagamento, dashboard do cliente, remetente/domínio da marca, Cron de retenção, fluxo EIN-only, fluxo Registered Agent-only, melhorias de auditoria admin ou evolução mais ampla do onboarding."
           >
-            Deploy Phase 10 to abre-usa.vercel.app, verify the document-assisted path end-to-end in production, then choose the next Post-MVP priority: payment, customer dashboard, branded sender, retention Cron, or admin enhancements.
+            Choose the next Post-MVP priority: payment, customer dashboard, branded sender/domain, retention Cron, EIN-only flow, Registered Agent-only flow, admin audit enhancements, or broader onboarding evolution.
           </p>
           <p
-            data-en="Stop checkpoint: docs reviewed on May 14, 2026. No implementation task is active."
-            data-pt="Checkpoint de parada: docs revisados em 14 de maio de 2026. Nenhuma tarefa de implementação está ativa."
+            data-en="Stop checkpoint: production deploy verified on May 14, 2026. No implementation task is active."
+            data-pt="Checkpoint de parada: deploy em produção verificado em 14 de maio de 2026. Nenhuma tarefa de implementação está ativa."
           >
-            Stop checkpoint: docs reviewed on May 14, 2026. No implementation task is active.
+            Stop checkpoint: production deploy verified on May 14, 2026. No implementation task is active.
           </p>
         </article>
       </section>
