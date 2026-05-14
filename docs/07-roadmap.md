@@ -1851,6 +1851,35 @@ P8.5-T03 status:
   - `/admin/orders` redirects unauthenticated users to `/admin/login`.
 - `npx vercel inspect https://abre-usa.vercel.app` reports the deployment is `Ready`.
 
+## Phase 8.5 Documentation Alignment Deploy
+
+Status: Complete.
+
+Task ID: `P8.5-T04`.
+
+Title: Redeploy committed Phase 8.5 state to production.
+
+Scope:
+
+- Confirm the worktree is clean and the Phase 8.5 deploy documentation commit exists.
+- Redeploy the current HEAD to Vercel production so the production deployment aligns with the committed repository state.
+- Verify customer app and admin entry points after redeploy.
+
+P8.5-T04 status:
+
+- Status: Complete.
+- Current HEAD before redeploy: `fd119631c295d3ba5d35f31283d1108a5bba7706`.
+- Local `npm run build` passed.
+- Vercel production redeploy completed successfully.
+- Deployment ID: `dpl_49uw5re5UDZQnVBDPJPPwqDufjSn`.
+- Production deployment URL: `https://abre-49oizmwkg-abre-usa-s-projects.vercel.app`.
+- Production alias remains `https://abre-usa.vercel.app`.
+- Production health checks passed:
+  - `/` returns `200`.
+  - `/admin/login` returns `200`.
+  - `/admin/orders` redirects unauthenticated users to `/admin/login`.
+- `npx vercel inspect https://abre-usa.vercel.app` reports the deployment is `Ready`.
+
 Potential additions (post-P8-T02):
 
 - Payment processing.

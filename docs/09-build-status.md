@@ -10,17 +10,18 @@ Phase 8.5 is complete. The guided onboarding UX cleanup is implemented before pa
 
 ## Last Completed Task
 
-Task ID: `P8.5-T03`
+Task ID: `P8.5-T04`
 
-Title: Deploy Phase 8.5 onboarding UX cleanup to production.
+Title: Redeploy committed Phase 8.5 state to production.
 
 Result:
 
-- Local `npm run build` passed before deploy.
-- Vercel production deploy completed successfully.
-- Deployment ID: `dpl_FKGnAAzFvdhVNkeazTgXxugx7HsQ`.
-- Production deployment URL: `https://abre-ha3hf131u-abre-usa-s-projects.vercel.app`.
-- Production alias updated: `https://abre-usa.vercel.app`.
+- Current HEAD before redeploy: `fd119631c295d3ba5d35f31283d1108a5bba7706`.
+- Local `npm run build` passed.
+- Vercel production redeploy completed successfully.
+- Deployment ID: `dpl_49uw5re5UDZQnVBDPJPPwqDufjSn`.
+- Production deployment URL: `https://abre-49oizmwkg-abre-usa-s-projects.vercel.app`.
+- Production alias remains `https://abre-usa.vercel.app`.
 - Production health checks passed:
   - `/` returns `200`.
   - `/admin/login` returns `200`.
@@ -29,7 +30,7 @@ Result:
 
 ## Current Task
 
-None. P8.5-T03 is complete.
+None. P8.5-T04 is complete.
 
 Result:
 
@@ -110,6 +111,7 @@ No next task is currently defined. Post-MVP priorities remain owner/operator-dir
   - P8.5-T01: Guided onboarding UX cleanup complete. Choice/card steps auto-advance, input/upload/review steps keep explicit Continue/Confirm, active Articles previews are hidden behind short education cards, sticky footer navigation is implemented, lint/build/browser verification passed, and `/api/orders` persistence/upload regression check passed with `AUS-2026-0015`.
   - P8.5-T02: Same-as-residential company address reuse complete. Applicant residential address, copied LLC principal address, and boolean relationship flag persist correctly. Verified with `AUS-2026-0016`.
   - P8.5-T03: Phase 8.5 production deployment complete. `https://abre-usa.vercel.app` now points to deployment `dpl_FKGnAAzFvdhVNkeazTgXxugx7HsQ`; production `/` and `/admin/login` return `200`, and `/admin/orders` redirects unauthenticated users to login.
+  - P8.5-T04: Committed Phase 8.5 state redeployed to production. `https://abre-usa.vercel.app` now points to deployment `dpl_49uw5re5UDZQnVBDPJPPwqDufjSn`; production `/` and `/admin/login` return `200`, and `/admin/orders` redirects unauthenticated users to login.
 
 ## What Is Implemented
 
@@ -239,7 +241,7 @@ Choose the next owner/operator-directed Post-MVP priority. Current candidates in
 - Permanent admin user exists, is email-confirmed, and owner/operator confirmed access.
 - Correct AbreUSA Vercel account is authenticated as `abreusaonline-7459`.
 - Vercel project is linked and deployed at `https://abre-usa.vercel.app`.
-- Phase 8.5 changes are deployed to production at `https://abre-usa.vercel.app`.
+- Phase 8.5 committed state is deployed to production at `https://abre-usa.vercel.app`.
 - Custom domain is deferred for now; controlled launch continues on `https://abre-usa.vercel.app`.
 - AbreUSA domain email migration remains deferred; temporary sender remains in use.
 - Manual physical deletion is implemented (P8-T11). In-browser verification against a real eligible document is recommended before enabling for production use.
