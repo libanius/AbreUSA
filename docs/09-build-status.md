@@ -10,44 +10,32 @@ Phase 9 foundation is implemented locally and verified. Source of truth: GitHub 
 
 ## Last Completed Task
 
-Task ID: `P9-T01`
+Task ID: `P9-T02`
 
-Title: Implement AI-ready onboarding entry mode foundation.
+Title: Implement real AI OCR document extraction via OpenAI GPT-4o Vision.
 
 Result:
 
-- App Spine updated from GitHub issue #2 before implementation.
-- Post-service onboarding entry mode choice added:
-  - `Enviar documentos para facilitar o preenchimento`.
-  - `Preencher manualmente`.
-- Manual path continues through the existing Phase 8.5 guided flow.
-- Document-assisted path keeps existing upload flow and explicitly states OCR is not active.
-- Supabase `orders` table now supports Phase 9 readiness fields:
-  - `onboarding_entry_mode`.
-  - `document_extraction_status`.
-  - `extracted_applicant_data`.
-  - `extracted_address_data`.
-  - `extraction_confidence`.
-  - `user_confirmed_extracted_data`.
-  - `agent_summary`.
-  - `missing_information_flags`.
-- Admin order detail shows entry mode, extraction status, confirmation state, confidence, missing flags, and agent summary.
-- Verification passed:
-  - `npm run lint`.
-  - `npm run build`.
-  - `npx supabase db push`.
-  - Local `/api/orders` persistence and private document upload regression check with `AUS-2026-0017`.
+- App Spine updated before implementation: DG-006 confirmed, 03-requirements, 05-platform-strategy, 07-roadmap, 09-build-status updated.
+- New server-side route: `POST /api/extract-document` receives FormData with passport and addressProof files.
+- New lib: `lib/extract-document.ts` calls OpenAI GPT-4o Vision API separately for passport and address proof.
+- Passport extraction targets: full name, date of birth, nationality, passport number, expiration date (YYYY-MM-DD).
+- Address extraction targets: street address, city, US state code, ZIP code.
+- New `extraction_review` step added to the guided flow (document-assisted path only, step 12 of 15).
+- Documents step now shows disclosure message for document-assisted mode instead of "OCR not active" placeholder.
+- Documents step Continue button triggers real OCR for document-assisted path; manual path goes directly to review.
+- extraction_review step shows loading spinner during API call, pre-filled editable fields on success, manual entry on failure.
+- extractionState drives flow: `idle`, `loading`, `done`, `failed`.
+- `buildLocalOrderPayload` sets `documentExtractionStatus`, `extractedApplicantData`, `extractedAddressData`, and `userConfirmedExtractedData` based on extraction outcome.
+- totalSteps is 15 for document-assisted mode, 14 for manual mode. Progress sidebar and step counter reflect mode.
+- `OPENAI_API_KEY` added to `.env.example`.
+- Verification passed: `npm run lint`, `npm run build`.
 
 ## Current Task
 
 Task ID: `None active`
 
-Title: Awaiting owner/operator selection for the next phase.
-
-Result:
-
-- Phase 9 foundation implementation is complete locally.
-- Real AI OCR, OpenAI API calls, autonomous AI behavior, payment, customer dashboard, Sunbiz checks, multi-state orchestration, branded sender, custom domain, and retention Cron remain out of scope.
+Title: Awaiting next owner/operator priority.
 
 ## Next Task
 
@@ -97,6 +85,7 @@ Commit the completed Phase 9 state, then choose the next owner/operator-directed
   - P8.5-T04: Committed Phase 8.5 state redeployed to production. `https://abre-usa.vercel.app` now points to deployment `dpl_49uw5re5UDZQnVBDPJPPwqDufjSn`; production `/` and `/admin/login` return `200`, and `/admin/orders` redirects unauthenticated users to login.
 - Phase 9 complete locally:
   - P9-T01: AI-ready onboarding entry mode foundation implemented from GitHub issue #2 and verified with `AUS-2026-0017`.
+  - P9-T02: Real AI OCR document extraction implemented via OpenAI GPT-4o Vision. Lint and build verified.
 
 ## What Is Implemented
 

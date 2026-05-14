@@ -240,12 +240,23 @@ Architecture principle:
 
 ## AI Extraction Strategy
 
-Current prototype uses simulated extraction. Real AI extraction is not confirmed for MVP.
+Provider: OpenAI GPT-4o Vision API (confirmed P9-T02).
 
-Confirmed MVP direction:
+Implementation:
 
-- Use placeholder/manual extraction strategy for MVP.
-- Real AI provider selection is deferred.
+- Server-side route: `/api/extract-document` (POST, FormData with passport and addressProof files).
+- Passport extraction targets: full name, date of birth, nationality, passport number, expiration.
+- Address proof extraction targets: street address, city, US state code, ZIP.
+- Result populates `extracted_applicant_data`, `extracted_address_data`, `document_extraction_status`, and `user_confirmed_extracted_data` on the order.
+
+Scope constraints:
+
+- Applies to document-assisted path only.
+- Customer disclosure shown before upload.
+- All extracted fields shown in a dedicated editable review step (`extraction_review`).
+- Customer must confirm before proceeding to the full review step.
+- AI may not provide legal or tax advice, service recommendations, or autonomous order actions.
+- If extraction fails, customer fills fields manually. Flow does not block.
 
 Planning constraint:
 

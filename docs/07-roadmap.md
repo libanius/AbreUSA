@@ -1933,10 +1933,13 @@ Out of scope:
 - Branded sender domain.
 - Retention Cron automation.
 
-Completed Phase 9 task:
+Completed Phase 9 tasks:
 
 - Task ID: `P9-T01`.
 - Title: Implement AI-ready onboarding entry mode foundation.
+
+- Task ID: `P9-T02`.
+- Title: Implement real AI OCR document extraction via OpenAI GPT-4o Vision.
 - Result:
   - App Spine updated first from GitHub issue #2.
   - Service selection now advances to a post-diagnosis entry mode choice.

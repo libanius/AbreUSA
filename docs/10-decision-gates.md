@@ -135,7 +135,7 @@ P8-T04 proposed direction:
 
 Category: AI orchestration, compliance, onboarding architecture.
 
-Status: Proposed.
+Status: Confirmed.
 
 Decision needed:
 
@@ -152,6 +152,16 @@ P8-T04 proposed direction:
 - AI may explain steps, check completeness, summarize review issues, and suggest non-final document extraction values.
 - AI must not provide autonomous legal/tax advice, final service recommendations, or unreviewed order submission.
 - All AI-generated field values must remain customer-reviewable before approval.
+
+P9-T02 confirmation:
+
+- Provider: OpenAI GPT-4o Vision API.
+- Scope: document field pre-fill only. Passport fields (full name, date of birth, nationality, passport number, expiration) and US address proof fields (street, city, state, ZIP).
+- Customer disclosure: required before upload in document-assisted mode.
+- Customer review: all extracted fields shown in an editable review step before any data is submitted. No field used without customer confirmation.
+- Failure behavior: if extraction fails, customer sees error message and fills fields manually. Flow does not block.
+- Autonomous behavior: explicitly blocked. AI may not provide legal or tax advice, make service recommendations, or submit orders.
+- Applies to: document-assisted path only. Manual path skips extraction entirely.
 
 ### DG-007: Progressive Onboarding And Resume Model
 

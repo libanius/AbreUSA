@@ -33,9 +33,11 @@ type FlowStep =
   | "registered_agent"
   | "ein_questions"
   | "documents"
+  | "extraction_review"
   | "review"
   | "approval"
   | "confirmation";
+type ExtractionState = "idle" | "loading" | "done" | "failed";
 type BusinessActivityId =
   | "tech"
   | "ecomm"
@@ -241,22 +243,6 @@ const businessActivityOptions: BusinessActivityOption[] = [
   { id: "other", label: "Outro" },
 ];
 
-const progressItems = [
-  "Serviço",
-  "Modo",
-  "Contato",
-  "Empresa",
-  "Atividade",
-  "Sócios",
-  "Dados",
-  "Endereço",
-  "Agente",
-  "EIN",
-  "Documentos",
-  "Revisão",
-  "Aprovação",
-  "Confirmação",
-];
 const einReasonOptions: { id: EinReason; label: string; description: string }[] = [
   { id: "new_business", label: "Novo negócio", description: "Abertura de uma nova empresa nos EUA." },
   { id: "banking", label: "Conta bancária", description: "Necessário para abertura de conta nos EUA." },
@@ -525,7 +511,10 @@ function StepFrame({
   onContinueToDocuments,
   onContinueToApproval,
   onContinueToConfirmation,
-  onContinueToReview,
+  onContinueFromDocuments,
+  onConfirmExtraction,
+  onBackFromReview,
+  extractionState,
   onContinueToMemberData,
   onContinueToMemberCount,
   onContinueToRegisteredAgent,
@@ -591,7 +580,10 @@ function StepFrame({
   onContinueToDocuments: () => void;
   onContinueToApproval: () => void;
   onContinueToConfirmation: () => void;
-  onContinueToReview: () => void;
+  onContinueFromDocuments: () => void;
+  onConfirmExtraction: () => void;
+  onBackFromReview: () => void;
+  extractionState: ExtractionState;
   onContinueToMemberData: () => void;
   onContinueToMemberCount: () => void;
   onContinueToRegisteredAgent: () => void;
@@ -831,7 +823,7 @@ function StepFrame({
     return (
       <StepCard
         badge="Preview local"
-        eyebrow="Passo 12 · Revisão"
+        eyebrow={`Passo ${totalSteps - 2} · Revisão`}
         title="Revise os dados e os previews"
       >
         <div className="grid gap-3">
@@ -923,12 +915,16 @@ function StepFrame({
               {
                 label: "Status da extração",
                 value:
-                  onboardingEntryMode === "document_assisted"
-                    ? "Preparado para extração futura; OCR ainda não ativo"
-                    : "Não iniciado",
+                  extractionState === "done"
+                    ? "Extração concluída · Dados revisados pelo cliente"
+                    : extractionState === "failed"
+                    ? "Extração não concluída · Preenchimento manual"
+                    : onboardingEntryMode === "document_assisted"
+                    ? "Aguardando extração"
+                    : "Preenchimento manual",
               },
             ]}
-            title="Documentos e extração futura"
+            title="Documentos e dados extraídos"
           />
 
           <FieldGroup title="Preview — Florida Articles of Organization">
@@ -1001,7 +997,7 @@ function StepFrame({
           backLabel="Voltar"
           nextDisabled={false}
           nextLabel="Aprovar dados"
-          onBack={onBackToDocuments}
+          onBack={onBackFromReview}
           onNext={onContinueToApproval}
         />
       </StepCard>
@@ -1021,11 +1017,11 @@ function StepFrame({
       >
         <div className="grid gap-3">
           {onboardingEntryMode === "document_assisted" ? (
-            <StatusMessage title="Modo assistido por documentos" tone="info">
+            <StatusMessage title="Análise automática de documentos" tone="info">
               <p>
-                O upload seguro está ativo. A extração automática ainda não está
-                ativa neste MVP; os dados abaixo continuam sendo revisão manual
-                e editável.
+                Após enviar os arquivos, o assistente de IA (OpenAI) irá
+                extrair os dados do passaporte e do comprovante de endereço.
+                Você revisará e confirmará todos os campos antes de continuar.
               </p>
             </StatusMessage>
           ) : null}
@@ -1115,11 +1111,12 @@ function StepFrame({
             ))}
           </FieldGroup>
 
-          <FieldGroup title="Revisão manual para extração futura">
-            <StatusMessage title="OCR ainda não ativo" tone="warning">
+          {onboardingEntryMode !== "document_assisted" ? (
+          <FieldGroup title="Revisão manual">
+            <StatusMessage title="Preencha os campos manualmente" tone="info">
               <p>
-                Estes campos preparam a revisão editável para uma fase futura.
-                Nenhum dado é extraído automaticamente neste momento.
+                Informe os dados do passaporte e do comprovante de endereço
+                para incluir na revisão final.
               </p>
             </StatusMessage>
             <FieldShell label="Nome completo">
@@ -1214,6 +1211,7 @@ function StepFrame({
               </FieldShell>
             </div>
           </FieldGroup>
+          ) : null}
 
           <ReviewSummary
             items={[
@@ -1239,11 +1237,173 @@ function StepFrame({
           nextDisabled={!isDocumentCollectionComplete}
           nextLabel={
             isDocumentCollectionComplete
-              ? "Continuar"
+              ? onboardingEntryMode === "document_assisted"
+                ? "Analisar documentos com IA"
+                : "Continuar"
               : "Anexar documentos"
           }
           onBack={onBackFromDocuments}
-          onNext={onContinueToReview}
+          onNext={onContinueFromDocuments}
+        />
+      </StepCard>
+    );
+  }
+
+  if (activeStep === "extraction_review") {
+    if (extractionState === "loading") {
+      return (
+        <StepCard
+          badge="Processando"
+          eyebrow="Passo 12 · Extração IA"
+          title="Analisando documentos com IA..."
+        >
+          <div className="flex flex-col items-center gap-6 py-10">
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-muted border-t-primary" />
+            <p className="text-center text-sm text-muted-foreground">
+              O assistente de IA está lendo o passaporte e o comprovante de
+              endereço. Isso pode levar alguns segundos.
+            </p>
+          </div>
+        </StepCard>
+      );
+    }
+
+    return (
+      <StepCard
+        badge="Rascunho local"
+        eyebrow="Passo 12 · Extração IA"
+        title={
+          extractionState === "failed"
+            ? "Preencha os dados manualmente"
+            : "Revise os dados extraídos pela IA"
+        }
+      >
+        <div className="grid gap-3">
+          {extractionState === "failed" ? (
+            <StatusMessage title="Extração não concluída" tone="warning">
+              <p>
+                Não foi possível extrair os dados automaticamente. Preencha os
+                campos abaixo e continue.
+              </p>
+            </StatusMessage>
+          ) : (
+            <StatusMessage
+              title="Dados extraídos · Todos os campos são editáveis"
+              tone="info"
+            >
+              <p>
+                Revise e corrija cada campo antes de continuar. Nenhum dado é
+                enviado sem sua confirmação.
+              </p>
+            </StatusMessage>
+          )}
+
+          <FieldGroup title="Dados do passaporte">
+            <FieldShell label="Nome completo">
+              <Input
+                onChange={(event) =>
+                  onChangeDocumentExtraction("fullName", event.target.value)
+                }
+                placeholder="Como no passaporte"
+                value={documents.extraction.fullName}
+              />
+            </FieldShell>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <FieldShell label="Data de nascimento">
+                <Input
+                  onChange={(event) =>
+                    onChangeDocumentExtraction("dateOfBirth", event.target.value)
+                  }
+                  type="date"
+                  value={documents.extraction.dateOfBirth}
+                />
+              </FieldShell>
+              <FieldShell label="Nacionalidade">
+                <Input
+                  onChange={(event) =>
+                    onChangeDocumentExtraction("nationality", event.target.value)
+                  }
+                  placeholder="Ex.: Brasileira"
+                  value={documents.extraction.nationality}
+                />
+              </FieldShell>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <FieldShell label="Número do passaporte">
+                <Input
+                  onChange={(event) =>
+                    onChangeDocumentExtraction("passportNumber", event.target.value)
+                  }
+                  placeholder="Ex.: AB123456"
+                  value={documents.extraction.passportNumber}
+                />
+              </FieldShell>
+              <FieldShell label="Validade do passaporte">
+                <Input
+                  onChange={(event) =>
+                    onChangeDocumentExtraction(
+                      "passportExpiration",
+                      event.target.value,
+                    )
+                  }
+                  type="date"
+                  value={documents.extraction.passportExpiration}
+                />
+              </FieldShell>
+            </div>
+          </FieldGroup>
+
+          <FieldGroup title="Endereço nos EUA">
+            <FieldShell label="Endereço">
+              <Input
+                onChange={(event) =>
+                  onChangeDocumentExtraction("streetAddress", event.target.value)
+                }
+                placeholder="Rua e número"
+                value={documents.extraction.streetAddress}
+              />
+            </FieldShell>
+            <div className="grid gap-4 sm:grid-cols-3">
+              <FieldShell label="Cidade">
+                <Input
+                  onChange={(event) =>
+                    onChangeDocumentExtraction("city", event.target.value)
+                  }
+                  value={documents.extraction.city}
+                />
+              </FieldShell>
+              <FieldShell label="Estado">
+                <Input
+                  maxLength={2}
+                  onChange={(event) =>
+                    onChangeDocumentExtraction("state", event.target.value)
+                  }
+                  placeholder="FL"
+                  value={documents.extraction.state}
+                />
+              </FieldShell>
+              <FieldShell label="ZIP Code">
+                <Input
+                  inputMode="numeric"
+                  maxLength={10}
+                  onChange={(event) =>
+                    onChangeDocumentExtraction("zip", event.target.value)
+                  }
+                  value={documents.extraction.zip}
+                />
+              </FieldShell>
+            </div>
+          </FieldGroup>
+        </div>
+        <StepNavigation
+          currentStep={currentStep}
+          totalSteps={totalSteps}
+          backDisabled={false}
+          backLabel="Voltar"
+          nextDisabled={false}
+          nextLabel="Confirmar e continuar"
+          onBack={onBackToDocuments}
+          onNext={onConfirmExtraction}
         />
       </StepCard>
     );
@@ -2360,14 +2520,22 @@ export function GuidedIntakeShell() {
       residentialZip: "",
     });
   const [documentFiles, setDocumentFiles] = useState<{ passport: File | null; addressProof: File | null }>({ passport: null, addressProof: null });
+  const [extractionState, setExtractionState] = useState<ExtractionState>("idle");
   const [approvedOrderPayload, setApprovedOrderPayload] =
     useState<LocalOrderPayload | null>(null);
+  const isDocumentAssisted = onboardingEntryMode === "document_assisted";
+  const totalSteps = isDocumentAssisted ? 15 : 14;
+  const progressItems = isDocumentAssisted
+    ? ["Serviço", "Modo", "Contato", "Empresa", "Atividade", "Sócios", "Dados", "Endereço", "Agente", "EIN", "Documentos", "Extração IA", "Revisão", "Aprovação", "Confirmação"]
+    : ["Serviço", "Modo", "Contato", "Empresa", "Atividade", "Sócios", "Dados", "Endereço", "Agente", "EIN", "Documentos", "Revisão", "Aprovação", "Confirmação"];
   const currentStep =
     activeStep === "confirmation"
-      ? 14
+      ? totalSteps
       : activeStep === "approval"
-      ? 13
+      ? totalSteps - 1
       : activeStep === "review"
+      ? totalSteps - 2
+      : activeStep === "extraction_review"
       ? 12
       : activeStep === "documents"
       ? 11
@@ -2395,6 +2563,8 @@ export function GuidedIntakeShell() {
       ? "Confirmação"
       : activeStep === "approval"
       ? "Aprovação"
+      : activeStep === "extraction_review"
+      ? "Extração IA"
       : activeStep === "review"
       ? "Revisão"
       : activeStep === "documents"
@@ -2461,6 +2631,7 @@ export function GuidedIntakeShell() {
     });
     setDocuments(emptyDocumentCollection);
     setApprovalConfirmed(false);
+    setExtractionState("idle");
     setApprovedOrderPayload(null);
   }
 
@@ -2507,11 +2678,22 @@ export function GuidedIntakeShell() {
         status: "approved",
         approvedAt: approvedAt.toISOString(),
         onboardingEntryMode: onboardingEntryMode ?? "manual",
-        documentExtractionStatus: "not_started",
-        extractedApplicantData: {},
-        extractedAddressData: {},
+        documentExtractionStatus: extractionState === "done" ? "completed" : extractionState === "failed" ? "failed" : "not_started",
+        extractedApplicantData: extractionState !== "idle" ? {
+          fullName: documents.extraction.fullName,
+          dateOfBirth: documents.extraction.dateOfBirth,
+          nationality: documents.extraction.nationality,
+          passportNumber: documents.extraction.passportNumber,
+          passportExpiration: documents.extraction.passportExpiration,
+        } : {},
+        extractedAddressData: extractionState !== "idle" ? {
+          streetAddress: documents.extraction.streetAddress,
+          city: documents.extraction.city,
+          state: documents.extraction.state,
+          zip: documents.extraction.zip,
+        } : {},
         extractionConfidence: null,
-        userConfirmedExtractedData: false,
+        userConfirmedExtractedData: extractionState === "done",
         agentSummary: null,
         missingInformationFlags: [],
       },
@@ -2546,6 +2728,40 @@ export function GuidedIntakeShell() {
       },
       generatedForms,
     };
+  }
+
+  async function handleContinueFromDocuments() {
+    if (onboardingEntryMode === "document_assisted") {
+      setExtractionState("loading");
+      setActiveStep("extraction_review");
+      try {
+        const formData = new FormData();
+        if (documentFiles.passport) formData.append("passport", documentFiles.passport);
+        if (documentFiles.addressProof) formData.append("addressProof", documentFiles.addressProof);
+        const response = await fetch("/api/extract-document", { method: "POST", body: formData });
+        if (!response.ok) throw new Error("extraction failed");
+        const result = await response.json();
+        setDocuments((prev) => ({
+          ...prev,
+          extraction: {
+            fullName: result.passport?.fullName ?? "",
+            dateOfBirth: result.passport?.dateOfBirth ?? "",
+            nationality: result.passport?.nationality ?? "",
+            passportNumber: result.passport?.passportNumber ?? "",
+            passportExpiration: result.passport?.passportExpiration ?? "",
+            streetAddress: result.address?.streetAddress ?? "",
+            city: result.address?.city ?? "",
+            state: result.address?.state ?? "",
+            zip: result.address?.zipCode ?? "",
+          },
+        }));
+        setExtractionState("done");
+      } catch {
+        setExtractionState("failed");
+      }
+    } else {
+      setActiveStep("review");
+    }
   }
 
   async function handleContinueToConfirmation() {
@@ -2687,7 +2903,7 @@ export function GuidedIntakeShell() {
             onBackToLlcName={() => setActiveStep("llc_name")}
             onBackToMemberData={() => setActiveStep("member_data")}
             onBackToRegisteredAgent={() => setActiveStep("registered_agent")}
-            onBackToDocuments={() => setActiveStep("documents")}
+            onBackToDocuments={() => { setExtractionState("idle"); setActiveStep("documents"); }}
             onBackToApproval={() => setActiveStep("approval")}
             onBackToReview={() => setActiveStep("review")}
             onBackFromDocuments={() =>
@@ -2715,7 +2931,10 @@ export function GuidedIntakeShell() {
             onContinueToConfirmation={handleContinueToConfirmation}
             onContinueToDocuments={() => setActiveStep("documents")}
             onContinueToEinQuestions={() => setActiveStep("ein_questions")}
-            onContinueToReview={() => setActiveStep("review")}
+            onContinueFromDocuments={handleContinueFromDocuments}
+            onConfirmExtraction={() => setActiveStep("review")}
+            onBackFromReview={() => setActiveStep(isDocumentAssisted ? "extraction_review" : "documents")}
+            extractionState={extractionState}
             onContinueToMemberData={() => setActiveStep("member_data")}
             onContinueToMemberCount={() => setActiveStep("member_count")}
             onContinueToRegisteredAgent={() => setActiveStep("registered_agent")}
@@ -2725,7 +2944,7 @@ export function GuidedIntakeShell() {
             onSelectService={handleSelectService}
             selectedService={selectedService}
             currentStep={currentStep}
-            totalSteps={14}
+            totalSteps={totalSteps}
           />
 
           <aside className="h-fit rounded-lg border bg-card p-5 shadow-sm">

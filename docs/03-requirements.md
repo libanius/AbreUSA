@@ -38,11 +38,15 @@ Document extraction targets:
 - State.
 - ZIP code.
 
-AI extraction strategy for MVP:
+AI extraction strategy:
 
-- Use placeholder/manual extraction behavior.
-- Customer must be able to manually review and correct fields.
-- Real AI provider selection is deferred.
+- Provider: OpenAI GPT-4o Vision API (server-side, `/api/extract-document`).
+- Applies to document-assisted path only. Manual path fills fields directly.
+- Customer disclosure shown before upload in document-assisted mode.
+- Extracted fields shown in a dedicated editable review step before submission.
+- Customer must review and confirm all extracted values. No field submitted without confirmation.
+- If extraction fails, customer fills fields manually. Flow does not block on failure.
+- AI must not provide legal or tax advice, service recommendations, or autonomous actions.
 
 ## Review And Approval Requirements
 
