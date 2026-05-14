@@ -883,3 +883,20 @@ Reason:
 
 Phase 9 established the document-assisted path structure and positioned documents at step 3. Phase 10 completes the intended design by running real OCR after upload and using the result to prefill later onboarding fields — reducing manual data entry for document-assisted customers. The extraction_review step ensures the customer always reviews and confirms before confirmed data is used.
 
+### 2026-05-14: Phase 11 Customer Dashboard Lookup MVP
+
+Decision:
+
+Start the customer dashboard journey with a protocol + applicant email lookup instead of a full customer account system.
+
+Result:
+
+- Phase 11 begins with `/dashboard`.
+- Customers can view a safe order summary after submission using protocol number and applicant email.
+- The dashboard may show order status, service, LLC name, applicant identity, document checklist status, generated form checklist, and next-step timeline.
+- The dashboard must not expose document signed URLs, storage paths, admin-only controls, internal audit records, or raw sensitive files.
+- Full customer login, magic links, draft resume, customer corrections, and document downloads remain future work.
+
+Reason:
+
+Customers need a simple way to check progress after receiving a protocol number. A protocol + email lookup delivers immediate value while avoiding the larger architecture and security decisions of a full customer account portal.

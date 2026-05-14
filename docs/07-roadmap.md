@@ -2047,3 +2047,70 @@ Stop checkpoint:
   - `/api/extract-document` returns extracted passport/address data from a generated JPEG test image with `confidence: 100`.
   - `/api/orders` persists a document-assisted Complete Package order with private document uploads (`AUS-2026-0020`).
 - Exact next roadmap action: choose the next owner/operator-directed Post-MVP priority and update the App Spine before implementation.
+
+## Phase 11: Customer Dashboard Journey
+
+Status: In progress. Local customer dashboard lookup MVP is implemented and verified; production deployment remains pending.
+
+Purpose:
+
+Give customers a simple Portuguese-first way to check an approved order after submission without exposing sensitive documents or requiring a full customer account system yet.
+
+Decision:
+
+Phase 11 starts with a lightweight customer dashboard lookup using protocol number and applicant email. This is not a full authenticated customer portal, draft resume system, or document vault.
+
+Scope:
+
+- Add a customer-facing `/dashboard` route.
+- Allow lookup by protocol number plus applicant email.
+- Fetch data server-side using the existing service-role Supabase boundary.
+- Return only a safe customer DTO:
+  - protocol number.
+  - selected service.
+  - current order status.
+  - creation/approval dates.
+  - applicant name/email.
+  - LLC name and state.
+  - document checklist/status, without signed URLs or storage paths.
+  - generated form checklist.
+  - basic next-step timeline.
+- Keep UI Portuguese-first.
+- Do not expose raw document links, storage paths, admin notes, internal audit records, or private reviewer controls.
+
+Out of scope:
+
+- Customer login/account creation.
+- Magic-link authentication.
+- Draft resume.
+- Customer document download.
+- Customer edits or missing-information correction.
+- Payment.
+- Status-triggered email automation.
+- Granular customer authorization beyond protocol + email lookup.
+
+Completed Phase 11 tasks:
+
+- Task ID: `P11-T01`.
+- Title: Implement customer dashboard lookup MVP.
+- Result:
+  - Added `lib/customer-dashboard.ts` server-only lookup DTO.
+  - Added `/dashboard` Portuguese-first customer lookup route.
+  - Lookup requires protocol number plus applicant email.
+  - Valid lookup returns safe order summary, document status checklist, generated form checklist, and next-step timeline.
+  - Invalid lookup returns a neutral not-found message.
+  - Customer dashboard does not expose signed document URLs, storage paths, download/view URLs, admin controls, audit records, or raw sensitive files.
+  - Confirmation screen links to `/dashboard` with protocol prefilled.
+  - Verification passed: `npm run lint`, `npm run build`, local `/dashboard` lookup with `AUS-2026-0020`, invalid-email lookup, and HTML check for absent sensitive URL/path tokens.
+
+Current Phase 11 task:
+
+- Task ID: `P11-T02`.
+- Title: Deploy customer dashboard lookup MVP and verify production.
+- Acceptance criteria:
+  - Phase 11 code is deployed to `https://abre-usa.vercel.app`.
+  - Production `/dashboard` renders the Portuguese lookup screen.
+  - Production valid lookup for `AUS-2026-0020` returns the safe summary.
+  - Production invalid-email lookup does not reveal customer/order details.
+  - Production dashboard HTML does not expose signed URLs, storage paths, download/view URLs, admin controls, audit records, or raw sensitive files.
+  - App Spine and progress page record the production deployment result.

@@ -716,6 +716,21 @@ function StepFrame({
             title="Resumo da confirmação"
           />
 
+          <StatusMessage title="Acompanhe seu pedido" tone="info">
+            <p>
+              Use o protocolo abaixo e o e-mail informado no onboarding para
+              consultar o status no dashboard do cliente.
+            </p>
+            <a
+              className="mt-3 inline-flex rounded-lg bg-foreground px-4 py-2 text-sm font-semibold text-background transition hover:opacity-90"
+              href={`/dashboard?protocol=${encodeURIComponent(
+                approvedOrderPayload?.order.protocolNumber ?? "",
+              )}`}
+            >
+              Abrir dashboard do cliente
+            </a>
+          </StatusMessage>
+
           <FieldGroup title="Payload interno">
             <StatusMessage title="Dados preparados para revisão" tone="info">
               <p>

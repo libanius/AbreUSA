@@ -266,17 +266,17 @@
       <section class="grid overview">
         <article class="card">
           <span class="pill done" data-en="Current phase" data-pt="Fase atual">Current phase</span>
-          <p class="phase" data-en="Phase 10: AI Document Extraction / OCR" data-pt="Fase 10: Extração de Documentos / OCR por IA">Phase 10: AI Document Extraction / OCR</p>
+          <p class="phase" data-en="Phase 11: Customer Dashboard Journey" data-pt="Fase 11: Jornada do dashboard do cliente">Phase 11: Customer Dashboard Journey</p>
           <p
-            data-en="Phase 10 is deployed to production. Real OCR extraction via OpenAI GPT-4o Vision is live for the document-assisted path at abre-usa.vercel.app."
-            data-pt="A Fase 10 está em produção. Extração real com OCR via OpenAI GPT-4o Vision está ativa para o fluxo document-assisted em abre-usa.vercel.app."
+            data-en="Phase 11 is in progress. The local dashboard lookup MVP is implemented and verified; production deployment is the next task."
+            data-pt="A Fase 11 está em andamento. O MVP local de consulta do dashboard está implementado e verificado; o deploy de produção é a próxima tarefa."
           >
-            Phase 10 is deployed to production. Real OCR extraction via OpenAI GPT-4o Vision is live for the document-assisted path at abre-usa.vercel.app.
+            Phase 11 is in progress. The local dashboard lookup MVP is implemented and verified; production deployment is the next task.
           </p>
           <div class="progress-wrap" aria-label="Project progress">
             <div class="progress-label">
               <span data-en="Roadmap progress" data-pt="Progresso do roadmap">Roadmap progress</span>
-              <span data-en="Phase 10 production" data-pt="Fase 10 em produção">Phase 10 production</span>
+              <span data-en="Phase 11 active" data-pt="Fase 11 em andamento">Phase 11 active</span>
             </div>
             <div class="progress-track">
               <div class="progress-fill"></div>
@@ -419,35 +419,36 @@
             <li data-en="P10-T04 complete: approval step shows loading state, Processando... button, and error retry on Supabase failure. handleContinueToConfirmation is fail-closed. Lint and build verified." data-pt="P10-T04 concluído: passo de aprovação exibe estado de carregamento, botão Processando... e retry em falha do Supabase. handleContinueToConfirmation é fail-closed. Lint e build verificados.">P10-T04 complete: approval step shows loading state, Processando... button, and error retry on Supabase failure. handleContinueToConfirmation is fail-closed. Lint and build verified.</li>
             <li data-en="P10-T05 complete: Phase 10 deployed to production at https://abre-usa.vercel.app. Deployment dpl_8UtvGpSfHWJGM5zV1DPDKyG9UCtr is Ready. OCR route verified with JPEG extraction and confidence 100." data-pt="P10-T05 concluído: Fase 10 publicada em produção em https://abre-usa.vercel.app. Deployment dpl_8UtvGpSfHWJGM5zV1DPDKyG9UCtr está Ready. Rota OCR verificada com extração JPEG e confiança 100.">P10-T05 complete: Phase 10 deployed to production at https://abre-usa.vercel.app. Deployment dpl_8UtvGpSfHWJGM5zV1DPDKyG9UCtr is Ready. OCR route verified with JPEG extraction and confidence 100.</li>
             <li data-en="P10-T06 complete: production /api/orders persisted a document-assisted Complete Package order with OCR data and private uploads; verified with protocol AUS-2026-0020." data-pt="P10-T06 concluído: /api/orders em produção persistiu um pedido Pacote Completo document-assisted com dados OCR e uploads privados; verificado com protocolo AUS-2026-0020.">P10-T06 complete: production /api/orders persisted a document-assisted Complete Package order with OCR data and private uploads; verified with protocol AUS-2026-0020.</li>
-            <li data-en="Payment, customer dashboard, branded AbreUSA sender migration, retention automation, and onboarding evolution implementations remain not implemented." data-pt="Pagamento, dashboard do cliente, migração para remetente AbreUSA, automação de retenção e implementações de evolução de onboarding ainda não foram implementados.">Payment, customer dashboard, branded AbreUSA sender migration, retention automation, and onboarding evolution implementations remain not implemented.</li>
+            <li data-en="P11-T01 complete locally: /dashboard lookup by protocol + applicant email returns a safe order summary and hides sensitive document URLs/storage paths. Lint, build, valid lookup, invalid lookup, and sensitive-token checks passed." data-pt="P11-T01 concluído localmente: /dashboard consulta por protocolo + e-mail do solicitante retorna resumo seguro do pedido e oculta URLs/caminhos de documentos sensíveis. Lint, build, consulta válida, consulta inválida e checagens de tokens sensíveis aprovados.">P11-T01 complete locally: /dashboard lookup by protocol + applicant email returns a safe order summary and hides sensitive document URLs/storage paths. Lint, build, valid lookup, invalid lookup, and sensitive-token checks passed.</li>
+            <li data-en="Payment, full authenticated customer portal, customer login/magic links, branded AbreUSA sender migration, retention automation, and onboarding evolution implementations remain not implemented." data-pt="Pagamento, portal autenticado completo do cliente, login/magic links de cliente, migração para remetente AbreUSA, automação de retenção e implementações de evolução de onboarding ainda não foram implementados.">Payment, full authenticated customer portal, customer login/magic links, branded AbreUSA sender migration, retention automation, and onboarding evolution implementations remain not implemented.</li>
           </ul>
         </article>
 
         <article class="card task">
           <span class="pill done" data-en="Last completed" data-pt="Última concluída">Last completed</span>
-          <h2 data-en="P10-T06 — Production Order Verified" data-pt="P10-T06 — Pedido em produção verificado">P10-T06 — Production Order Verified</h2>
+          <h2 data-en="P11-T01 — Customer Dashboard Lookup" data-pt="P11-T01 — Consulta do dashboard do cliente">P11-T01 — Customer Dashboard Lookup</h2>
           <p
-            data-en="Production order AUS-2026-0020 verified the document-assisted path through /api/orders: OCR fields, applicant address, reused company address, EIN data, generated forms, and private uploads persisted."
-            data-pt="O pedido de produção AUS-2026-0020 verificou o caminho document-assisted via /api/orders: campos OCR, endereço do applicant, endereço da empresa reutilizado, EIN, formulários gerados e uploads privados persistidos."
+            data-en="/dashboard now supports protocol + applicant email lookup, renders a safe Portuguese order summary, and exposes no signed document URLs or storage paths."
+            data-pt="/dashboard agora permite consulta por protocolo + e-mail do solicitante, exibe um resumo seguro em português e não expõe URLs assinadas nem caminhos de storage."
           >
-            Production order AUS-2026-0020 verified the document-assisted path through /api/orders: OCR fields, applicant address, reused company address, EIN data, generated forms, and private uploads persisted.
+            /dashboard now supports protocol + applicant email lookup, renders a safe Portuguese order summary, and exposes no signed document URLs or storage paths.
           </p>
         </article>
 
         <article class="card next">
-          <span class="pill needed" data-en="Next task" data-pt="Próxima tarefa">Next task</span>
-          <h2 data-en="Choose Next Priority" data-pt="Escolher próxima prioridade">Choose Next Priority</h2>
+          <span class="pill needed" data-en="Current task" data-pt="Tarefa atual">Current task</span>
+          <h2 data-en="P11-T02 — Deploy Customer Dashboard" data-pt="P11-T02 — Publicar dashboard do cliente">P11-T02 — Deploy Customer Dashboard</h2>
           <p
-            data-en="Choose the next Post-MVP priority: payment, customer dashboard, branded sender/domain, retention Cron, EIN-only flow, Registered Agent-only flow, admin audit enhancements, or broader onboarding evolution."
-            data-pt="Escolher a próxima prioridade pós-MVP: pagamento, dashboard do cliente, remetente/domínio da marca, Cron de retenção, fluxo EIN-only, fluxo Registered Agent-only, melhorias de auditoria admin ou evolução mais ampla do onboarding."
+            data-en="Deploy the customer dashboard lookup to production and verify valid lookup, invalid lookup, and no sensitive URLs/paths in production HTML."
+            data-pt="Publicar a consulta do dashboard em produção e verificar consulta válida, consulta inválida e ausência de URLs/caminhos sensíveis no HTML de produção."
           >
-            Choose the next Post-MVP priority: payment, customer dashboard, branded sender/domain, retention Cron, EIN-only flow, Registered Agent-only flow, admin audit enhancements, or broader onboarding evolution.
+            Deploy the customer dashboard lookup to production and verify valid lookup, invalid lookup, and no sensitive URLs/paths in production HTML.
           </p>
           <p
-            data-en="Stop checkpoint: production deploy verified on May 14, 2026. No implementation task is active."
-            data-pt="Checkpoint de parada: deploy em produção verificado em 14 de maio de 2026. Nenhuma tarefa de implementação está ativa."
+            data-en="Sensitive document links, customer login, magic links, draft resume, and customer corrections remain future work."
+            data-pt="Links de documentos sensíveis, login de cliente, magic links, retomada de rascunho e correções pelo cliente continuam como trabalho futuro."
           >
-            Stop checkpoint: production deploy verified on May 14, 2026. No implementation task is active.
+            Sensitive document links, customer login, magic links, draft resume, and customer corrections remain future work.
           </p>
         </article>
       </section>

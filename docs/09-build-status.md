@@ -2,50 +2,62 @@
 
 ## Current Phase
 
-Phase 10: AI Document Extraction / OCR.
+Phase 11: Customer Dashboard Journey.
 
-Phases 1–9 are complete. Phase 10 is implemented, deployed to production, and verified. Source of truth: GitHub issue #3, `Phase 10 — AI Document Extraction / OCR`.
+Phases 1–10 are complete. Phase 11 is in progress. The first customer dashboard slice is implemented locally as a protocol + applicant email lookup, not a full customer account portal.
 
 ## Last Completed Task
 
-Task ID: `P10-T06`
+Task ID: `P11-T01`
 
-Title: Production document-assisted order persistence verification.
+Title: Customer dashboard lookup MVP.
 
 Result:
 
-- Production `/api/orders` verified with a document-assisted Complete Package payload.
-- Test protocol: `AUS-2026-0020`.
-- Persisted order values verified in Supabase:
-  - `onboarding_entry_mode = document_assisted`.
-  - `document_extraction_status = completed`.
-  - `extraction_confidence = 100`.
-  - `user_confirmed_extracted_data = true`.
-  - `extracted_applicant_data` and `extracted_address_data` stored.
-- Applicant residential address persisted.
-- LLC principal address persisted with `principal_same_as_applicant_address = true`.
-- Two private document rows persisted:
-  - `passport` / `phase10-passport.jpg`.
-  - `us_address_proof` / `phase10-address-proof.jpg`.
+- Added `/dashboard` customer-facing lookup screen in Portuguese.
+- Added `lib/customer-dashboard.ts` server-only safe DTO builder.
+- Lookup requires protocol number plus applicant email.
+- Valid local lookup with `AUS-2026-0020` and the applicant email returns:
+  - protocol, service, status, received/approved dates.
+  - applicant name/email.
+  - LLC name/state.
+  - document checklist/status.
+  - generated form checklist.
+  - next-step timeline.
+- Invalid email lookup returns a neutral not-found message.
+- Local HTML checks confirmed no `storage_path`, signed URLs, download/view URLs, storage object paths, or raw sensitive passport fields are exposed.
+- Confirmation screen now links to `/dashboard` with the protocol prefilled.
+- Verification passed:
+  - `npm run lint`.
+  - `npm run build`.
+  - Local `/dashboard` HTTP checks on port 3000.
 
 ## Current Task
 
-Task ID: `None active`
+Task ID: `P11-T02`
 
-Title: Awaiting next owner/operator priority.
+Title: Deploy customer dashboard lookup MVP and verify production.
 
-Phase 10 is complete and deployed. Next step is choosing the next Post-MVP priority.
+Scope:
 
-Stop checkpoint:
+- Deploy the Phase 11 customer dashboard slice to production.
+- Verify `/dashboard` on `https://abre-usa.vercel.app`.
+- Confirm valid protocol + email returns only the safe summary.
+- Confirm invalid lookup does not reveal customer/order data.
+- Confirm production HTML does not expose signed document URLs, storage paths, admin-only controls, audit records, or raw uploaded files.
 
-- Date: 2026-05-14.
-- Latest deployment: `dpl_8UtvGpSfHWJGM5zV1DPDKyG9UCtr`.
-- Local docs reviewed before stopping: `/docs/09-build-status.md`, `/docs/07-roadmap.md`, `/progress/index.html`.
-- No implementation task is currently in progress.
+Acceptance criteria:
+
+- Production deployment is Ready.
+- `/dashboard` returns `200`.
+- Production valid lookup for `AUS-2026-0020` returns the safe order summary.
+- Production invalid lookup returns a neutral not-found message.
+- Sensitive document URLs, storage paths, admin controls, audit records, and raw files remain hidden.
+- App Spine and progress page are updated with the production deployment result.
 
 ## Next Task
 
-Choose the next owner/operator-directed priority. Candidates: payment, customer dashboard, branded sender/domain, retention Cron automation, EIN-only flow, Registered Agent-only flow, admin audit enhancements, or broader onboarding evolution.
+Deploy `P11-T02` to production and verify the dashboard lookup against `https://abre-usa.vercel.app`.
 
 ## Completed Tasks
 
@@ -101,6 +113,8 @@ Choose the next owner/operator-directed priority. Candidates: payment, customer 
   - P10-T04: Approval loading state and error retry. Button shows "Processando...", loading StatusMessage shown during persistence, error StatusMessage + retry on failure. `handleContinueToConfirmation` fail-closed: only navigates to confirmation on Supabase success. Lint and build verified.
   - P10-T05: Production redeploy complete. `https://abre-usa.vercel.app` now points to `dpl_8UtvGpSfHWJGM5zV1DPDKyG9UCtr`; home/admin health checks passed; production OCR route verified with JPEG extraction and `confidence: 100`.
   - P10-T06: Production document-assisted order persistence verified through `/api/orders` with `AUS-2026-0020`; extracted data, address reuse, EIN details, generated forms, and two private document records persisted.
+- Phase 11 in progress:
+  - P11-T01: Customer dashboard lookup MVP implemented locally. `/dashboard` supports protocol + applicant email lookup, returns a safe customer DTO, and hides sensitive document URLs/storage paths/raw files. Lint, build, valid lookup, invalid lookup, and sensitive-token HTML checks passed.
 
 ## What Is Implemented
 
@@ -142,6 +156,12 @@ Choose the next owner/operator-directed priority. Candidates: payment, customer 
   - Logout clears session.
 - `.env.example` documents all required environment variables (`OPENAI_API_KEY` included).
 - `/progress/index.html` bilingual stakeholder dashboard.
+- Customer dashboard journey:
+  - `/dashboard` protocol + applicant email lookup implemented locally.
+  - Safe customer summary includes protocol, service, status, dates, applicant, LLC, document checklist/status, generated form checklist, and next-step timeline.
+  - Signed document URLs, storage paths, raw uploaded files, admin controls, and audit records are not exposed.
+  - Confirmation screen links to `/dashboard` with the protocol prefilled.
+  - Full customer login/account portal is not implemented yet.
 - Strategic evolution operating model: `AGENTS.md`, `/docs/START-HERE.md`, `/docs/COMMANDS.md`, `/docs/10-decision-gates.md`.
 - Document retention: 90-day sensitive upload retention, 1-year generated files, long-term customer metadata.
 - Manual admin deletion workflow with audit events (`document_deletion_attempted`, `document_deleted`, `document_deletion_failed`).
@@ -164,7 +184,10 @@ Choose the next owner/operator-directed priority. Candidates: payment, customer 
 - Vercel Cron retention automation.
 - Reviewer access scope refinement beyond the single authenticated admin MVP model.
 - Payment processing (Post-MVP).
-- Customer dashboard (Post-MVP).
+- Full authenticated customer dashboard/account portal.
+- Customer magic-link access.
+- Customer document download.
+- Customer correction/missing-information workflow.
 - EIN-only and Registered Agent-only dedicated flows (Post-MVP).
 - Admin pagination (MVP assumes low order volume).
 - Automated status-triggered emails to applicant (Post-MVP).
@@ -179,13 +202,15 @@ Choose the next owner/operator-directed priority. Candidates: payment, customer 
 
 ## Exact Next Step To Resume
 
-1. Choose the next owner/operator-directed Post-MVP priority.
-2. Recommended candidates: payment, customer dashboard, branded sender/domain, retention Cron automation, EIN-only flow, Registered Agent-only flow, admin audit enhancements, or broader onboarding evolution.
-3. Before starting the next phase, update `/docs/07-roadmap.md`, `/docs/09-build-status.md`, and `/progress/index.html` with the new phase/task.
+1. Deploy `P11-T02` to production.
+2. Verify production `/dashboard` valid lookup with `AUS-2026-0020`.
+3. Verify production invalid-email lookup does not reveal customer/order details.
+4. Verify production HTML does not include signed URLs, storage paths, download/view URLs, admin controls, audit records, or raw sensitive fields.
+5. Update `/docs/07-roadmap.md`, `/docs/09-build-status.md`, and `/progress/index.html` with the production deployment result.
 
 Resume command prompt:
 
-Read `AGENTS.md`, `/docs/START-HERE.md`, `/docs/07-roadmap.md`, and this file. Select the next owner/operator-directed priority and update the App Spine before implementation.
+Read `AGENTS.md`, `/docs/START-HERE.md`, `/docs/07-roadmap.md`, and this file. Resume with `P11-T02` production deployment and verification.
 
 ## Blockers And Risks
 
@@ -199,5 +224,6 @@ Read `AGENTS.md`, `/docs/START-HERE.md`, `/docs/07-roadmap.md`, and this file. S
 - Automated retention Cron (Vercel Cron) remains deferred until manual deletion is verified in production.
 - OCR extraction only supports image files (JPEG, PNG, GIF, WebP). PDF uploads are accepted for Supabase storage but return `unsupported_file_type` error for extraction — customer sees friendly fallback and can continue manually.
 - Admin portal has no rate limiting or brute-force protection on the login page (acceptable for MVP internal use).
+- Customer dashboard lookup has no rate limiting yet. The MVP relies on protocol + applicant email and exposes only a safe DTO, but rate limiting should be added before broader public launch volume.
 - Default PATH does not include Node/npm on this machine; use `PATH=/usr/local/opt/node@22/bin:$PATH` for local commands.
 - The project path contains a curly apostrophe (U+2019); use Python subprocess or `pathlib.Path.cwd()` for shell commands — do not use shell `find | head -1` pattern.
