@@ -2050,7 +2050,7 @@ Stop checkpoint:
 
 ## Phase 11: Customer Dashboard Journey
 
-Status: In progress. Local customer dashboard lookup MVP is implemented and verified; production deployment remains pending.
+Status: Complete for the first production slice. Customer dashboard lookup MVP is implemented, deployed, and production-verified.
 
 Purpose:
 
@@ -2103,14 +2103,22 @@ Completed Phase 11 tasks:
   - Confirmation screen links to `/dashboard` with protocol prefilled.
   - Verification passed: `npm run lint`, `npm run build`, local `/dashboard` lookup with `AUS-2026-0020`, invalid-email lookup, and HTML check for absent sensitive URL/path tokens.
 
-Current Phase 11 task:
-
 - Task ID: `P11-T02`.
 - Title: Deploy customer dashboard lookup MVP and verify production.
-- Acceptance criteria:
-  - Phase 11 code is deployed to `https://abre-usa.vercel.app`.
-  - Production `/dashboard` renders the Portuguese lookup screen.
+- Result:
+  - Phase 11 code deployed to production.
+  - Deployment ID: `dpl_GoRjqfqJFDwcYofHqU6dn9SStsHL`.
+  - Production URL: `https://abre-fl7829zy2-abre-usa-s-projects.vercel.app`.
+  - Production alias: `https://abre-usa.vercel.app`.
+  - Production `/dashboard` returns `200`.
   - Production valid lookup for `AUS-2026-0020` returns the safe summary.
-  - Production invalid-email lookup does not reveal customer/order details.
-  - Production dashboard HTML does not expose signed URLs, storage paths, download/view URLs, admin controls, audit records, or raw sensitive files.
-  - App Spine and progress page record the production deployment result.
+  - Production invalid-email lookup returns the neutral not-found message and does not reveal customer/order details.
+  - Production dashboard HTML check found no signed URLs, storage paths, download/view URLs, admin controls, audit records, storage object paths, or raw sensitive passport fields.
+  - Production `/` returns `200`.
+  - Production unauthenticated `/admin/orders` redirects to `/admin/login`.
+
+Stop checkpoint:
+
+- Date: 2026-05-14.
+- Phase 11 first slice is complete and deployed.
+- Exact next roadmap action: choose the next owner/operator-directed priority. Recommended next security hardening task before broader dashboard usage: add rate limiting to `/dashboard` lookup.

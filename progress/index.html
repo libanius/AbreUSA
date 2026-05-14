@@ -268,15 +268,15 @@
           <span class="pill done" data-en="Current phase" data-pt="Fase atual">Current phase</span>
           <p class="phase" data-en="Phase 11: Customer Dashboard Journey" data-pt="Fase 11: Jornada do dashboard do cliente">Phase 11: Customer Dashboard Journey</p>
           <p
-            data-en="Phase 11 is in progress. The local dashboard lookup MVP is implemented and verified; production deployment is the next task."
-            data-pt="A Fase 11 está em andamento. O MVP local de consulta do dashboard está implementado e verificado; o deploy de produção é a próxima tarefa."
+            data-en="Phase 11 first production slice is complete. The customer dashboard lookup is live and verified at https://abre-usa.vercel.app."
+            data-pt="O primeiro recorte de produção da Fase 11 está concluído. A consulta do dashboard do cliente está ao vivo e verificada em https://abre-usa.vercel.app."
           >
-            Phase 11 is in progress. The local dashboard lookup MVP is implemented and verified; production deployment is the next task.
+            Phase 11 first production slice is complete. The customer dashboard lookup is live and verified at https://abre-usa.vercel.app.
           </p>
           <div class="progress-wrap" aria-label="Project progress">
             <div class="progress-label">
               <span data-en="Roadmap progress" data-pt="Progresso do roadmap">Roadmap progress</span>
-              <span data-en="Phase 11 active" data-pt="Fase 11 em andamento">Phase 11 active</span>
+              <span data-en="Phase 11 slice complete" data-pt="Recorte da Fase 11 concluído">Phase 11 slice complete</span>
             </div>
             <div class="progress-track">
               <div class="progress-fill"></div>
@@ -420,29 +420,30 @@
             <li data-en="P10-T05 complete: Phase 10 deployed to production at https://abre-usa.vercel.app. Deployment dpl_8UtvGpSfHWJGM5zV1DPDKyG9UCtr is Ready. OCR route verified with JPEG extraction and confidence 100." data-pt="P10-T05 concluído: Fase 10 publicada em produção em https://abre-usa.vercel.app. Deployment dpl_8UtvGpSfHWJGM5zV1DPDKyG9UCtr está Ready. Rota OCR verificada com extração JPEG e confiança 100.">P10-T05 complete: Phase 10 deployed to production at https://abre-usa.vercel.app. Deployment dpl_8UtvGpSfHWJGM5zV1DPDKyG9UCtr is Ready. OCR route verified with JPEG extraction and confidence 100.</li>
             <li data-en="P10-T06 complete: production /api/orders persisted a document-assisted Complete Package order with OCR data and private uploads; verified with protocol AUS-2026-0020." data-pt="P10-T06 concluído: /api/orders em produção persistiu um pedido Pacote Completo document-assisted com dados OCR e uploads privados; verificado com protocolo AUS-2026-0020.">P10-T06 complete: production /api/orders persisted a document-assisted Complete Package order with OCR data and private uploads; verified with protocol AUS-2026-0020.</li>
             <li data-en="P11-T01 complete locally: /dashboard lookup by protocol + applicant email returns a safe order summary and hides sensitive document URLs/storage paths. Lint, build, valid lookup, invalid lookup, and sensitive-token checks passed." data-pt="P11-T01 concluído localmente: /dashboard consulta por protocolo + e-mail do solicitante retorna resumo seguro do pedido e oculta URLs/caminhos de documentos sensíveis. Lint, build, consulta válida, consulta inválida e checagens de tokens sensíveis aprovados.">P11-T01 complete locally: /dashboard lookup by protocol + applicant email returns a safe order summary and hides sensitive document URLs/storage paths. Lint, build, valid lookup, invalid lookup, and sensitive-token checks passed.</li>
+            <li data-en="P11-T02 complete: customer dashboard lookup deployed to production at https://abre-usa.vercel.app. Deployment dpl_GoRjqfqJFDwcYofHqU6dn9SStsHL is Ready; valid lookup, invalid lookup, sensitive-token checks, home health check, and admin redirect verification passed." data-pt="P11-T02 concluído: consulta do dashboard do cliente publicada em produção em https://abre-usa.vercel.app. Deployment dpl_GoRjqfqJFDwcYofHqU6dn9SStsHL está Ready; consulta válida, consulta inválida, checagens de tokens sensíveis, health check da home e redirecionamento admin aprovados.">P11-T02 complete: customer dashboard lookup deployed to production at https://abre-usa.vercel.app. Deployment dpl_GoRjqfqJFDwcYofHqU6dn9SStsHL is Ready; valid lookup, invalid lookup, sensitive-token checks, home health check, and admin redirect verification passed.</li>
             <li data-en="Payment, full authenticated customer portal, customer login/magic links, branded AbreUSA sender migration, retention automation, and onboarding evolution implementations remain not implemented." data-pt="Pagamento, portal autenticado completo do cliente, login/magic links de cliente, migração para remetente AbreUSA, automação de retenção e implementações de evolução de onboarding ainda não foram implementados.">Payment, full authenticated customer portal, customer login/magic links, branded AbreUSA sender migration, retention automation, and onboarding evolution implementations remain not implemented.</li>
           </ul>
         </article>
 
         <article class="card task">
           <span class="pill done" data-en="Last completed" data-pt="Última concluída">Last completed</span>
-          <h2 data-en="P11-T01 — Customer Dashboard Lookup" data-pt="P11-T01 — Consulta do dashboard do cliente">P11-T01 — Customer Dashboard Lookup</h2>
+          <h2 data-en="P11-T02 — Production Dashboard Verified" data-pt="P11-T02 — Dashboard em produção verificado">P11-T02 — Production Dashboard Verified</h2>
           <p
-            data-en="/dashboard now supports protocol + applicant email lookup, renders a safe Portuguese order summary, and exposes no signed document URLs or storage paths."
-            data-pt="/dashboard agora permite consulta por protocolo + e-mail do solicitante, exibe um resumo seguro em português e não expõe URLs assinadas nem caminhos de storage."
+            data-en="/dashboard is live in production and verified with protocol AUS-2026-0020. Invalid lookup does not reveal order details, and production HTML exposes no signed URLs or storage paths."
+            data-pt="/dashboard está ao vivo em produção e verificado com o protocolo AUS-2026-0020. Consulta inválida não revela detalhes do pedido, e o HTML de produção não expõe URLs assinadas nem caminhos de storage."
           >
-            /dashboard now supports protocol + applicant email lookup, renders a safe Portuguese order summary, and exposes no signed document URLs or storage paths.
+            /dashboard is live in production and verified with protocol AUS-2026-0020. Invalid lookup does not reveal order details, and production HTML exposes no signed URLs or storage paths.
           </p>
         </article>
 
         <article class="card next">
-          <span class="pill needed" data-en="Current task" data-pt="Tarefa atual">Current task</span>
-          <h2 data-en="P11-T02 — Deploy Customer Dashboard" data-pt="P11-T02 — Publicar dashboard do cliente">P11-T02 — Deploy Customer Dashboard</h2>
+          <span class="pill needed" data-en="Next task" data-pt="Próxima tarefa">Next task</span>
+          <h2 data-en="Choose Next Priority" data-pt="Escolher próxima prioridade">Choose Next Priority</h2>
           <p
-            data-en="Deploy the customer dashboard lookup to production and verify valid lookup, invalid lookup, and no sensitive URLs/paths in production HTML."
-            data-pt="Publicar a consulta do dashboard em produção e verificar consulta válida, consulta inválida e ausência de URLs/caminhos sensíveis no HTML de produção."
+            data-en="Recommended next: add rate limiting to /dashboard lookup before broader public dashboard usage."
+            data-pt="Próximo recomendado: adicionar rate limiting à consulta /dashboard antes de uso público mais amplo."
           >
-            Deploy the customer dashboard lookup to production and verify valid lookup, invalid lookup, and no sensitive URLs/paths in production HTML.
+            Recommended next: add rate limiting to /dashboard lookup before broader public dashboard usage.
           </p>
           <p
             data-en="Sensitive document links, customer login, magic links, draft resume, and customer corrections remain future work."

@@ -4,60 +4,50 @@
 
 Phase 11: Customer Dashboard Journey.
 
-Phases 1–10 are complete. Phase 11 is in progress. The first customer dashboard slice is implemented locally as a protocol + applicant email lookup, not a full customer account portal.
+Phases 1–11 first production slice are complete. Customer dashboard lookup is deployed as a protocol + applicant email lookup, not a full customer account portal.
 
 ## Last Completed Task
-
-Task ID: `P11-T01`
-
-Title: Customer dashboard lookup MVP.
-
-Result:
-
-- Added `/dashboard` customer-facing lookup screen in Portuguese.
-- Added `lib/customer-dashboard.ts` server-only safe DTO builder.
-- Lookup requires protocol number plus applicant email.
-- Valid local lookup with `AUS-2026-0020` and the applicant email returns:
-  - protocol, service, status, received/approved dates.
-  - applicant name/email.
-  - LLC name/state.
-  - document checklist/status.
-  - generated form checklist.
-  - next-step timeline.
-- Invalid email lookup returns a neutral not-found message.
-- Local HTML checks confirmed no `storage_path`, signed URLs, download/view URLs, storage object paths, or raw sensitive passport fields are exposed.
-- Confirmation screen now links to `/dashboard` with the protocol prefilled.
-- Verification passed:
-  - `npm run lint`.
-  - `npm run build`.
-  - Local `/dashboard` HTTP checks on port 3000.
-
-## Current Task
 
 Task ID: `P11-T02`
 
 Title: Deploy customer dashboard lookup MVP and verify production.
 
+Result:
+
+- Production deployment is Ready.
+- Deployment ID: `dpl_GoRjqfqJFDwcYofHqU6dn9SStsHL`.
+- Production URL: `https://abre-fl7829zy2-abre-usa-s-projects.vercel.app`.
+- Production alias: `https://abre-usa.vercel.app`.
+- Production `/dashboard` returns `200`.
+- Valid production lookup with `AUS-2026-0020` and the applicant email returns the safe customer summary.
+- Invalid production lookup with the wrong email returns a neutral not-found message and does not reveal customer/order details.
+- Production HTML checks confirmed no `storage_path`, signed URLs, download/view URLs, storage object paths, admin controls, audit records, or raw sensitive passport fields are exposed.
+- Production `/` returns `200`.
+- Production unauthenticated `/admin/orders` redirects to `/admin/login`.
+- Pre-deploy verification passed:
+  - `npm run lint`.
+  - `npm run build`.
+
+## Current Task
+
+Task ID: `TBD`
+
+Title: Choose next owner/operator-directed priority.
+
 Scope:
 
-- Deploy the Phase 11 customer dashboard slice to production.
-- Verify `/dashboard` on `https://abre-usa.vercel.app`.
-- Confirm valid protocol + email returns only the safe summary.
-- Confirm invalid lookup does not reveal customer/order data.
-- Confirm production HTML does not expose signed document URLs, storage paths, admin-only controls, audit records, or raw uploaded files.
+- Select the next phase or hardening task before implementation.
+- Recommended next security hardening task: add rate limiting to `/dashboard` lookup before broader public dashboard usage.
+- Other candidate next tasks remain payment, full customer portal/auth, customer correction workflow, retention automation, or sender/domain cleanup.
 
 Acceptance criteria:
 
-- Production deployment is Ready.
-- `/dashboard` returns `200`.
-- Production valid lookup for `AUS-2026-0020` returns the safe order summary.
-- Production invalid lookup returns a neutral not-found message.
-- Sensitive document URLs, storage paths, admin controls, audit records, and raw files remain hidden.
-- App Spine and progress page are updated with the production deployment result.
+- App Spine is updated before implementation.
+- Scope, out-of-scope items, acceptance criteria, and risks are recorded.
 
 ## Next Task
 
-Deploy `P11-T02` to production and verify the dashboard lookup against `https://abre-usa.vercel.app`.
+Choose the next priority. Recommended: rate limit `/dashboard` lookup.
 
 ## Completed Tasks
 
@@ -113,8 +103,9 @@ Deploy `P11-T02` to production and verify the dashboard lookup against `https://
   - P10-T04: Approval loading state and error retry. Button shows "Processando...", loading StatusMessage shown during persistence, error StatusMessage + retry on failure. `handleContinueToConfirmation` fail-closed: only navigates to confirmation on Supabase success. Lint and build verified.
   - P10-T05: Production redeploy complete. `https://abre-usa.vercel.app` now points to `dpl_8UtvGpSfHWJGM5zV1DPDKyG9UCtr`; home/admin health checks passed; production OCR route verified with JPEG extraction and `confidence: 100`.
   - P10-T06: Production document-assisted order persistence verified through `/api/orders` with `AUS-2026-0020`; extracted data, address reuse, EIN details, generated forms, and two private document records persisted.
-- Phase 11 in progress:
+- Phase 11 first production slice complete:
   - P11-T01: Customer dashboard lookup MVP implemented locally. `/dashboard` supports protocol + applicant email lookup, returns a safe customer DTO, and hides sensitive document URLs/storage paths/raw files. Lint, build, valid lookup, invalid lookup, and sensitive-token HTML checks passed.
+  - P11-T02: Customer dashboard lookup MVP deployed to production and verified at `https://abre-usa.vercel.app`. Valid lookup, invalid lookup, sensitive-token HTML checks, home health check, and admin unauthenticated redirect passed.
 
 ## What Is Implemented
 
@@ -157,7 +148,7 @@ Deploy `P11-T02` to production and verify the dashboard lookup against `https://
 - `.env.example` documents all required environment variables (`OPENAI_API_KEY` included).
 - `/progress/index.html` bilingual stakeholder dashboard.
 - Customer dashboard journey:
-  - `/dashboard` protocol + applicant email lookup implemented locally.
+  - `/dashboard` protocol + applicant email lookup implemented and deployed.
   - Safe customer summary includes protocol, service, status, dates, applicant, LLC, document checklist/status, generated form checklist, and next-step timeline.
   - Signed document URLs, storage paths, raw uploaded files, admin controls, and audit records are not exposed.
   - Confirmation screen links to `/dashboard` with the protocol prefilled.
@@ -202,22 +193,20 @@ Deploy `P11-T02` to production and verify the dashboard lookup against `https://
 
 ## Exact Next Step To Resume
 
-1. Deploy `P11-T02` to production.
-2. Verify production `/dashboard` valid lookup with `AUS-2026-0020`.
-3. Verify production invalid-email lookup does not reveal customer/order details.
-4. Verify production HTML does not include signed URLs, storage paths, download/view URLs, admin controls, audit records, or raw sensitive fields.
-5. Update `/docs/07-roadmap.md`, `/docs/09-build-status.md`, and `/progress/index.html` with the production deployment result.
+1. Choose the next owner/operator-directed priority.
+2. Recommended next implementation: add rate limiting to `/dashboard` lookup before broader public dashboard usage.
+3. Update `/docs/07-roadmap.md`, `/docs/09-build-status.md`, and `/progress/index.html` before implementation.
 
 Resume command prompt:
 
-Read `AGENTS.md`, `/docs/START-HERE.md`, `/docs/07-roadmap.md`, and this file. Resume with `P11-T02` production deployment and verification.
+Read `AGENTS.md`, `/docs/START-HERE.md`, `/docs/07-roadmap.md`, and this file. Resume by selecting and documenting the next priority. Recommended: `/dashboard` lookup rate limiting.
 
 ## Blockers And Risks
 
 - Production confirmation email verified: `AUS-2026-0014` received at `brightscalegroup@gmail.com` on 2026-05-09.
 - Permanent admin user exists, is email-confirmed, and owner/operator confirmed access.
 - Correct AbreUSA Vercel account is authenticated as `abreusaonline-7459`.
-- Vercel project is linked. Current production deployment: `dpl_8UtvGpSfHWJGM5zV1DPDKyG9UCtr` (Phase 10).
+- Vercel project is linked. Current production deployment: `dpl_GoRjqfqJFDwcYofHqU6dn9SStsHL` (Phase 11).
 - Custom domain is deferred; controlled launch continues on `https://abre-usa.vercel.app`.
 - AbreUSA domain email migration remains deferred; temporary Brightscale sender in use.
 - Manual physical deletion is implemented (P8-T11). In-browser verification against a real eligible document is recommended before enabling for production use.
