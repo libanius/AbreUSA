@@ -823,3 +823,23 @@ Result:
 Reason:
 
 The guided onboarding should avoid asking customers to type the same address multiple times while preserving clear operational data for AbreUSA review.
+
+### 2026-05-14: Phase 9 AI-Ready Onboarding Foundation
+
+Decision:
+
+AbreUSA uses anonymous initial onboarding followed by progressive applicant creation. After diagnosis and service selection, users can choose between document-assisted prefill or manual entry. Real AI OCR is a future capability; the MVP must not claim automatic extraction until implemented.
+
+Result:
+
+- Phase 9 is AI-Ready Onboarding Foundation.
+- The onboarding flow should offer:
+  - `Enviar documentos para facilitar o preenchimento`.
+  - `Preencher manualmente`.
+- Document-assisted onboarding may use the existing document upload infrastructure and prepare future extraction review surfaces.
+- Manual onboarding continues through the existing guided flow.
+- No real OCR, OpenAI API calls, passport parsing, proof-of-residence parsing, or autonomous AI behavior are implemented in Phase 9.
+
+Reason:
+
+Phase 8.5 improved onboarding UX. The next product step is preparing deterministic, safe onboarding structure for future AI-assisted flows without making unimplemented AI claims.

@@ -67,19 +67,54 @@ The current prototype branches this service through LLC-style steps. Production 
 
 1. Welcome and value statement.
 2. Service selection.
-3. LLC name entry and validation.
-4. Business activity selection.
-5. Member count selection.
-6. Member data collection.
-7. Principal Florida business address collection.
-8. Registered Agent selection.
-9. EIN and IRS SS-4 questions when service includes EIN.
-10. Document upload.
-11. AI-assisted document extraction.
-12. Customer review.
-13. Generated Florida Articles of Organization and IRS SS-4 previews.
-14. Customer approval.
-15. Submission confirmation with protocol number.
+3. Post-diagnosis onboarding path selection:
+   - Enviar documentos para facilitar o preenchimento.
+   - Preencher manualmente.
+4. Applicant contact and residential address.
+5. LLC name entry and validation.
+6. Business activity selection.
+7. Member count selection.
+8. Member data collection.
+9. Principal Florida business address collection.
+10. Registered Agent selection.
+11. EIN and IRS SS-4 questions when service includes EIN.
+12. Document upload.
+13. Placeholder/manual extraction review.
+14. Customer review.
+15. Generated Florida Articles of Organization and IRS SS-4 previews.
+16. Customer approval.
+17. Submission confirmation with protocol number.
+
+## Phase 9: AI-Ready Onboarding Foundation
+
+Status: Current planning and implementation foundation.
+
+Phase 9 prepares AbreUSA for future document-assisted and conversational onboarding without implementing real OCR, OpenAI API calls, autonomous AI decisions, passport parsing, or proof-of-residence parsing.
+
+Post-diagnosis choice:
+
+After the customer selects or receives the recommended service, the flow offers two paths without requiring login at the beginning:
+
+1. `document_assisted`: "Enviar documentos para facilitar o preenchimento".
+2. `manual`: "Preencher manualmente".
+
+Document-assisted path:
+
+- Uses the existing secure document upload and server-side persistence infrastructure.
+- Prepares the UI/data model for future extraction review.
+- Clearly states that automatic OCR is not active yet.
+- Continues to manual and review steps as needed.
+- Requires the customer to review and edit any future extracted values before final submission.
+
+Manual path:
+
+- Continues through the existing guided manual flow.
+- Preserves Phase 8.5 behavior: simple card choices auto-advance, while input/upload/review steps require explicit Continue/Confirm.
+
+Review principle:
+
+- Any future extracted data must be shown in an editable review surface before approval.
+- Customer approval remains required before AbreUSA review and before any government submission.
 
 ## Onboarding Architecture Discovery
 

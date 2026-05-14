@@ -2,73 +2,56 @@
 
 ## Current Phase
 
-Phase 8.5: Onboarding UX Cleanup.
+Phase 9: AI-Ready Onboarding Foundation.
 
-Phases 1–7 are complete. P8-T01 through P8-T14 are complete. Controlled MVP launch is fully verified: production deployment, authenticated admin portal, and production email confirmation are all confirmed.
+Phases 1–7 are complete. P8-T01 through P8-T14 and Phase 8.5 are complete. Controlled MVP launch is fully verified: production deployment, authenticated admin portal, and production email confirmation are all confirmed.
 
-Phase 8.5 is complete. The guided onboarding UX cleanup is implemented before payment, customer dashboard, OCR, or full conversational AI.
+Phase 9 foundation is implemented locally and verified. Source of truth: GitHub issue #2, `Phase 9 — AI-Ready Onboarding Foundation`.
 
 ## Last Completed Task
 
-Task ID: `P8.5-T04`
+Task ID: `P9-T01`
 
-Title: Redeploy committed Phase 8.5 state to production.
+Title: Implement AI-ready onboarding entry mode foundation.
 
 Result:
 
-- Current HEAD before redeploy: `fd119631c295d3ba5d35f31283d1108a5bba7706`.
-- Local `npm run build` passed.
-- Vercel production redeploy completed successfully.
-- Deployment ID: `dpl_49uw5re5UDZQnVBDPJPPwqDufjSn`.
-- Production deployment URL: `https://abre-49oizmwkg-abre-usa-s-projects.vercel.app`.
-- Production alias remains `https://abre-usa.vercel.app`.
-- Production health checks passed:
-  - `/` returns `200`.
-  - `/admin/login` returns `200`.
-  - `/admin/orders` redirects unauthenticated users to `/admin/login`.
-- `npx vercel inspect https://abre-usa.vercel.app` reports the deployment is `Ready`.
+- App Spine updated from GitHub issue #2 before implementation.
+- Post-service onboarding entry mode choice added:
+  - `Enviar documentos para facilitar o preenchimento`.
+  - `Preencher manualmente`.
+- Manual path continues through the existing Phase 8.5 guided flow.
+- Document-assisted path keeps existing upload flow and explicitly states OCR is not active.
+- Supabase `orders` table now supports Phase 9 readiness fields:
+  - `onboarding_entry_mode`.
+  - `document_extraction_status`.
+  - `extracted_applicant_data`.
+  - `extracted_address_data`.
+  - `extraction_confidence`.
+  - `user_confirmed_extracted_data`.
+  - `agent_summary`.
+  - `missing_information_flags`.
+- Admin order detail shows entry mode, extraction status, confirmation state, confidence, missing flags, and agent summary.
+- Verification passed:
+  - `npm run lint`.
+  - `npm run build`.
+  - `npx supabase db push`.
+  - Local `/api/orders` persistence and private document upload regression check with `AUS-2026-0017`.
 
 ## Current Task
 
-None. P8.5-T04 is complete.
+Task ID: `None active`
+
+Title: Awaiting owner/operator selection for the next phase.
 
 Result:
 
-- Simple predefined option/card selections now auto-advance.
-- Text input, upload, review, approval, and protocol-generation steps still require explicit Continue/Confirm.
-- Inline Articles of Organization previews were removed from active question steps.
-- Active question steps now use a short Articles education card with hidden-by-default example details.
-- Full generated previews remain in the review stage.
-- Sticky bottom navigation now includes step progress.
-- Existing Supabase persistence, document upload, confirmation email, and admin review code paths were preserved.
-- `npm run lint` passes.
-- `npm run build` passes after clearing the interrupted `.next` cache.
-- Browser verification passed for service, business activity, and Registered Agent auto-advance behavior.
-- Server-side order persistence and document upload regression check passed through `/api/orders` with test protocol `AUS-2026-0015` and order ID `5c2dcc55-99c2-4f7f-a009-645db697a8b0`.
-
-Current P8.5-T02 goal:
-
-- Capture applicant/residential address in onboarding.
-- Allow the LLC/company principal address to reuse that residential address through a checkbox.
-- Persist the copied company address and the relationship boolean.
-- Show the relationship in final review and admin order detail.
-
-P8.5-T02 result:
-
-- Applicant/contact step captures residential address.
-- LLC/company principal address step includes a checkbox to reuse the applicant/residential address.
-- Final payload stores both the copied LLC principal address and `principalSameAsApplicantAddress`.
-- Admin detail shows applicant residential address, LLC principal address, and whether they are the same.
-- Supabase schema and migration were updated and pushed to the remote project.
-- Verification passed with `AUS-2026-0016`:
-  - Applicant residential address persisted.
-  - LLC principal address persisted with the same values.
-  - `principal_same_as_applicant_address` persisted as `true`.
-  - Two document rows persisted.
+- Phase 9 foundation implementation is complete locally.
+- Real AI OCR, OpenAI API calls, autonomous AI behavior, payment, customer dashboard, Sunbiz checks, multi-state orchestration, branded sender, custom domain, and retention Cron remain out of scope.
 
 ## Next Task
 
-No next task is currently defined. Post-MVP priorities remain owner/operator-directed.
+Commit the completed Phase 9 state, then choose the next owner/operator-directed priority. Candidate next phases include production redeploy of Phase 9, payment, customer dashboard, real OCR/document extraction, branded sender/domain work, retention Cron automation, EIN-only flow, Registered Agent-only flow, or broader onboarding evolution.
 
 ## Completed Tasks
 
@@ -112,11 +95,15 @@ No next task is currently defined. Post-MVP priorities remain owner/operator-dir
   - P8.5-T02: Same-as-residential company address reuse complete. Applicant residential address, copied LLC principal address, and boolean relationship flag persist correctly. Verified with `AUS-2026-0016`.
   - P8.5-T03: Phase 8.5 production deployment complete. `https://abre-usa.vercel.app` now points to deployment `dpl_FKGnAAzFvdhVNkeazTgXxugx7HsQ`; production `/` and `/admin/login` return `200`, and `/admin/orders` redirects unauthenticated users to login.
   - P8.5-T04: Committed Phase 8.5 state redeployed to production. `https://abre-usa.vercel.app` now points to deployment `dpl_49uw5re5UDZQnVBDPJPPwqDufjSn`; production `/` and `/admin/login` return `200`, and `/admin/orders` redirects unauthenticated users to login.
+- Phase 9 complete locally:
+  - P9-T01: AI-ready onboarding entry mode foundation implemented from GitHub issue #2 and verified with `AUS-2026-0017`.
 
 ## What Is Implemented
 
-- Full guided 13-step intake for Complete Package (LLC + EIN) and Florida LLC paths.
-- Applicant contact step (name, email, phone, residential address) — step 2.
+- Full guided 14-step intake for Complete Package (LLC + EIN) and Florida LLC paths.
+- Post-service onboarding entry mode choice supports `manual` and `document_assisted`.
+- Document-assisted mode prepares the upload/review path for future extraction but does not claim OCR is active.
+- Applicant contact step (name, email, phone, residential address) — step 3.
 - Company principal address can reuse the applicant residential address through a checkbox.
 - Persisted order data stores the copied LLC principal address plus `principal_same_as_applicant_address`.
 - Document collection for passport and U.S. address proof.
@@ -124,6 +111,7 @@ No next task is currently defined. Post-MVP priorities remain owner/operator-dir
 - Confirmation screen with server-generated collision-resistant protocol number (`AUS-YYYY-NNNN`).
 - Supabase persistence via server-side `/api/orders` route using `SUPABASE_SERVICE_ROLE_KEY`:
   - `orders`, `applicants`, `llcs`, `members`, `registered_agents`, `ein_details`, `generated_forms`, `documents` tables.
+  - Phase 9 readiness fields on `orders`: entry mode, extraction status, extracted data placeholders, confidence, user confirmation flag, agent summary, and missing information flags.
 - Document file upload to Supabase private `documents` storage bucket.
 - RLS enabled on all 8 order tables. Anon/authenticated roles fully revoked.
 - Storage bucket is private. Development storage policies removed.
@@ -149,7 +137,7 @@ No next task is currently defined. Post-MVP priorities remain owner/operator-dir
   - `/docs/10-decision-gates.md` tracks unresolved strategic, UX, architecture, onboarding, compliance, scalability, and AI-orchestration decisions.
 - Roadmap now supports onboarding orchestration evolution, conversational onboarding architecture, AI-guided onboarding layer, progressive onboarding systems, and state-based onboarding.
 - P8-T04 onboarding architecture discovery:
-  - Current 13-step guided flow remains the canonical baseline.
+  - Current 14-step guided flow remains the canonical baseline after Phase 9 entry mode selection.
   - Candidate onboarding states are documented.
   - Conversational onboarding is proposed as an assistive layer first.
   - AI-guided onboarding is proposed as advisory, customer-reviewable, and blocked from autonomous legal/tax advice or submission.

@@ -19,8 +19,11 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
 type ServiceId = "complete" | "florida_llc";
+type OnboardingEntryMode = "manual" | "document_assisted";
+type DocumentExtractionStatus = "not_started" | "pending" | "completed" | "failed";
 type FlowStep =
   | "service"
+  | "entry_mode"
   | "applicant_contact"
   | "llc_name"
   | "business_activity"
@@ -50,6 +53,12 @@ type ServiceOption = {
   title: string;
   description: string;
   price: string;
+};
+
+type OnboardingEntryOption = {
+  id: OnboardingEntryMode;
+  title: string;
+  description: string;
 };
 
 type ApplicantContactDraft = {
@@ -145,6 +154,14 @@ type LocalOrderPayload = {
     serviceType: "complete_llc_ein" | "florida_llc";
     status: "approved";
     approvedAt: string;
+    onboardingEntryMode: OnboardingEntryMode;
+    documentExtractionStatus: DocumentExtractionStatus;
+    extractedApplicantData: Record<string, unknown>;
+    extractedAddressData: Record<string, unknown>;
+    extractionConfidence: number | null;
+    userConfirmedExtractedData: boolean;
+    agentSummary: string | null;
+    missingInformationFlags: string[];
   };
   applicant: {
     name: string;
@@ -196,6 +213,21 @@ const serviceOptions: ServiceOption[] = [
   },
 ];
 
+const onboardingEntryOptions: OnboardingEntryOption[] = [
+  {
+    id: "document_assisted",
+    title: "Enviar documentos para facilitar o preenchimento",
+    description:
+      "Use o envio seguro existente para anexar documentos. A extração automática ainda não está ativa; você revisará e completará os dados manualmente.",
+  },
+  {
+    id: "manual",
+    title: "Preencher manualmente",
+    description:
+      "Siga o fluxo guiado respondendo cada etapa sem depender de documentos para pré-preenchimento.",
+  },
+];
+
 const businessActivityOptions: BusinessActivityOption[] = [
   { id: "tech", label: "Tecnologia / Software" },
   { id: "ecomm", label: "E-commerce / Vendas online" },
@@ -211,6 +243,7 @@ const businessActivityOptions: BusinessActivityOption[] = [
 
 const progressItems = [
   "Serviço",
+  "Modo",
   "Contato",
   "Empresa",
   "Atividade",
@@ -391,6 +424,59 @@ function ServiceSelection({
   );
 }
 
+function OnboardingEntrySelection({
+  selectedMode,
+  onSelect,
+}: {
+  selectedMode: OnboardingEntryMode | null;
+  onSelect: (mode: OnboardingEntryMode) => void;
+}) {
+  return (
+    <FieldGroup title="Escolha como continuar">
+      <div className="grid gap-3">
+        {onboardingEntryOptions.map((option) => {
+          const selected = option.id === selectedMode;
+
+          return (
+            <button
+              aria-pressed={selected}
+              className={cn(
+                "rounded-md border bg-card p-4 text-left transition-colors",
+                "focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/40",
+                selected
+                  ? "border-emerald-600 bg-emerald-50"
+                  : "hover:border-emerald-300 hover:bg-emerald-50/40",
+              )}
+              key={option.id}
+              onClick={() => onSelect(option.id)}
+              type="button"
+            >
+              <span className="flex gap-4">
+                <span
+                  className={cn(
+                    "mt-1 size-3 rounded-full border",
+                    selected
+                      ? "border-emerald-600 bg-emerald-600"
+                      : "border-muted-foreground/40",
+                  )}
+                />
+                <span className="min-w-0 flex-1">
+                  <span className="block text-sm font-semibold text-foreground">
+                    {option.title}
+                  </span>
+                  <span className="mt-1 block text-sm leading-6 text-muted-foreground">
+                    {option.description}
+                  </span>
+                </span>
+              </span>
+            </button>
+          );
+        })}
+      </div>
+    </FieldGroup>
+  );
+}
+
 function StepFrame({
   activeStep,
   businessActivity,
@@ -409,6 +495,7 @@ function StepFrame({
   onChangeApplicantContact,
   onContinueToLlcName,
   onBackToApplicantContact,
+  onBackToEntryMode,
   registeredAgent,
   onBackToBusinessActivity,
   onBackToBusinessAddress,
@@ -444,7 +531,9 @@ function StepFrame({
   onContinueToRegisteredAgent,
   onResetService,
   selectedService,
+  onboardingEntryMode,
   onSelectService,
+  onSelectOnboardingEntryMode,
   currentStep,
   totalSteps,
 }: {
@@ -460,6 +549,7 @@ function StepFrame({
   onChangeApplicantContact: (field: keyof ApplicantContactDraft, value: string) => void;
   onContinueToLlcName: () => void;
   onBackToApplicantContact: () => void;
+  onBackToEntryMode: () => void;
   approvedOrderPayload: LocalOrderPayload | null;
   einQuestions: EinQuestionsDraft;
   llcName: string;
@@ -507,7 +597,9 @@ function StepFrame({
   onContinueToRegisteredAgent: () => void;
   onResetService: () => void;
   selectedService: ServiceId | null;
+  onboardingEntryMode: OnboardingEntryMode | null;
   onSelectService: (service: ServiceId) => void;
+  onSelectOnboardingEntryMode: (mode: OnboardingEntryMode) => void;
   currentStep: number;
   totalSteps: number;
 }) {
@@ -515,6 +607,12 @@ function StepFrame({
     return serviceOptions.find((service) => service.id === selectedService)
       ?.title;
   }, [selectedService]);
+  const onboardingEntryLabel =
+    onboardingEntryMode === "document_assisted"
+      ? "Assistido por documentos"
+      : onboardingEntryMode === "manual"
+        ? "Manual"
+        : "Pendente";
   const trimmedLlcName = llcName.trim();
   const hasLlcName = trimmedLlcName.length > 0;
   const hasValidSuffix = llcSuffixPattern.test(trimmedLlcName);
@@ -582,7 +680,7 @@ function StepFrame({
     return (
       <StepCard
         badge="Protocolo local"
-        eyebrow="Passo 13 · Confirmação"
+        eyebrow="Passo 14 · Confirmação"
         title="Pedido preparado para revisão"
       >
         <div className="grid gap-3">
@@ -645,7 +743,7 @@ function StepFrame({
     return (
       <StepCard
         badge="Aprovação local"
-        eyebrow="Passo 12 · Aprovação"
+        eyebrow="Passo 13 · Aprovação"
         title="Confirme a revisão do pedido"
       >
         <div className="grid gap-3">
@@ -733,7 +831,7 @@ function StepFrame({
     return (
       <StepCard
         badge="Preview local"
-        eyebrow="Passo 11 · Revisão"
+        eyebrow="Passo 12 · Revisão"
         title="Revise os dados e os previews"
       >
         <div className="grid gap-3">
@@ -747,6 +845,7 @@ function StepFrame({
           <ReviewSummary
             items={[
               { label: "Serviço", value: selectedLabel ?? "Pendente" },
+              { label: "Modo de entrada", value: onboardingEntryLabel },
               { label: "Estado", value: "Florida" },
               { label: "Nome LLC", value: trimmedLlcName || "Pendente" },
               { label: "Atividade", value: selectedActivityLabel || "Pendente" },
@@ -821,8 +920,15 @@ function StepFrame({
                 value: documents.extraction.nationality || "Pendente",
               },
               { label: "Endereço extraído", value: extractionAddress },
+              {
+                label: "Status da extração",
+                value:
+                  onboardingEntryMode === "document_assisted"
+                    ? "Preparado para extração futura; OCR ainda não ativo"
+                    : "Não iniciado",
+              },
             ]}
-            title="Documentos e extração placeholder"
+            title="Documentos e extração futura"
           />
 
           <FieldGroup title="Preview — Florida Articles of Organization">
@@ -910,10 +1016,20 @@ function StepFrame({
     return (
       <StepCard
         badge="Rascunho local"
-        eyebrow="Passo 10 · Documentos"
+        eyebrow="Passo 11 · Documentos"
         title="Envie os documentos necessários"
       >
         <div className="grid gap-3">
+          {onboardingEntryMode === "document_assisted" ? (
+            <StatusMessage title="Modo assistido por documentos" tone="info">
+              <p>
+                O upload seguro está ativo. A extração automática ainda não está
+                ativa neste MVP; os dados abaixo continuam sendo revisão manual
+                e editável.
+              </p>
+            </StatusMessage>
+          ) : null}
+
           <StatusMessage
             title={
               isDocumentCollectionComplete
@@ -924,8 +1040,8 @@ function StepFrame({
           >
             <p>
               {isDocumentCollectionComplete
-                ? "Os arquivos foram capturados apenas neste rascunho local. Nenhum upload para servidor foi feito."
-                : "Anexe o passaporte e um comprovante de endereço nos EUA para revisar os dados extraídos manualmente."}
+                ? "Os arquivos serão enviados para o armazenamento privado quando você gerar o protocolo."
+                : "Anexe o passaporte e um comprovante de endereço nos EUA para revisar os dados manualmente."}
             </p>
           </StatusMessage>
 
@@ -999,11 +1115,11 @@ function StepFrame({
             ))}
           </FieldGroup>
 
-          <FieldGroup title="Revisão manual da extração placeholder">
-            <StatusMessage title="Extração simulada" tone="warning">
+          <FieldGroup title="Revisão manual para extração futura">
+            <StatusMessage title="OCR ainda não ativo" tone="warning">
               <p>
-                Estes campos representam a revisão manual do MVP. Eles devem ser
-                confirmados pelo cliente antes de qualquer envio para a AbreUSA.
+                Estes campos preparam a revisão editável para uma fase futura.
+                Nenhum dado é extraído automaticamente neste momento.
               </p>
             </StatusMessage>
             <FieldShell label="Nome completo">
@@ -1137,7 +1253,7 @@ function StepFrame({
     return (
       <StepCard
         badge="Rascunho local"
-        eyebrow="Passo 6 · Dados dos sócios"
+        eyebrow="Passo 7 · Dados dos sócios"
         title="Dados de cada sócio"
       >
         <div className="grid gap-3">
@@ -1245,7 +1361,7 @@ function StepFrame({
     return (
       <StepCard
         badge="Rascunho local"
-        eyebrow="Passo 9 · EIN / IRS SS-4"
+        eyebrow="Passo 10 · EIN / IRS SS-4"
         title="Informações para o EIN"
       >
         <div className="grid gap-3">
@@ -1458,7 +1574,7 @@ function StepFrame({
     return (
       <StepCard
         badge="Rascunho local"
-        eyebrow="Passo 8 · Registered Agent"
+        eyebrow="Passo 9 · Registered Agent"
         title="Quem será o Registered Agent?"
       >
         <div className="grid gap-3">
@@ -1631,7 +1747,7 @@ function StepFrame({
     return (
       <StepCard
         badge="Rascunho local"
-        eyebrow="Passo 7 · Endereço"
+        eyebrow="Passo 8 · Endereço"
         title="Endereço principal da empresa"
       >
         <div className="grid gap-3">
@@ -1763,7 +1879,7 @@ function StepFrame({
     return (
       <StepCard
         badge="Rascunho local"
-        eyebrow="Passo 5 · Sócios"
+        eyebrow="Passo 6 · Sócios"
         title="Quantos sócios terá a LLC?"
       >
         <div className="grid gap-3">
@@ -1845,7 +1961,7 @@ function StepFrame({
     return (
       <StepCard
         badge="Rascunho local"
-        eyebrow="Passo 4 · Atividade"
+        eyebrow="Passo 5 · Atividade"
         title="Qual é o ramo do negócio?"
       >
         <div className="grid gap-3">
@@ -1948,7 +2064,7 @@ function StepFrame({
     return (
       <StepCard
         badge="Seus dados"
-        eyebrow="Passo 2 · Contato"
+        eyebrow="Passo 3 · Contato"
         title="Como podemos entrar em contato com você?"
       >
         <FieldGroup title="Dados de contato">
@@ -2027,18 +2143,18 @@ function StepFrame({
           backLabel="Voltar"
           nextDisabled={!isContactComplete}
           nextLabel={isContactComplete ? "Continuar" : "Preencher dados"}
-          onBack={onResetService}
+          onBack={onBackToEntryMode}
           onNext={isContactComplete ? onContinueToLlcName : undefined}
         />
       </StepCard>
     );
   }
 
-  if (selectedService) {
+  if (activeStep === "llc_name" && selectedService) {
     return (
       <StepCard
         badge="Rascunho local"
-        eyebrow="Passo 3 · Empresa"
+        eyebrow="Passo 4 · Empresa"
         title="Qual será o nome da LLC?"
       >
         <div className="grid gap-3">
@@ -2108,6 +2224,47 @@ function StepFrame({
     );
   }
 
+  if (activeStep === "entry_mode" && selectedService) {
+    return (
+      <StepCard
+        badge="Caminho de entrada"
+        eyebrow="Passo 2 · Modo"
+        title="Como você quer continuar?"
+      >
+        <div className="grid gap-3">
+          <StatusMessage title="Escolha pós-diagnóstico" tone="info">
+            <p>
+              Você pode preencher manualmente ou anexar documentos para preparar
+              uma revisão futura. O MVP não faz OCR automático nem toma decisões
+              autônomas.
+            </p>
+          </StatusMessage>
+          <OnboardingEntrySelection
+            onSelect={onSelectOnboardingEntryMode}
+            selectedMode={onboardingEntryMode}
+          />
+          <ReviewSummary
+            items={[
+              { label: "Serviço", value: selectedLabel ?? "Pendente" },
+              { label: "Modo", value: onboardingEntryLabel },
+              { label: "Extração automática", value: "Não ativa no MVP" },
+            ]}
+            title="Resumo"
+          />
+        </div>
+        <StepNavigation
+          currentStep={currentStep}
+          totalSteps={totalSteps}
+          backDisabled={false}
+          backLabel="Voltar"
+          hideNext
+          nextLabel="Continuar"
+          onBack={onResetService}
+        />
+      </StepCard>
+    );
+  }
+
   return (
     <StepCard
       badge="Fluxo guiado"
@@ -2152,6 +2309,8 @@ function StepFrame({
 
 export function GuidedIntakeShell() {
   const [selectedService, setSelectedService] = useState<ServiceId | null>(null);
+  const [onboardingEntryMode, setOnboardingEntryMode] =
+    useState<OnboardingEntryMode | null>(null);
   const [llcName, setLlcName] = useState("");
   const [activeStep, setActiveStep] = useState<FlowStep>("service");
   const [businessActivity, setBusinessActivity] =
@@ -2205,30 +2364,32 @@ export function GuidedIntakeShell() {
     useState<LocalOrderPayload | null>(null);
   const currentStep =
     activeStep === "confirmation"
-      ? 13
+      ? 14
       : activeStep === "approval"
-      ? 12
+      ? 13
       : activeStep === "review"
-      ? 11
+      ? 12
       : activeStep === "documents"
-      ? 10
+      ? 11
       : activeStep === "ein_questions"
-      ? 9
+      ? 10
       : activeStep === "registered_agent"
-      ? 8
+      ? 9
       : activeStep === "business_address"
-      ? 7
+      ? 8
       : activeStep === "member_data"
-      ? 6
+      ? 7
       : activeStep === "member_count"
-      ? 5
+      ? 6
       : activeStep === "business_activity"
+      ? 5
+      : activeStep === "llc_name"
       ? 4
       : activeStep === "applicant_contact"
+      ? 3
+      : activeStep === "entry_mode"
       ? 2
-      : selectedService
-        ? 3
-        : 1;
+      : 1;
   const currentLabel =
     activeStep === "confirmation"
       ? "Confirmação"
@@ -2250,19 +2411,27 @@ export function GuidedIntakeShell() {
       ? "Sócios"
       : activeStep === "business_activity"
       ? "Atividade"
+      : activeStep === "llc_name"
+      ? "Empresa"
       : activeStep === "applicant_contact"
       ? "Contato"
-      : selectedService
-        ? "Empresa"
-        : "Serviço";
+      : activeStep === "entry_mode"
+      ? "Modo"
+      : "Serviço";
 
   function handleSelectService(service: ServiceId) {
     setSelectedService(service);
+    setActiveStep("entry_mode");
+  }
+
+  function handleSelectOnboardingEntryMode(mode: OnboardingEntryMode) {
+    setOnboardingEntryMode(mode);
     setActiveStep("applicant_contact");
   }
 
   function handleResetService() {
     setSelectedService(null);
+    setOnboardingEntryMode(null);
     setActiveStep("service");
     setLlcName("");
     setBusinessActivity(null);
@@ -2337,6 +2506,14 @@ export function GuidedIntakeShell() {
           selectedService === "complete" ? "complete_llc_ein" : "florida_llc",
         status: "approved",
         approvedAt: approvedAt.toISOString(),
+        onboardingEntryMode: onboardingEntryMode ?? "manual",
+        documentExtractionStatus: "not_started",
+        extractedApplicantData: {},
+        extractedAddressData: {},
+        extractionConfidence: null,
+        userConfirmedExtractedData: false,
+        agentSummary: null,
+        missingInformationFlags: [],
       },
       applicant: {
         name: applicantContact.name.trim(),
@@ -2478,7 +2655,7 @@ export function GuidedIntakeShell() {
       <ProgressHeader
         currentStep={currentStep}
         label={currentLabel}
-        totalSteps={13}
+        totalSteps={14}
       />
       <main className="mx-auto flex w-full max-w-6xl flex-1 px-4 py-8 sm:px-6 lg:px-8">
         <div className="grid w-full gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
@@ -2492,6 +2669,7 @@ export function GuidedIntakeShell() {
             }
             onContinueToLlcName={() => setActiveStep("llc_name")}
             onBackToApplicantContact={() => setActiveStep("applicant_contact")}
+            onBackToEntryMode={() => setActiveStep("entry_mode")}
             approvedOrderPayload={approvedOrderPayload}
             businessActivity={businessActivity}
             businessAddress={businessAddress}
@@ -2542,10 +2720,12 @@ export function GuidedIntakeShell() {
             onContinueToMemberCount={() => setActiveStep("member_count")}
             onContinueToRegisteredAgent={() => setActiveStep("registered_agent")}
             onResetService={handleResetService}
+            onboardingEntryMode={onboardingEntryMode}
+            onSelectOnboardingEntryMode={handleSelectOnboardingEntryMode}
             onSelectService={handleSelectService}
             selectedService={selectedService}
             currentStep={currentStep}
-            totalSteps={13}
+            totalSteps={14}
           />
 
           <aside className="h-fit rounded-lg border bg-card p-5 shadow-sm">

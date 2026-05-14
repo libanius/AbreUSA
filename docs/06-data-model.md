@@ -8,6 +8,14 @@ This document defines product-level data, not final database schema.
 - protocolNumber.
 - serviceType.
 - status.
+- onboardingEntryMode.
+- documentExtractionStatus.
+- extractedApplicantData.
+- extractedAddressData.
+- extractionConfidence.
+- userConfirmedExtractedData.
+- agentSummary.
+- missingInformationFlags.
 - createdAt.
 - updatedAt.
 - approvedAt.
@@ -31,6 +39,33 @@ Status values:
 - submitted.
 - completed.
 - blocked.
+
+Onboarding entry mode values:
+
+- manual.
+- document_assisted.
+
+Document extraction status values:
+
+- not_started.
+- pending.
+- completed.
+- failed.
+
+Phase 9 readiness fields:
+
+- `onboardingEntryMode`: stores whether the customer chose manual onboarding or document-assisted onboarding after service selection.
+- `documentExtractionStatus`: stores future extraction lifecycle state. Phase 9 does not run OCR, so the default is `not_started`.
+- `extractedApplicantData`: JSON/object placeholder for future customer-reviewable applicant extraction values.
+- `extractedAddressData`: JSON/object placeholder for future customer-reviewable address extraction values.
+- `extractionConfidence`: optional future numeric confidence signal.
+- `userConfirmedExtractedData`: whether the customer confirmed any extracted values before submission.
+- `agentSummary`: future internal/assistive summary; must not replace structured customer-reviewed data.
+- `missingInformationFlags`: JSON/object or array of future missing-information markers.
+
+Phase 9 constraint:
+
+- These fields prepare the architecture for Phase 10 or later. They must not be used to claim real OCR, automated passport parsing, proof-of-residence parsing, or autonomous AI behavior.
 
 ## Applicant
 
@@ -166,6 +201,12 @@ Entity type values:
 - deletedBy.
 - deletionReason.
 - deletionAuditId.
+
+Future extraction review readiness:
+
+- Document upload can support a document-assisted onboarding path.
+- Uploaded files remain governed by existing private storage and retention rules.
+- Any future extracted values must remain editable and customer-confirmed before approval.
 
 Document type values:
 

@@ -17,6 +17,18 @@ create table if not exists orders (
                                default ('AUS-' || to_char(now(), 'YYYY') || '-'
                                         || lpad(nextval('order_protocol_seq')::text, 4, '0')),
   service_type     text        not null check (service_type in ('complete_llc_ein', 'florida_llc')),
+  onboarding_entry_mode text    not null default 'manual' check (
+                                 onboarding_entry_mode in ('manual', 'document_assisted')
+                               ),
+  document_extraction_status text not null default 'not_started' check (
+                                 document_extraction_status in ('not_started', 'pending', 'completed', 'failed')
+                               ),
+  extracted_applicant_data jsonb not null default '{}'::jsonb,
+  extracted_address_data jsonb not null default '{}'::jsonb,
+  extraction_confidence numeric,
+  user_confirmed_extracted_data boolean not null default false,
+  agent_summary text,
+  missing_information_flags jsonb not null default '[]'::jsonb,
   status           text        not null default 'approved' check (
                                  status in (
                                    'draft', 'awaiting_documents', 'ready_for_review', 'customer_reviewing',

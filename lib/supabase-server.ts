@@ -9,6 +9,18 @@ type AbreUsaDatabase = {
           service_type: string;
           status: string;
           approved_at: string;
+          onboarding_entry_mode?: "manual" | "document_assisted";
+          document_extraction_status?:
+            | "not_started"
+            | "pending"
+            | "completed"
+            | "failed";
+          extracted_applicant_data?: Record<string, unknown>;
+          extracted_address_data?: Record<string, unknown>;
+          extraction_confidence?: number | null;
+          user_confirmed_extracted_data?: boolean;
+          agent_summary?: string | null;
+          missing_information_flags?: string[];
         };
         Update: {
           status?: string;

@@ -12,6 +12,14 @@ export type PersistOrderPayload = {
     serviceType: string;
     status: string;
     approvedAt: string;
+    onboardingEntryMode?: "manual" | "document_assisted";
+    documentExtractionStatus?: "not_started" | "pending" | "completed" | "failed";
+    extractedApplicantData?: Record<string, unknown>;
+    extractedAddressData?: Record<string, unknown>;
+    extractionConfidence?: number | null;
+    userConfirmedExtractedData?: boolean;
+    agentSummary?: string | null;
+    missingInformationFlags?: string[];
   };
   llc: {
     legalName: string;

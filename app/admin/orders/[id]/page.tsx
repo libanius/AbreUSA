@@ -63,6 +63,8 @@ export default async function AdminOrderDetailPage({
     .from("orders")
     .select(`
       id, protocol_number, service_type, status, approved_at, created_at,
+      onboarding_entry_mode, document_extraction_status, extraction_confidence,
+      user_confirmed_extracted_data, agent_summary, missing_information_flags,
       applicants(id, name, email, phone, residential_street, residential_city, residential_state, residential_zip),
       llcs(id, legal_name, state, business_activity_label, principal_street, principal_city, principal_state, principal_zip, principal_same_as_applicant_address, management_type, member_count),
       members(id, member_index, full_name, address, ownership_percentage),
@@ -140,6 +142,40 @@ export default async function AdminOrderDetailPage({
           <StatusUpdater orderId={id} currentStatus={order.status as string} />
         </div>
       </div>
+
+      <Section title="Onboarding Foundation">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <Field
+            label="Entry Mode"
+            value={formatToken(order.onboarding_entry_mode, "manual")}
+          />
+          <Field
+            label="Document Extraction Status"
+            value={formatToken(order.document_extraction_status, "not_started")}
+          />
+          <Field
+            label="User Confirmed Extracted Data"
+            value={order.user_confirmed_extracted_data ? "Yes" : "No"}
+          />
+          <Field
+            label="Extraction Confidence"
+            value={
+              order.extraction_confidence == null
+                ? "—"
+                : String(order.extraction_confidence)
+            }
+          />
+          <Field
+            label="Missing Information Flags"
+            value={
+              Array.isArray(order.missing_information_flags)
+                ? order.missing_information_flags.join(", ") || "—"
+                : "—"
+            }
+          />
+          <Field label="Agent Summary" value={order.agent_summary as string} />
+        </div>
+      </Section>
 
       {/* Applicant */}
       {applicant && (

@@ -1880,6 +1880,73 @@ P8.5-T04 status:
   - `/admin/orders` redirects unauthenticated users to `/admin/login`.
 - `npx vercel inspect https://abre-usa.vercel.app` reports the deployment is `Ready`.
 
+## Phase 9: AI-Ready Onboarding Foundation
+
+Status: Complete locally.
+
+Source of truth:
+
+- GitHub issue #2: Phase 9 — AI-Ready Onboarding Foundation.
+
+Purpose:
+
+Prepare AbreUSA for future AI-assisted document extraction and conversational onboarding while keeping the current product deterministic, safe, and MVP-friendly.
+
+Scope:
+
+- Update the App Spine first.
+- Add a post-diagnosis onboarding choice after service selection:
+  - `Enviar documentos para facilitar o preenchimento`.
+  - `Preencher manualmente`.
+- Preserve anonymous initial onboarding; do not require login at the beginning.
+- Document-assisted path:
+  - Uses existing document upload infrastructure.
+  - Stores documents securely using the existing approach.
+  - Prepares UI/data model for future extraction review.
+  - Does not claim OCR is currently active.
+- Manual path:
+  - Continues through the existing manual flow.
+  - Preserves Phase 8.5 UX behavior.
+- Prepare data model support for:
+  - `onboarding_entry_mode`.
+  - `document_extraction_status`.
+  - `extracted_applicant_data`.
+  - `extracted_address_data`.
+  - `extraction_confidence`.
+  - `user_confirmed_extracted_data`.
+  - `agent_summary`.
+  - `missing_information_flags`.
+- Prepare an editable review concept for future extracted data.
+
+Out of scope:
+
+- Real AI OCR.
+- OpenAI API calls.
+- Passport parsing.
+- Proof-of-residence parsing.
+- Autonomous AI decision-making.
+- Payment.
+- Customer dashboard.
+- Sunbiz availability check.
+- Multi-state orchestration.
+- Custom production domain.
+- Branded sender domain.
+- Retention Cron automation.
+
+Completed Phase 9 task:
+
+- Task ID: `P9-T01`.
+- Title: Implement AI-ready onboarding entry mode foundation.
+- Result:
+  - App Spine updated first from GitHub issue #2.
+  - Service selection now advances to a post-diagnosis entry mode choice.
+  - Entry modes are `manual` and `document_assisted`.
+  - Manual mode preserves the existing Phase 8.5 guided onboarding.
+  - Document-assisted mode uses the existing document upload/review path and does not claim OCR is active.
+  - `orders` persistence supports Phase 9 readiness fields for future extraction and agent summaries.
+  - Admin order detail displays onboarding entry mode and extraction readiness fields.
+  - Verification passed: `npm run lint`, `npm run build`, `npx supabase db push`, and `/api/orders` persistence/upload regression with `AUS-2026-0017`.
+
 Potential additions (post-P8-T02):
 
 - Payment processing.

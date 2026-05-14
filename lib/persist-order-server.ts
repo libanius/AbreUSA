@@ -42,6 +42,16 @@ export async function persistOrderServer(
       service_type: payload.order.serviceType,
       status: payload.order.status,
       approved_at: payload.order.approvedAt,
+      onboarding_entry_mode: payload.order.onboardingEntryMode ?? "manual",
+      document_extraction_status:
+        payload.order.documentExtractionStatus ?? "not_started",
+      extracted_applicant_data: payload.order.extractedApplicantData ?? {},
+      extracted_address_data: payload.order.extractedAddressData ?? {},
+      extraction_confidence: payload.order.extractionConfidence ?? null,
+      user_confirmed_extracted_data:
+        payload.order.userConfirmedExtractedData ?? false,
+      agent_summary: payload.order.agentSummary ?? null,
+      missing_information_flags: payload.order.missingInformationFlags ?? [],
     })
     .select("id, protocol_number")
     .single();
