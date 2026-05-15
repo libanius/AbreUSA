@@ -246,21 +246,35 @@ None in progress. Awaiting next owner/operator priority.
 ### Next Action
 Choose the next owner/operator-directed priority and update the App Spine before implementation:
 
-Implement `P11-T05`: customer document download via authenticated signed URL.
-- Scope documented in `/docs/07-roadmap.md` under Phase 11.
-- New API route: `GET /api/customer/documents/[id]/signed-url`.
-- Dashboard UI: "Ver documento" button per document in authenticated view only.
+### Current Phase
+Phase 11: Customer Dashboard Journey.
+
+### Last Completed Task
+`P11-T05` — Customer document download via authenticated signed URL.
+- `GET /api/customer/documents/[id]/signed-url`: session auth + email ownership check + 60s signed URL.
+- "Ver documento" button shown per document in authenticated dashboard only.
+- Deleted documents show no button; unauthenticated fallback unaffected.
+- Production deployment: `dpl_Ds9YAqLbn7psCoBv2ogtrSQBycs8`.
+- Health checks: `/` 200, `/dashboard` 200, unauthenticated `/api/customer/documents/*/signed-url` returns 401.
+
+### Current Task
+None. Awaiting next priority.
+
+### Next Action
+Choose the next owner/operator-directed priority:
+- Phase 11: customer correction/missing-information workflow.
+- Post-MVP: custom domain, branded email sender, Vercel Cron retention.
 
 Resume command prompt:
 
-Read `AGENTS.md`, `/docs/START-HERE.md`, `/docs/07-roadmap.md`, and this file. Implement `P11-T05`.
+Read `AGENTS.md`, `/docs/START-HERE.md`, `/docs/07-roadmap.md`, and this file. P11-T05 is complete. Choose the next priority.
 
 ## Blockers And Risks
 
 - Production confirmation email verified: `AUS-2026-0014` received at `brightscalegroup@gmail.com` on 2026-05-09.
 - Permanent admin user exists, is email-confirmed, and owner/operator confirmed access.
 - Correct AbreUSA Vercel account is authenticated as `abreusaonline-7459`.
-- Vercel project is linked. Current production deployment: `dpl_31ZdR5zEXbFHsp5eKRWdFXtwsn3w` (P11-T04).
+- Vercel project is linked. Current production deployment: `dpl_Ds9YAqLbn7psCoBv2ogtrSQBycs8` (P11-T05).
 - Custom domain is deferred; controlled launch continues on `https://abre-usa.vercel.app`.
 - AbreUSA domain email migration remains deferred; temporary Brightscale sender in use.
 - Manual physical deletion is implemented (P8-T11). In-browser verification against a real eligible document is recommended before enabling for production use.

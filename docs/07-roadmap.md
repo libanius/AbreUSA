@@ -2260,4 +2260,12 @@ Phase 11 customer document download task:
   - Deleted documents show "Removido" with no download button and return 410 if called directly.
   - `npm run lint` and `npm run build` pass.
   - Production deployment and verification recorded.
-- Status: Planned.
+- Status: Complete.
+- Result:
+  - `app/api/customer/documents/[id]/signed-url/route.ts`: GET route, reads session via `createSupabaseRouteHandlerClient`, verifies ownership (document → order → applicant email = user.email), generates 60s signed URL via service-role. Returns 401 unauthenticated, 403 wrong user, 410 deleted, 404 not found.
+  - `app/dashboard/_components/document-download-button.tsx`: client button, fetches signed URL, opens in new tab, shows inline error on failure.
+  - `app/dashboard/page.tsx`: "Ver documento" button shown per document when `document.id` present and not deleted (authenticated path only). Unauthenticated fallback unchanged.
+  - `lib/customer-dashboard.ts`: `CustomerDashboardOrder.documents` extended with `id?: string` and `deleted: boolean`. `getCustomerDashboardOrdersByEmail` includes document `id` in select. Protocol+email path leaves `id` undefined.
+  - `npm run lint` and `npm run build` pass (17 routes, 0 errors).
+  - Production deployed: `dpl_Ds9YAqLbn7psCoBv2ogtrSQBycs8`.
+  - Health checks: `/` 200, `/dashboard` 200, unauthenticated document API returns 401.
