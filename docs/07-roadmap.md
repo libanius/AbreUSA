@@ -2228,3 +2228,36 @@ Phase 11 authenticated customer account task:
   - Production deployed: `dpl_31ZdR5zEXbFHsp5eKRWdFXtwsn3w`.
   - Production health checks: `/`, `/dashboard`, `/dashboard/login`, `/dashboard/register`, `/dashboard/reset-password` all return 200. `/admin/orders` returns 307 to `/admin/login`.
   - Production verification passed (2026-05-14): signup → confirmation email received → link clicked on mobile → session established → authenticated dashboard displayed order by email. Supabase Auth Site URL corrected to `https://abre-usa.vercel.app` during verification (was `http://localhost:3000`).
+
+
+Phase 11 customer document download task:
+
+- Task ID: `P11-T05`.
+- Title: Customer document download via authenticated signed URL.
+- Purpose:
+  - Allow authenticated customers to view their own uploaded documents via a short-lived signed URL.
+  - Maintain the security model: no public URLs, no raw storage paths, customer restricted to own documents.
+- Scope:
+  - New API route: `GET /api/customer/documents/[id]/signed-url`.
+  - Route reads authenticated session via `createSupabaseRouteHandlerClient` (anon key).
+  - Server-side authorization: fetch document → fetch order → confirm `applicant_email = user.email`.
+  - If authorized, generate a short-lived signed URL (60 seconds) via service-role Supabase client.
+  - Return JSON with the signed URL; client opens it in a new tab.
+  - Deleted documents (`deletion_status = success` or `retention_status = deleted`): return 410 Gone.
+  - Unauthenticated requests: return 401.
+  - Dashboard UI: add "Ver documento" button per document in the authenticated dashboard view only.
+  - Unauthenticated protocol+email fallback: no download buttons (existing behavior preserved).
+- Out of scope:
+  - Admin document download changes (already implemented).
+  - Customer document upload or replacement.
+  - Customer correction workflow.
+  - Permanent or long-lived download URLs.
+- Acceptance criteria:
+  - Authenticated customer can click "Ver documento" and open their document in a new tab.
+  - Unauthenticated users see no download buttons.
+  - Signed URL expires in 60 seconds.
+  - Customer cannot access documents belonging to another customer's order.
+  - Deleted documents show "Removido" with no download button and return 410 if called directly.
+  - `npm run lint` and `npm run build` pass.
+  - Production deployment and verification recorded.
+- Status: Planned.

@@ -47,10 +47,12 @@ export type CustomerDashboardOrder = {
   llcName: string;
   llcState: string;
   documents: Array<{
+    id?: string;
     type: string;
     label: string;
     statusLabel: string;
     retentionLabel: string;
+    deleted: boolean;
   }>;
   generatedForms: Array<{
     type: string;
@@ -163,6 +165,7 @@ export async function getCustomerDashboardOrder({
       label: DOCUMENT_LABELS[documentType] ?? tokenLabel(documentType, "Documento"),
       statusLabel: deleted ? "Removido conforme politica de retencao" : "Recebido com seguranca",
       retentionLabel: deleted ? "Arquivo apagado" : "Arquivo privado",
+      deleted,
     };
   });
 
@@ -230,7 +233,7 @@ export async function getCustomerDashboardOrdersByEmail(
       onboarding_entry_mode, document_extraction_status, extraction_confidence,
       applicants(name, email),
       llcs(legal_name, state),
-      documents(document_type, retention_status, deletion_status),
+      documents(id, document_type, retention_status, deletion_status),
       generated_forms(form_type, customer_approved)
     `)
     .in("id", orderIds)
@@ -250,10 +253,12 @@ export async function getCustomerDashboardOrdersByEmail(
       const documentType = text(doc.document_type, "document");
       const deleted = doc.deletion_status === "success" || doc.retention_status === "deleted";
       return {
+        id: typeof doc.id === "string" ? doc.id : undefined,
         type: documentType,
         label: DOCUMENT_LABELS[documentType] ?? tokenLabel(documentType, "Documento"),
         statusLabel: deleted ? "Removido conforme politica de retencao" : "Recebido com seguranca",
         retentionLabel: deleted ? "Arquivo apagado" : "Arquivo privado",
+        deleted,
       };
     });
 

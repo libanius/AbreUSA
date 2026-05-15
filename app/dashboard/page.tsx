@@ -8,6 +8,7 @@ import {
   type CustomerDashboardOrder,
 } from "@/lib/customer-dashboard";
 import CustomerLogoutButton from "./_components/logout-button";
+import DocumentDownloadButton from "./_components/document-download-button";
 
 export const dynamic = "force-dynamic";
 
@@ -173,19 +174,26 @@ function DashboardSummary({ order }: { order: CustomerDashboardOrder }) {
                   <p className="text-sm font-medium text-gray-950">{document.label}</p>
                   <p className="mt-1 text-xs text-gray-500">{document.retentionLabel}</p>
                 </div>
-                <span className="rounded-full bg-green-50 px-3 py-1 text-xs font-semibold text-green-800">
-                  {document.statusLabel}
-                </span>
+                <div className="flex flex-wrap items-center gap-3">
+                  <span className="rounded-full bg-green-50 px-3 py-1 text-xs font-semibold text-green-800">
+                    {document.statusLabel}
+                  </span>
+                  {document.id && !document.deleted ? (
+                    <DocumentDownloadButton documentId={document.id} />
+                  ) : null}
+                </div>
               </div>
             ))}
           </div>
         ) : (
           <p className="text-sm text-gray-600">Nenhum documento registrado neste pedido.</p>
         )}
-        <p className="mt-4 rounded-lg bg-gray-50 p-3 text-xs leading-5 text-gray-600">
-          Por seguranca, este dashboard mostra apenas o status dos documentos. Links de visualizacao,
-          download, caminhos de storage e arquivos sensiveis ficam restritos ao time autorizado da AbreUSA.
-        </p>
+        {!order.documents.some((d) => d.id) && (
+          <p className="mt-4 rounded-lg bg-gray-50 p-3 text-xs leading-5 text-gray-600">
+            Por seguranca, este dashboard mostra apenas o status dos documentos. Links de visualizacao,
+            download, caminhos de storage e arquivos sensiveis ficam restritos ao time autorizado da AbreUSA.
+          </p>
+        )}
       </Section>
 
       <Section title="Formularios e registros">

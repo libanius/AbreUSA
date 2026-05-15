@@ -246,18 +246,14 @@ None in progress. Awaiting next owner/operator priority.
 ### Next Action
 Choose the next owner/operator-directed priority and update the App Spine before implementation:
 
-Option A — Phase 11 continuation:
-- Customer document download (authenticated, short-lived signed URL).
-- Customer correction/missing-information workflow.
-
-Option B — Post-MVP infrastructure:
-- Custom domain (`abreusa.com` via Cloudflare).
-- AbreUSA-branded email sender (migrate from temporary Brightscale sender).
-- Vercel Cron automated retention (deferred until manual deletion is verified in production).
+Implement `P11-T05`: customer document download via authenticated signed URL.
+- Scope documented in `/docs/07-roadmap.md` under Phase 11.
+- New API route: `GET /api/customer/documents/[id]/signed-url`.
+- Dashboard UI: "Ver documento" button per document in authenticated view only.
 
 Resume command prompt:
 
-Read `AGENTS.md`, `/docs/START-HERE.md`, `/docs/07-roadmap.md`, and this file. P11-T04 is complete. Choose the next priority.
+Read `AGENTS.md`, `/docs/START-HERE.md`, `/docs/07-roadmap.md`, and this file. Implement `P11-T05`.
 
 ## Blockers And Risks
 
