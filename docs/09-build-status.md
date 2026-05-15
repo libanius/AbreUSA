@@ -231,25 +231,33 @@ Verify P10-robustness in production with a real PNG and JPEG mobile photo upload
 
 ## Exact Next Step To Resume
 
-P11-T04 is fully deployed and verified:
-- All P11-T04 routes return correct HTTP status in production.
-- `/auth/confirm` with no params returns `307 /dashboard/login?error=link_invalido` (correct).
-- `/admin/orders` still redirects unauthenticated users to `/admin/login`.
-- Admin user (`contact@brightscalegroup.com`) is confirmed and unaffected.
-- Supabase Auth redirect URL `https://abre-usa.vercel.app/auth/confirm` confirmed added by owner/operator.
-- Full email verification flow (signup + click link + dashboard) requires a real browser test by the owner/operator.
+### Current Phase
+Phase 11: Customer Dashboard Journey.
 
-P11-T04 is fully complete and production-verified including the email confirmation flow.
+### Last Completed Task
+`P11-T04` — Full authenticated customer account via Supabase Auth (email + password).
+- Signup, login, password reset, email verification, and authenticated dashboard all verified in production (2026-05-14).
+- Supabase Auth Site URL corrected to `https://abre-usa.vercel.app` during verification.
+- Production deployment: `dpl_31ZdR5zEXbFHsp5eKRWdFXtwsn3w`.
 
-Next action:
+### Current Task
+None in progress. Awaiting next owner/operator priority.
 
-Choose the next owner/operator-directed priority:
-- Next Phase 11 slice (customer document downloads, customer correction workflow).
-- Post-MVP priority (branded sender domain, custom domain, Vercel Cron retention automation).
+### Next Action
+Choose the next owner/operator-directed priority and update the App Spine before implementation:
+
+Option A — Phase 11 continuation:
+- Customer document download (authenticated, short-lived signed URL).
+- Customer correction/missing-information workflow.
+
+Option B — Post-MVP infrastructure:
+- Custom domain (`abreusa.com` via Cloudflare).
+- AbreUSA-branded email sender (migrate from temporary Brightscale sender).
+- Vercel Cron automated retention (deferred until manual deletion is verified in production).
 
 Resume command prompt:
 
-Read `AGENTS.md`, `/docs/START-HERE.md`, `/docs/07-roadmap.md`, and this file. P11-T04 is complete and verified. Choose the next priority and update the App Spine before implementation.
+Read `AGENTS.md`, `/docs/START-HERE.md`, `/docs/07-roadmap.md`, and this file. P11-T04 is complete. Choose the next priority.
 
 ## Blockers And Risks
 
