@@ -76,6 +76,7 @@ export type CustomerDashboardOrder = {
   llcPrincipalCity?: string;
   llcPrincipalState?: string;
   llcPrincipalZip?: string;
+  correctionNotes?: string | null;
 };
 
 function normalizeProtocol(protocol: string) {
@@ -244,7 +245,7 @@ export async function getCustomerDashboardOrdersByEmail(
     .select(`
       id, protocol_number, service_type, status, approved_at, created_at,
       onboarding_entry_mode, document_extraction_status, extraction_confidence,
-      missing_information_flags,
+      missing_information_flags, correction_notes,
       applicants(name, email, phone, residential_street, residential_city, residential_state, residential_zip),
       llcs(legal_name, state, business_activity_label, principal_street, principal_city, principal_state, principal_zip),
       documents(id, document_type, retention_status, deletion_status),
@@ -323,6 +324,7 @@ export async function getCustomerDashboardOrdersByEmail(
       llcPrincipalCity: text(llc?.principal_city),
       llcPrincipalState: text(llc?.principal_state),
       llcPrincipalZip: text(llc?.principal_zip),
+      correctionNotes: typeof order.correction_notes === 'string' ? order.correction_notes : null,
     } satisfies CustomerDashboardOrder;
   });
 }

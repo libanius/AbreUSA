@@ -134,6 +134,7 @@ function DashboardSummary({ order }: { order: CustomerDashboardOrder }) {
       {order.status === "customer_reviewing" && order.orderId ? (
         <CorrectionForm
           orderId={order.orderId}
+          correctionNotes={order.correctionNotes ?? null}
           missingFlags={order.missingInformationFlags ?? []}
           initialApplicant={{
             phone: order.applicantPhone ?? "",

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 
 type CorrectionFormProps = {
   orderId: string;
+  correctionNotes: string | null;
   missingFlags: string[];
   initialApplicant: {
     phone: string;
@@ -52,6 +53,7 @@ function Field({
 
 export default function CorrectionForm({
   orderId,
+  correctionNotes,
   missingFlags,
   initialApplicant,
   initialLlc,
@@ -115,9 +117,20 @@ export default function CorrectionForm({
         <p className="text-sm font-semibold text-orange-900">
           A equipe AbreUSA identificou informacoes que precisam de atualizacao.
         </p>
-        <p className="mt-1 text-sm text-orange-800">
-          Revise e corrija os campos abaixo e clique em Enviar correcao.
-        </p>
+
+        {correctionNotes ? (
+          <div className="mt-3 rounded-lg border border-orange-300 bg-white px-4 py-3">
+            <p className="text-xs font-semibold text-orange-700 uppercase tracking-wide mb-1">
+              Instrucoes da equipe AbreUSA
+            </p>
+            <p className="text-sm text-gray-800 whitespace-pre-wrap">{correctionNotes}</p>
+          </div>
+        ) : (
+          <p className="mt-1 text-sm text-orange-800">
+            Revise e corrija os campos abaixo e clique em Enviar correcao.
+          </p>
+        )}
+
         {missingFlags.length > 0 && (
           <ul className="mt-2 list-disc list-inside text-xs text-orange-700 space-y-0.5">
             {missingFlags.map((flag) => (
@@ -213,7 +226,7 @@ export default function CorrectionForm({
           disabled={loading}
           className="w-full rounded-lg bg-green-700 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-green-800 disabled:opacity-60"
         >
-          {loading ? "Enviando\u2026" : "Enviar correcao"}
+          {loading ? "Enviando…" : "Enviar correcao"}
         </button>
       </form>
     </div>

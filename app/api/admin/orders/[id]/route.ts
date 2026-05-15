@@ -29,8 +29,8 @@ export async function PATCH(
   }
 
   const { id } = await params;
-  const body = await request.json() as { status?: string };
-  const { status } = body;
+  const body = await request.json() as { status?: string; correction_notes?: string | null };
+  const { status, correction_notes } = body;
 
   if (!status || !VALID_STATUSES.has(status)) {
     return Response.json({ error: "Invalid status." }, { status: 400 });
@@ -49,9 +49,21 @@ export async function PATCH(
 
   const previousStatus = (currentOrder as { status?: string } | null)?.status ?? null;
   const updatedAt = new Date().toISOString();
+  const orderUpdate: { status: string; updated_at: string; correction_notes?: string | null } = {
+    status,
+    updated_at: updatedAt,
+  };
+  if (status === "customer_reviewing" && correction_notes !== undefined) {
+    orderUpdate.correction_notes = correction_notes ?? null;
+  }
+  // Clear notes when leaving customer_reviewing
+  if (status !== "customer_reviewing") {
+    orderUpdate.correction_notes = null;
+  }
+
   const { error } = await (supabase as ReturnType<typeof getSupabaseServerClient>)
     .from("orders")
-    .update({ status, updated_at: updatedAt })
+    .update(orderUpdate)
     .eq("id", id);
 
   if (error) {

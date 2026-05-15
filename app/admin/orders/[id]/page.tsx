@@ -64,7 +64,7 @@ export default async function AdminOrderDetailPage({
     .select(`
       id, protocol_number, service_type, status, approved_at, created_at,
       onboarding_entry_mode, document_extraction_status, extraction_confidence,
-      user_confirmed_extracted_data, agent_summary, missing_information_flags,
+      user_confirmed_extracted_data, agent_summary, missing_information_flags, correction_notes,
       applicants(id, name, email, phone, residential_street, residential_city, residential_state, residential_zip),
       llcs(id, legal_name, state, business_activity_label, principal_street, principal_city, principal_state, principal_zip, principal_same_as_applicant_address, management_type, member_count),
       members(id, member_index, full_name, address, ownership_percentage),
@@ -139,7 +139,7 @@ export default async function AdminOrderDetailPage({
         </div>
         <div>
           <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Status</p>
-          <StatusUpdater orderId={id} currentStatus={order.status as string} />
+          <StatusUpdater orderId={id} currentStatus={order.status as string} currentCorrectionNotes={typeof order.correction_notes === "string" ? order.correction_notes : null} />
         </div>
       </div>
 

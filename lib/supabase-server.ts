@@ -25,6 +25,7 @@ type AbreUsaDatabase = {
         Update: {
           status?: string;
           updated_at?: string;
+          correction_notes?: string | null;
         };
         Relationships: [];
       };
