@@ -63,6 +63,19 @@ export type CustomerDashboardOrder = {
     label: string;
     state: "done" | "current" | "next";
   }>;
+  // Correction workflow fields — populated in authenticated path only
+  orderId?: string;
+  missingInformationFlags?: string[];
+  applicantPhone?: string;
+  applicantResidentialStreet?: string;
+  applicantResidentialCity?: string;
+  applicantResidentialState?: string;
+  applicantResidentialZip?: string;
+  llcBusinessActivity?: string;
+  llcPrincipalStreet?: string;
+  llcPrincipalCity?: string;
+  llcPrincipalState?: string;
+  llcPrincipalZip?: string;
 };
 
 function normalizeProtocol(protocol: string) {
@@ -231,8 +244,9 @@ export async function getCustomerDashboardOrdersByEmail(
     .select(`
       id, protocol_number, service_type, status, approved_at, created_at,
       onboarding_entry_mode, document_extraction_status, extraction_confidence,
-      applicants(name, email),
-      llcs(legal_name, state),
+      missing_information_flags,
+      applicants(name, email, phone, residential_street, residential_city, residential_state, residential_zip),
+      llcs(legal_name, state, business_activity_label, principal_street, principal_city, principal_state, principal_zip),
       documents(id, document_type, retention_status, deletion_status),
       generated_forms(form_type, customer_approved)
     `)
@@ -295,6 +309,20 @@ export async function getCustomerDashboardOrdersByEmail(
       documents,
       generatedForms,
       timeline: buildTimeline(status),
+      orderId: text(order.id),
+      missingInformationFlags: Array.isArray(order.missing_information_flags)
+        ? (order.missing_information_flags as string[])
+        : [],
+      applicantPhone: text(applicant?.phone),
+      applicantResidentialStreet: text(applicant?.residential_street),
+      applicantResidentialCity: text(applicant?.residential_city),
+      applicantResidentialState: text(applicant?.residential_state),
+      applicantResidentialZip: text(applicant?.residential_zip),
+      llcBusinessActivity: text(llc?.business_activity_label),
+      llcPrincipalStreet: text(llc?.principal_street),
+      llcPrincipalCity: text(llc?.principal_city),
+      llcPrincipalState: text(llc?.principal_state),
+      llcPrincipalZip: text(llc?.principal_zip),
     } satisfies CustomerDashboardOrder;
   });
 }

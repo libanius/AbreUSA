@@ -40,7 +40,13 @@ type AbreUsaDatabase = {
           residential_state?: string | null;
           residential_zip?: string | null;
         };
-        Update: never;
+        Update: {
+          phone?: string;
+          residential_street?: string | null;
+          residential_city?: string | null;
+          residential_state?: string | null;
+          residential_zip?: string | null;
+        };
         Relationships: [];
       };
       llcs: {
@@ -58,7 +64,14 @@ type AbreUsaDatabase = {
           management_type: string;
           member_count: number;
         };
-        Update: never;
+        Update: {
+          legal_name?: string;
+          business_activity_label?: string;
+          principal_street?: string;
+          principal_city?: string;
+          principal_state?: string;
+          principal_zip?: string;
+        };
         Relationships: [];
       };
       members: {

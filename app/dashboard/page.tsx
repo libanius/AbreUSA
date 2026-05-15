@@ -9,6 +9,7 @@ import {
 } from "@/lib/customer-dashboard";
 import CustomerLogoutButton from "./_components/logout-button";
 import DocumentDownloadButton from "./_components/document-download-button";
+import CorrectionForm from "./_components/correction-form";
 
 export const dynamic = "force-dynamic";
 
@@ -130,6 +131,27 @@ function DashboardSummary({ order }: { order: CustomerDashboardOrder }) {
 
   return (
     <div className="space-y-5">
+      {order.status === "customer_reviewing" && order.orderId ? (
+        <CorrectionForm
+          orderId={order.orderId}
+          missingFlags={order.missingInformationFlags ?? []}
+          initialApplicant={{
+            phone: order.applicantPhone ?? "",
+            residential_street: order.applicantResidentialStreet ?? "",
+            residential_city: order.applicantResidentialCity ?? "",
+            residential_state: order.applicantResidentialState ?? "",
+            residential_zip: order.applicantResidentialZip ?? "",
+          }}
+          initialLlc={{
+            legal_name: order.llcName,
+            business_activity_label: order.llcBusinessActivity ?? "",
+            principal_street: order.llcPrincipalStreet ?? "",
+            principal_city: order.llcPrincipalCity ?? "",
+            principal_state: order.llcPrincipalState ?? "",
+            principal_zip: order.llcPrincipalZip ?? "",
+          }}
+        />
+      ) : null}
       <section className="rounded-lg border border-gray-200 bg-white p-5">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>

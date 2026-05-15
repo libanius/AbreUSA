@@ -2270,3 +2270,37 @@ Phase 11 customer document download task:
   - Production deployed: `dpl_Ds9YAqLbn7psCoBv2ogtrSQBycs8`.
   - Health checks: `/` 200, `/dashboard` 200, unauthenticated document API returns 401.
   - Production verification passed (2026-05-14): authenticated customer clicked "Ver documento" button → document opened in new tab.
+
+
+Phase 11 customer correction task:
+
+- Task ID: `P11-T06`.
+- Title: Customer correction workflow.
+- Purpose:
+  - Allow authenticated customers to correct safe fields when admin sets order status to `customer_reviewing`.
+  - After correction, status returns to `ready_for_review` automatically.
+- Scope:
+  - Correction banner shown in authenticated dashboard when status = `customer_reviewing`.
+  - Editable fields: applicant phone and residential address; LLC legal name, business activity, and principal address.
+  - Non-editable: applicant name, applicant email, LLC state, EIN details, members, registered agent, documents.
+  - New API route: `PATCH /api/customer/orders/[id]/correction`.
+    - Validates session, order ownership (applicant email = user.email), and status = `customer_reviewing`.
+    - Updates applicants and llcs tables.
+    - Sets order status to `ready_for_review` and updates `updated_at`.
+    - Records `customer_correction_submitted` audit event.
+  - `missing_information_flags` shown as guidance hints if set by admin.
+  - Dashboard DTO extended with orderId, correction fields, and missingInformationFlags for authenticated path.
+- Out of scope:
+  - Customer uploading replacement documents.
+  - Editing EIN details, members, or registered agent.
+  - Admin notification email on correction.
+  - Unauthenticated correction path.
+- Acceptance criteria:
+  - Authenticated customer with `customer_reviewing` order sees correction banner and form.
+  - Customer can edit and submit allowed fields.
+  - After submit, order status = `ready_for_review` and correction is recorded in audit_events.
+  - Customer with order in any other status sees no correction form.
+  - Unauthenticated path unchanged.
+  - `npm run lint` and `npm run build` pass.
+  - Production deployment and verification recorded.
+- Status: Planned.
