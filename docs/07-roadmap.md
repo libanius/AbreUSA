@@ -2269,3 +2269,4 @@ Phase 11 customer document download task:
   - `npm run lint` and `npm run build` pass (17 routes, 0 errors).
   - Production deployed: `dpl_Ds9YAqLbn7psCoBv2ogtrSQBycs8`.
   - Health checks: `/` 200, `/dashboard` 200, unauthenticated document API returns 401.
+  - Production verification passed (2026-05-14): authenticated customer clicked "Ver documento" button → document opened in new tab.
