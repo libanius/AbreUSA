@@ -239,15 +239,17 @@ P11-T04 is fully deployed and verified:
 - Supabase Auth redirect URL `https://abre-usa.vercel.app/auth/confirm` confirmed added by owner/operator.
 - Full email verification flow (signup + click link + dashboard) requires a real browser test by the owner/operator.
 
+P11-T04 is fully complete and production-verified including the email confirmation flow.
+
 Next action:
 
-Choose the next owner/operator-directed priority. Options:
+Choose the next owner/operator-directed priority:
 - Next Phase 11 slice (customer document downloads, customer correction workflow).
 - Post-MVP priority (branded sender domain, custom domain, Vercel Cron retention automation).
 
 Resume command prompt:
 
-Read `AGENTS.md`, `/docs/START-HERE.md`, `/docs/07-roadmap.md`, and this file. P11-T04 is complete and production-verified. Choose the next priority and update the App Spine before implementation.
+Read `AGENTS.md`, `/docs/START-HERE.md`, `/docs/07-roadmap.md`, and this file. P11-T04 is complete and verified. Choose the next priority and update the App Spine before implementation.
 
 ## Blockers And Risks
 
@@ -263,6 +265,10 @@ Read `AGENTS.md`, `/docs/START-HERE.md`, `/docs/07-roadmap.md`, and this file. P
 - Admin portal has no rate limiting or brute-force protection on the login page (acceptable for MVP internal use).
 - Customer accounts are implemented (signup, login, password reset, authenticated dashboard). Customer document downloads and correction workflows remain out of scope.
 - ADMIN_EMAIL env var is set in Vercel production; admin routes are protected from customer sessions.
-- Supabase Auth redirect URL `https://abre-usa.vercel.app/auth/confirm` confirmed added by owner/operator (2026-05-14). Local dev redirect `http://localhost:3000/auth/confirm` may also be added for development.
+- Supabase Auth configuration confirmed (2026-05-14):
+  - Site URL set to `https://abre-usa.vercel.app` (was `http://localhost:3000` — caused confirmation links to open localhost on mobile).
+  - `https://abre-usa.vercel.app/auth/confirm` added to Allowed Redirect URLs.
+  - `http://localhost:3000/**` added to Redirect URLs for local dev.
+- Full P11-T04 email verification flow verified in production: signup → confirmation email received → link clicked → session established → authenticated dashboard shows order by email.
 - Default PATH does not include Node/npm on this machine; use `PATH=/usr/local/opt/node@22/bin:$PATH` for local commands.
 - The project path contains a curly apostrophe (U+2019); use Python subprocess or `pathlib.Path.cwd()` for shell commands — do not use shell `find | head -1` pattern.

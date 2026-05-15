@@ -2227,4 +2227,4 @@ Phase 11 authenticated customer account task:
   - `npm run lint` and `npm run build` pass (16 routes, 0 errors).
   - Production deployed: `dpl_31ZdR5zEXbFHsp5eKRWdFXtwsn3w`.
   - Production health checks: `/`, `/dashboard`, `/dashboard/login`, `/dashboard/register`, `/dashboard/reset-password` all return 200. `/admin/orders` returns 307 to `/admin/login`.
-  - Pending manual verification: Supabase Auth redirect URLs must be configured to allow `https://abre-usa.vercel.app/auth/confirm`. Customer account creation and email confirmation require a real test with a valid inbox.
+  - Production verification passed (2026-05-14): signup → confirmation email received → link clicked on mobile → session established → authenticated dashboard displayed order by email. Supabase Auth Site URL corrected to `https://abre-usa.vercel.app` during verification (was `http://localhost:3000`).
