@@ -268,15 +268,15 @@
           <span class="pill done" data-en="Current phase" data-pt="Fase atual">Current phase</span>
           <p class="phase" data-en="Phase 11: Customer Dashboard Journey" data-pt="Fase 11: Jornada do dashboard do cliente">Phase 11: Customer Dashboard Journey</p>
           <p
-            data-en="Phase 11 tasks P11-T01 through P11-T06 are complete and verified in production at https://abre-usa.vercel.app."
+            data-en="Phase 11 is complete. P11-T01 through P11-T06 (including admin correction notes) are deployed and production-verified at https://abre-usa.vercel.app. Awaiting next priority."
             data-pt="As tarefas P11-T01 a P11-T06 da Fase 11 estão concluídas e verificadas em produção em https://abre-usa.vercel.app."
           >
-            Phase 11 tasks P11-T01 through P11-T06 are complete and verified in production at https://abre-usa.vercel.app.
+            Phase 11 is complete. P11-T01 through P11-T06 (including admin correction notes) are deployed and production-verified at https://abre-usa.vercel.app. Awaiting next priority.
           </p>
           <div class="progress-wrap" aria-label="Project progress">
             <div class="progress-label">
               <span data-en="Roadmap progress" data-pt="Progresso do roadmap">Roadmap progress</span>
-              <span data-en="P11-T06 complete" data-pt="P11-T06 concluído">P11-T06 complete</span>
+              <span data-en="Phase 11 complete" data-pt="Fase 11 concluída">Phase 11 complete</span>
             </div>
             <div class="progress-track">
               <div class="progress-fill"></div>
@@ -439,18 +439,18 @@
 
         <article class="card next">
           <span class="pill needed" data-en="Next task" data-pt="Próxima tarefa">Next task</span>
-          <h2 data-en="Choose P11-T04 Scope" data-pt="Escolher escopo P11-T04">Choose P11-T04 Scope</h2>
+          <h2 data-en="Owner/operator selects next priority" data-pt="Operador seleciona a próxima prioridade">Owner/operator selects next priority</h2>
           <p
-            data-en="Recommended next: define authenticated customer access or magic-link strategy before adding customer document downloads or correction workflows."
-            data-pt="Próximo recomendado: definir acesso autenticado do cliente ou estratégia de magic link antes de adicionar downloads de documentos ou correções pelo cliente."
+            data-en="Phase 11 is complete. Top candidate: automated email notification to customer when admin sets order to correction review status."
+            data-pt="Fase 11 concluída. Principal candidato: e-mail automático ao cliente quando o admin define o pedido como em revisão pelo cliente."
           >
-            Recommended next: define authenticated customer access or magic-link strategy before adding customer document downloads or correction workflows.
+            Phase 11 is complete. Top candidate: automated email notification to customer when admin sets order to correction review status.
           </p>
           <p
-            data-en="Sensitive document links, customer login, magic links, draft resume, and customer corrections remain future work."
-            data-pt="Links de documentos sensíveis, login de cliente, magic links, retomada de rascunho e correções pelo cliente continuam como trabalho futuro."
+            data-en="Other candidates: custom production domain, AbreUSA-branded email sender, Vercel Cron retention automation."
+            data-pt="Outros candidatos: domínio de produção personalizado, remetente de e-mail com marca AbreUSA, automação de retenção com Vercel Cron."
           >
-            Sensitive document links, customer login, magic links, draft resume, and customer corrections remain future work.
+            Other candidates: custom production domain, AbreUSA-branded email sender, Vercel Cron retention automation.
           </p>
         </article>
       </section>
@@ -461,12 +461,12 @@
         <ul>
           <li data-en="EIN-only dedicated flow requirements." data-pt="Requisitos do fluxo dedicado de EIN-only.">EIN-only dedicated flow requirements.</li>
             <li data-en="P11-T06: Customer correction workflow. Customers can edit safe fields when order is in correction-review status; submission moves order back to ready-for-review with audit log." data-pt="P11-T06: Fluxo de correção pelo cliente. Clientes podem editar campos seguros quando o pedido está em revisão; envio move o pedido de volta para pronto-para-revisão com log de auditoria.">P11-T06: Customer correction workflow. Customers can edit safe fields when order is in correction-review status; submission moves order back to ready-for-review with audit log.</li>
+          <li data-en="Automated status-triggered email to customer when order moves to customer_reviewing (top candidate for next implementation)." data-pt="E-mail automático ao cliente quando o pedido muda para em revisão pelo cliente (principal candidato para próxima implementação).">Automated status-triggered email to customer when order moves to customer_reviewing (top candidate for next implementation).</li>
           <li data-en="Registered Agent-only dedicated flow requirements." data-pt="Requisitos do fluxo dedicado de Registered Agent-only.">Registered Agent-only dedicated flow requirements.</li>
           <li data-en="Payment timing if payment is added later." data-pt="Momento do pagamento caso pagamento seja adicionado depois.">Payment timing if payment is added later.</li>
           <li data-en="PDF/export strategy beyond HTML preview." data-pt="Estratégia de PDF/exportação além do preview em HTML.">PDF/export strategy beyond HTML preview.</li>
           <li data-en="Draft persistence and resume behavior." data-pt="Persistência de rascunho e retomada do fluxo.">Draft persistence and resume behavior.</li>
           <li data-en="Future retention Cron (Vercel Cron), granular reviewer access scopes, and expanded audit logging." data-pt="Cron futuro de retenção (Vercel Cron), escopos granulares de reviewers e auditoria expandida.">Future retention Cron (Vercel Cron), granular reviewer access scopes, and expanded audit logging.</li>
-          <li data-en="Signed URL strategy for internal document review." data-pt="Estratégia de URLs assinadas para revisão interna de documentos.">Signed URL strategy for internal document review.</li>
           <li data-en="Conversational onboarding role: supplement or replace parts of the guided flow." data-pt="Papel do onboarding conversacional: complementar ou substituir partes do fluxo guiado.">Conversational onboarding role: supplement or replace parts of the guided flow.</li>
           <li data-en="AI-guided onboarding scope and guardrails for PII, passport data, and legal/tax guidance." data-pt="Escopo e limites do onboarding guiado por IA para PII, dados de passaporte e orientação legal/tributária.">AI-guided onboarding scope and guardrails for PII, passport data, and legal/tax guidance.</li>
           <li data-en="Progressive onboarding and resume model." data-pt="Modelo de onboarding progressivo e retomada de fluxo.">Progressive onboarding and resume model.</li>

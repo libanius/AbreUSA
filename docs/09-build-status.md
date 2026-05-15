@@ -2,291 +2,173 @@
 
 ## Current Phase
 
-Phase 11: Customer Dashboard Journey.
+Phase 11: Customer Dashboard Journey. P11-T01 through P11-T06 (plus correction notes enhancement) are complete, deployed, and production-verified.
 
-Phases 1–11 first production slice are complete. Phase 11 dashboard lookup is now rate-limited, deployed, and production-verified. A Phase 10 robustness fix (document extraction pipeline) is in progress locally.
+---
 
 ## Last Completed Task
 
-Task ID: `P11-T06`
+Task ID: `P11-T06` + correction notes enhancement
 
-Title: Customer correction workflow.
+Title: Customer correction workflow — with admin-written instructions.
 
 Result:
 
-- `PATCH /api/customer/orders/[id]/correction` route implemented with session auth, status check, and ownership verification.
-- Safe fields editable: phone, residential street/city/state/zip, LLC business activity, LLC principal address.
-- Order status moved from `customer_reviewing` to `ready_for_review` on submit.
-- `customer_correction_submitted` audit event recorded with corrected field data.
-- `CorrectionForm` React component with orange banner, missing-info hints, two-section form.
-- TypeScript build passed; production deployed: `dpl_2oKhEK8dwmULnshAH1vtdDCHFpev`.
+- `PATCH /api/customer/orders/[id]/correction`: session auth + status check (`customer_reviewing`) + email ownership check → updates safe applicant and LLC fields → moves order to `ready_for_review` → records `customer_correction_submitted` audit event.
+- `CorrectionForm` component on `/dashboard`: orange banner, displays admin correction notes prominently, lists `missing_information_flags` as hints, two-section form (Seus Dados / Dados da LLC).
+- `correction_notes TEXT` column added to `orders` via Supabase migration `20260514230000_correction_notes.sql`.
+- `StatusUpdater` admin component updated: selecting `customer_reviewing` reveals a textarea "Instrucoes para o cliente"; notes are sent alongside the status and stored in `correction_notes`.
+- Customer `CorrectionForm` shows notes in a bordered white box with the heading "Instrucoes da equipe AbreUSA" when notes are present.
+- Notes cleared automatically when order leaves `customer_reviewing`.
+- Production deployment: `dpl_ioqnAy9LjaSz7xGv4utiuSz46pry`.
+- Full end-to-end flow verified in production by owner/operator (2026-05-14).
 
-Previous Task ID: `P11-T03`
-
-Title (archived): Add rate limiting to customer dashboard lookup.
-
-Result (archived):
-
-- Supabase migration `20260514223000_customer_dashboard_rate_limits.sql` created and applied with `npx supabase db push`.
-- Added shared rate-limit table and RPC: `customer_dashboard_rate_limits` and `check_customer_dashboard_rate_limit`.
-- `/dashboard` checks rate limits before querying order data.
-- Limits apply by hashed client IP and hashed protocol/email lookup tuple.
-- Exceeded limits show the neutral Portuguese message: "Muitas tentativas de consulta foram feitas em pouco tempo. Aguarde alguns minutos e tente novamente."
-- Production deployment is Ready.
-- Deployment ID: `dpl_5DpoZY6usFF3qhubM9WXJdS8owLN`.
-- Production URL: `https://abre-hcpnwburm-abre-usa-s-projects.vercel.app`.
-- Production alias: `https://abre-usa.vercel.app`.
-- Production `/dashboard` returns `200`.
-- Valid production lookup with `AUS-2026-0020` and the applicant email returns the safe customer summary.
-- Invalid production lookup returns the neutral not-found message.
-- Exceeded-limit production lookup returns the neutral rate-limit message.
-- Production `/` returns `200`.
-- Production unauthenticated `/admin/orders` redirects to `/admin/login`.
-- Sensitive-token checks confirmed no `storage_path`, signed URLs, download/view URLs, storage object paths, admin controls, audit records, or raw sensitive passport fields are exposed.
-- Verification passed:
-  - `npx supabase db push`.
-  - `npm run lint`.
-  - `npm run build`.
-  - Local valid lookup.
-  - Local invalid lookup.
-  - Local exceeded-limit lookup.
-  - Production valid lookup.
-  - Production invalid lookup.
-  - Production exceeded-limit lookup.
+---
 
 ## Current Task
 
-None. Awaiting next priority selection.
+None. Awaiting next owner/operator priority.
+
+---
 
 ## Next Task
 
-Owner/operator selects next priority. Candidates:
-- Custom domain configuration.
-- AbreUSA-branded email sender migration.
-- Vercel Cron retention automation.
-- Automated status-triggered emails to applicant.
+Owner/operator selects. Candidates in priority order:
+
+1. Automated status-triggered email to customer (e.g. notify when status changes to `customer_reviewing`).
+2. Custom production domain (abre-usa.com or similar).
+3. AbreUSA-branded transactional email sender migration (away from Brightscale domain).
+4. Vercel Cron retention automation (auto-delete eligible sensitive uploads after 90 days).
+
+---
 
 ## Completed Tasks
 
 - App Spine approved as official source of truth.
 - Phases 1–5 complete (planning, foundation, UI scaffold, step flow, review/approval).
-- Phase 6 complete: P6-T01 through P6-T09.
-  - P6-T01: Phase 6 planning.
-  - P6-T02: Local confirmation flow.
-  - P6-T03: Persistence boundary documented.
-  - P6-T04: Supabase persistence implemented.
-  - P6-T05: Server-side collision-resistant protocol number generation.
-  - P6-T06: Applicant contact step (name, email, phone) added.
-  - P6-T07: Document file upload to Supabase private storage.
-  - P6-T08: Email/customer handoff plan.
-  - P6-T09: Phase 6 exit review and Phase 7 planning.
-- Phase 7 complete: P7-T01 through P7-T05.
-  - P7-T01: Security hardening plan.
-  - P7-T02: Server-side persistence boundary.
-  - P7-T03: Production credential and RLS/storage lockdown plan.
-  - P7-T04: Service-role enforcement and lockdown SQL artifact (`supabase/rls-storage-lockdown.sql`).
-  - P7-T05: Supabase RLS and storage lockdown applied and verified (AUS-2026-0009).
-- Phase 8 complete:
-  - P8-T01: Resend email integration live. Confirmation email delivered to applicant after order approval. Verified with AUS-2026-0010.
-  - P8-T02: Admin review portal live and verified.
-  - P8-T03: Strategic evolution system synchronization complete.
-  - P8-T04: Onboarding architecture discovery and Decision Gate review complete.
-  - P8-T05: Launch-blocking operational Decision Gates reviewed.
-  - P8-T06: Initial retention and customer data lifecycle policy confirmed.
-  - P8-T07: Retention automation and deletion workflow architecture complete.
-  - P8-T08: Retention metadata and audit-log implementation planning complete.
-  - P8-T09: Retention metadata and audit event foundation implemented.
-  - P8-T09V: Authenticated admin retention/audit verification complete.
-  - P8-T10: Retention deletion workflow implementation planning complete.
-  - P8-T11: Manual retention deletion workflow foundation implemented.
-  - P8-T12: Production deployment readiness planning complete.
-  - P8-T13: Production deployment and customer flow verification complete.
-  - P8-T13V: Authenticated production admin verification complete.
-  - P8-T14: All launch operations confirmed. Email bug fixed (void → await). Production confirmation email received in real inbox (AUS-2026-0014). Controlled MVP launch complete.
-- Phase 8.5 complete:
-  - P8.5-T01: Guided onboarding UX cleanup complete. Choice/card steps auto-advance, input/upload/review steps keep explicit Continue/Confirm, active Articles previews are hidden behind short education cards, sticky footer navigation is implemented, lint/build/browser verification passed, and `/api/orders` persistence/upload regression check passed with `AUS-2026-0015`.
-  - P8.5-T02: Same-as-residential company address reuse complete. Applicant residential address, copied LLC principal address, and boolean relationship flag persist correctly. Verified with `AUS-2026-0016`.
-  - P8.5-T03: Phase 8.5 production deployment complete. `https://abre-usa.vercel.app` now points to deployment `dpl_FKGnAAzFvdhVNkeazTgXxugx7HsQ`.
-  - P8.5-T04: Committed Phase 8.5 state redeployed to production. `https://abre-usa.vercel.app` now points to deployment `dpl_49uw5re5UDZQnVBDPJPPwqDufjSn`.
-- Phase 9 complete:
-  - P9-T01: AI-ready onboarding entry mode foundation implemented from GitHub issue #2 and verified with `AUS-2026-0017`.
-  - P9-T02: Real AI OCR document extraction implemented via OpenAI GPT-4o Vision. Lint and build verified.
-  - P9-T03: Document-assisted flow corrected. Documents now collected at step 3 (immediately after entry mode). `totalSteps` fixed to 14 for both modes. `stepOffset` pattern applied to all middle steps. Lint and build verified.
-- Phase 10 complete and deployed:
-  - P10-T01: Real OCR extraction wired into document-assisted flow. `handleContinueFromDocuments` (doc_assisted) triggers OpenAI GPT-4o Vision, navigates to `extraction_review` at step 4, populates editable fields on success, shows fallback on failure. `onConfirmExtraction` prefills `applicantContact` (name + residential address). `totalSteps` = 15 for doc_assisted, 14 for manual. `stepOffset` = 2 for doc_assisted, 0 for manual. Lint and build verified.
-  - P10 debug: Structured extraction errors. MIME type allowlist (`image/jpeg`, `image/png`, `image/gif`, `image/webp`) — PDF now returns `unsupported_file_type` error code instead of silent 500. Error code shown in extraction_review failure block. `extractionErrors` stored in order payload for admin visibility. Documents step shows image format hint for doc_assisted mode. Lint and build verified.
-  - P10-T02: Prefill sócio from extraction data. Member/owner step shows "Usar meus dados como sócio da LLC" checkbox when doc_assisted extraction confirmed. Prefills first member fullName and address from confirmed applicant data. All 12 hardcoded "Passo N" eyebrows replaced with dynamic `currentStep`. Lint and build verified.
-  - P10-T03: Prefill EIN Responsible Party from primary member. EIN step shows "Usar o sócio principal como responsável pelo EIN" checkbox when primary member has a name. Prefills `responsiblePartyName` and optionally `responsiblePartyPassportNumber` from extraction. Lint and build verified.
-  - P10-T04: Approval loading state and error retry. Button shows "Processando...", loading StatusMessage shown during persistence, error StatusMessage + retry on failure. `handleContinueToConfirmation` fail-closed: only navigates to confirmation on Supabase success. Lint and build verified.
-  - P10-T05: Production redeploy complete. `https://abre-usa.vercel.app` now points to `dpl_8UtvGpSfHWJGM5zV1DPDKyG9UCtr`; home/admin health checks passed; production OCR route verified with JPEG extraction and `confidence: 100`.
-  - P10-T06: Production document-assisted order persistence verified through `/api/orders` with `AUS-2026-0020`; extracted data, address reuse, EIN details, generated forms, and two private document records persisted.
-- Phase 10 robustness fix complete (P10-robustness):
-  - Image normalization pipeline via sharp: EXIF auto-rotation, max 4096px resize, 4MB compression, JPEG conversion.
-  - MIME allowlist expanded to include HEIC/HEIF, PDF, image/jpg.
-  - PDF: accepted and stored; returns `pdf_requires_image` with clear guidance.
-  - HEIC/HEIF: converted to JPEG via sharp.
-  - Error codes: `image_decode_failed`, `heic_conversion_failed`, `pdf_requires_image`.
-  - Upload UI: accept attribute and format hint updated per spec.
-  - Lint and build verified.
-- Production deployed: `dpl_H154NdEVXc2WUm1UJqm9c1ZPY91U` at `https://abre-nfx5wxbjr-abre-usa-s-projects.vercel.app`.
-- Production alias: `https://abre-usa.vercel.app`.
-- Production `/` returns 200.
-- Phase 11 first production slice complete:
-  - P11-T01: Customer dashboard lookup MVP implemented locally. `/dashboard` supports protocol + applicant email lookup, returns a safe customer DTO, and hides sensitive document URLs/storage paths/raw files. Lint, build, valid lookup, invalid lookup, and sensitive-token HTML checks passed.
-  - P11-T02: Customer dashboard lookup MVP deployed to production and verified at `https://abre-usa.vercel.app`. Valid lookup, invalid lookup, sensitive-token HTML checks, home health check, and admin unauthenticated redirect passed.
-  - P11-T03: Customer dashboard lookup rate limiting implemented, applied to Supabase, deployed to production, and verified. `/dashboard` now rate limits by hashed IP and hashed protocol/email tuple before order lookup.
+- Phase 6: P6-T01 through P6-T09 complete.
+- Phase 7: P7-T01 through P7-T05 complete — RLS, storage lockdown, service-role enforcement.
+- Phase 8: P8-T01 through P8-T14 complete — Resend email, admin portal, retention metadata, audit log, manual deletion, production launch (AUS-2026-0014 verified).
+- Phase 8.5: P8.5-T01 through P8.5-T04 complete — UX cleanup, address reuse, production redeploy.
+- Phase 9: P9-T01 through P9-T03 complete — AI-ready onboarding, OpenAI GPT-4o Vision OCR.
+- Phase 10: P10-T01 through P10-T06 complete — OCR wired, prefill, extraction review, robustness pipeline (sharp), production verified with AUS-2026-0020.
+- Phase 10 robustness fix: image normalization pipeline, HEIC/HEIF, PDF guidance, MIME allowlist expansion.
+- Phase 11:
+  - P11-T01: Customer dashboard lookup MVP (protocol + email, safe DTO).
+  - P11-T02: Production deploy and verification.
+  - P11-T03: Rate limiting (IP + lookup tuple, Supabase RPC).
+  - P11-T04: Full authenticated customer account — signup, login, password reset, email verification, session-based dashboard.
+  - P11-T05: Customer document download via 60s signed URL with ownership check.
+  - P11-T06: Customer correction workflow — admin sets `customer_reviewing`, writes correction notes; customer corrects safe fields; status returns to `ready_for_review` with audit event.
+
+---
 
 ## What Is Implemented
 
-- Full guided onboarding: 15 steps for `document_assisted`, 14 steps for `manual`.
-- Post-service onboarding entry mode choice: `manual` and `document_assisted`.
-- **Document-assisted path (15 steps):**
-  - Step 3: Document upload (passport + address proof). Disclosure message; image format hint.
-  - Step 4: Extraction review — OCR runs automatically via OpenAI GPT-4o Vision after upload. Loading spinner during extraction. On success: editable pre-filled fields (name, DOB, nationality, passport number, expiration, street, city, state, ZIP). On failure: error code shown, friendly fallback, flow never blocked.
-  - Step 5: Applicant contact — pre-filled with confirmed extraction data (name + residential address).
-  - Steps 6–12: LLC data with `stepOffset = 2`.
-  - Step 9: Member/owner — "Usar meus dados como sócio da LLC" checkbox pre-fills first member from applicant contact data.
-  - Step 12: EIN — "Usar o sócio principal como responsável pelo EIN" checkbox pre-fills Responsible Party from primary member + optionally passport number from OCR.
-  - Steps 13–15: Review, approval, confirmation.
-- **Manual path (14 steps):** unchanged from Phase 8.5. Documents at step 11.
-- Dynamic step numbering: all step eyebrows use `currentStep` (no hardcoded step numbers).
-- Extraction error codes: `missing_openai_api_key`, `file_not_provided`, `unsupported_file_type`, `extraction_api_failed`, `image_decode_failed`, `heic_conversion_failed`, `pdf_requires_image`. Errors propagated from route → client → UI → order payload.
-- Image normalization pipeline (`lib/preprocess-document.ts`): EXIF auto-rotation, resize, JPEG conversion via sharp. Supported input formats: JPEG, JPG, PNG, GIF, WebP, HEIC, HEIF. PDF: accepted for storage; returns `pdf_requires_image` with guidance.
-- Approval step: loading state ("Processando..."), success/failure handling, retry on error.
-- Applicant contact step (name, email, phone, residential address).
-- Company principal address can reuse the applicant residential address through a checkbox.
-- Persisted order data stores the copied LLC principal address plus `principal_same_as_applicant_address`.
-- Local review screen, generated preview shells (Articles of Organization + SS-4), approval gate.
-- Confirmation screen with server-generated collision-resistant protocol number (`AUS-YYYY-NNNN`).
-- Supabase persistence via server-side `/api/orders` route using `SUPABASE_SERVICE_ROLE_KEY`:
-  - `orders`, `applicants`, `llcs`, `members`, `registered_agents`, `ein_details`, `generated_forms`, `documents` tables.
-  - Phase 9/10 fields on `orders`: entry mode, extraction status, extracted data, confidence, extraction errors, user confirmation flag, agent summary, missing information flags.
-- Document file upload to Supabase private `documents` storage bucket.
-- RLS enabled on all 8 order tables. Anon/authenticated roles fully revoked.
-- Storage bucket is private.
-- Server-side persistence fails closed without `SUPABASE_SERVICE_ROLE_KEY`.
-- Resend transactional email: applicant receives order confirmation after approval.
-  - Sender: `noreply@notifications.brightscalegroup.com`.
-  - Email includes protocol number, service name, and next-steps message.
-- Admin review portal at `/admin`:
-  - Supabase Auth login at `/admin/login`. Auth guard via `proxy.ts`.
-  - Order list at `/admin/orders` (newest first, with applicant data).
-  - Full order detail at `/admin/orders/[id]`, including applicant residential address, LLC principal address, address relationship, extraction status, and extracted data.
-  - Supabase signed URLs for private document access (open in tab + download).
-  - Status dropdown with server-side PATCH update.
-  - Logout clears session.
-- `.env.example` documents all required environment variables (`OPENAI_API_KEY` included).
-- `/progress/index.html` bilingual stakeholder dashboard.
-- Customer dashboard journey:
-  - `/dashboard` protocol + applicant email lookup implemented and deployed.
-  - `/dashboard` lookup is rate-limited by hashed IP and hashed protocol/email tuple using a Supabase-backed shared counter.
-  - Safe customer summary includes protocol, service, status, dates, applicant, LLC, document checklist/status, generated form checklist, and next-step timeline.
-  - Signed document URLs, storage paths, raw uploaded files, admin controls, and audit records are not exposed.
-  - Confirmation screen links to `/dashboard` with the protocol prefilled.
-  - Full authenticated customer account portal (P11-T04):
-    - Customer signup at `/dashboard/register` (email + password, email verification via Supabase Auth).
-    - Customer login at `/dashboard/login`.
-    - Password reset at `/dashboard/reset-password` and `/dashboard/update-password`.
-    - OTP token exchange at `/auth/confirm` (handles signup confirmation and password recovery).
-    - Authenticated `/dashboard` shows orders by email without re-entering protocol.
-    - Protocol+email lookup form preserved as unauthenticated fallback.
-    - Admin routes protected against customer sessions via `ADMIN_EMAIL` env var check in `proxy.ts`.
-  - Customer document download (P11-T05): `GET /api/customer/documents/[id]/signed-url` with 60s signed URL; "Ver documento" button per document in authenticated dashboard.
-  - Customer correction workflow (P11-T06): `PATCH /api/customer/orders/[id]/correction`; `CorrectionForm` component on `/dashboard` when order is in `customer_reviewing` status; moves to `ready_for_review` on submit with audit event.
-- Strategic evolution operating model: `AGENTS.md`, `/docs/START-HERE.md`, `/docs/COMMANDS.md`, `/docs/10-decision-gates.md`.
-- Document retention: 90-day sensitive upload retention, 1-year generated files, long-term customer metadata.
-- Manual admin deletion workflow with audit events (`document_deletion_attempted`, `document_deleted`, `document_deletion_failed`).
-- Key files:
-  - `lib/extract-document.ts` — OpenAI GPT-4o Vision extraction logic.
-  - `app/api/extract-document/route.ts` — POST extraction route with MIME validation.
-  - `lib/supabase-server.ts` — service-role Supabase client.
-  - `lib/supabase-ssr.ts` — SSR auth client.
-  - `lib/supabase-browser.ts` — browser auth client.
-  - `lib/supabase-middleware.ts` — Edge-safe auth client (proxy).
-  - `lib/persist-order.ts`, `lib/persist-order-server.ts` — order persistence.
-  - `lib/resend.ts`, `lib/send-confirmation-email.ts` — email.
-  - `proxy.ts` — Next.js 16 route protection.
-  - `supabase/schema.sql`, `supabase/rls-storage-lockdown.sql`.
+### Onboarding Flow
+- 15-step `document_assisted` path; 14-step `manual` path.
+- Step 3 (doc_assisted): document upload (passport + address proof); EXIF auto-rotation, JPEG normalization, HEIC/HEIF support via sharp.
+- Step 4 (doc_assisted): extraction review — GPT-4o Vision OCR, editable pre-filled fields, fallback on failure.
+- Step 5 (doc_assisted): applicant contact pre-filled from extraction.
+- Steps 6–12 (doc_assisted): LLC data with stepOffset = 2.
+- Step 9: member/owner checkbox pre-fills from applicant contact.
+- Step 12: EIN responsible party checkbox pre-fills from primary member.
+- Approval step: loading state, fail-closed, retry on error.
+- Confirmation screen links to `/dashboard` with protocol prefilled.
+
+### Persistence
+- Server-side `/api/orders` route (service-role) persists: `orders`, `applicants`, `llcs`, `members`, `registered_agents`, `ein_details`, `generated_forms`, `documents`.
+- Private Supabase `documents` storage bucket.
+- RLS enabled on all 8 order tables; anon/authenticated roles revoked.
+- Phase 9/10 fields: entry mode, extraction status, extracted data, confidence, extraction errors, user confirmation, agent summary, missing information flags.
+- `correction_notes` column on `orders`.
+
+### Admin Portal
+- Supabase Auth login at `/admin/login`.
+- Order list at `/admin/orders` (newest first, with applicant data).
+- Full order detail at `/admin/orders/[id]`: applicant, LLC, members, registered agent, EIN, forms, documents with signed URLs.
+- Status dropdown: auto-saves for all statuses; when `customer_reviewing` is selected, reveals textarea for correction notes (saved alongside status).
+- Document signed URLs (60 min): view and download.
+- Document retention: 90-day window for sensitive uploads, 1-year for generated forms.
+- Manual deletion workflow with audit events.
+- `ADMIN_EMAIL` env var protects admin routes from customer sessions.
+
+### Customer Dashboard
+- `/dashboard/login`, `/dashboard/register`, `/dashboard/reset-password`, `/dashboard/update-password`: full Supabase Auth email+password flow.
+- `/auth/confirm`: OTP token exchange for signup confirmation and password recovery.
+- Authenticated `/dashboard`: session-based, fetches all orders by email, no re-entry of credentials.
+- Unauthenticated fallback: protocol + email lookup with rate limiting (IP + tuple, Supabase RPC).
+- Safe customer DTO: protocol, service, status, dates, applicant, LLC, document checklist, form checklist, timeline. No storage paths, signed URLs, or admin notes exposed.
+- "Ver documento" button (authenticated only): fetches 60s signed URL from `/api/customer/documents/[id]/signed-url`, opens in new tab. Deleted documents show no button; direct API call returns 410.
+- Correction form (authenticated, `customer_reviewing` status only): orange banner, shows admin correction notes prominently, editable fields (phone, residential address, LLC name/activity/address), submit → `ready_for_review` + audit event.
+
+### Email
+- Resend transactional email: order confirmation to applicant after approval.
+- Sender: `noreply@notifications.brightscalegroup.com` (temporary Brightscale domain).
+
+### Infrastructure
+- Next.js 16 App Router + React 19 + Tailwind 4.
+- Supabase (Auth, Postgres, Storage).
+- Vercel (deployment, production alias `https://abre-usa.vercel.app`).
+- `proxy.ts` middleware: admin route protection, customer redirect logic.
+- `/progress/index.html`: bilingual stakeholder progress dashboard.
+
+---
 
 ## What Is NOT Implemented
 
-- AbreUSA-branded sender domain migration (temporary Brightscale sender in use).
-- Custom production domain (temporary Vercel URL deployed and verified).
-- Vercel Cron retention automation.
-- Reviewer access scope refinement beyond the single authenticated admin MVP model.
-- Payment processing (Post-MVP).
-
+- Status-triggered automated emails to customer (e.g. notify on `customer_reviewing`).
+- Custom production domain.
+- AbreUSA-branded email sender (temporary Brightscale sender in use).
+- Vercel Cron retention automation (manual deletion only — manual workflow implemented, automation deferred).
+- Admin pagination (MVP: low order volume assumed).
+- Customer uploading replacement documents.
+- Customer editing EIN details, members, or registered agent.
+- Admin-customer messaging thread within the portal.
+- Social auth (Google, GitHub).
+- Draft resume / progressive onboarding.
 - EIN-only and Registered Agent-only dedicated flows (Post-MVP).
-- Admin pagination (MVP assumes low order volume).
-- Automated status-triggered emails to applicant (Post-MVP).
-- Conversational onboarding UI or chat experience.
-- AI-guided onboarding layer beyond current extraction/prefill.
-- Progressive onboarding/draft resume system.
-- State-based onboarding orchestration layer.
-- Central state machine or workflow engine for onboarding.
+- Payment processing (Post-MVP).
 - Multi-state LLC formation (Post-MVP).
 - Operating Agreement generation (Post-MVP).
-- Decision Gates are not resolved decisions; they are tracking controls for unresolved questions.
+- Conversational onboarding UI.
+
+---
 
 ## Exact Next Step To Resume
 
 ### Current Phase
-Phase 11: Customer Dashboard Journey.
+Phase 11 complete (P11-T01 through P11-T06 + enhancement). Awaiting next phase or priority selection.
 
 ### Last Completed Task
-`P11-T04` — Full authenticated customer account via Supabase Auth (email + password).
-- Signup, login, password reset, email verification, and authenticated dashboard all verified in production (2026-05-14).
-- Supabase Auth Site URL corrected to `https://abre-usa.vercel.app` during verification.
-- Production deployment: `dpl_31ZdR5zEXbFHsp5eKRWdFXtwsn3w`.
+`P11-T06` + correction notes enhancement — verified in production by owner/operator on 2026-05-14.
 
 ### Current Task
-None in progress. Awaiting next owner/operator priority.
+None.
 
 ### Next Action
-Choose the next owner/operator-directed priority and update the App Spine before implementation:
+Owner/operator selects next priority. Top candidate: automated status-triggered email to customer when admin sets `customer_reviewing` (so customer is notified immediately without checking the dashboard manually).
 
-### Current Phase
-Phase 11: Customer Dashboard Journey.
+Resume command:
+Read `AGENTS.md`, `/docs/START-HERE.md`, `/docs/07-roadmap.md`, and this file. P11-T06 with correction notes is complete and verified. Choose the next priority and update the App Spine before implementation.
 
-### Last Completed Task
-`P11-T06` — Customer correction workflow.
-- `PATCH /api/customer/orders/[id]/correction`: session auth + status check (`customer_reviewing`) + email ownership check → updates applicant and LLC safe fields → moves order to `ready_for_review` → records `customer_correction_submitted` audit event.
-- `CorrectionForm` component rendered on `/dashboard` when `order.status === "customer_reviewing"`.
-- Shows orange banner, lists `missing_information_flags` as hints, two-section form (applicant data + LLC data).
-- Success state triggers `router.refresh()` so status re-renders without page reload.
-- Production deployment: `dpl_2oKhEK8dwmULnshAH1vtdDCHFpev`.
-- Enhancement deployed `dpl_ioqnAy9LjaSz7xGv4utiuSz46pry`: admin correction notes field (`correction_notes` column on `orders`); admin textarea on `customer_reviewing` status; notes shown prominently in customer CorrectionForm.
-
-### Current Task
-None. Awaiting next priority.
-
-### Next Action
-Choose the next owner/operator-directed priority:
-- Post-MVP: custom domain, branded email sender, Vercel Cron retention automation.
-- Phase 11 additional: automated status-triggered emails to applicant.
-
-Resume command prompt:
-
-Read `AGENTS.md`, `/docs/START-HERE.md`, `/docs/07-roadmap.md`, and this file. P11-T05 is complete. Choose the next priority.
+---
 
 ## Blockers And Risks
 
-- Production confirmation email verified: `AUS-2026-0014` received at `brightscalegroup@gmail.com` on 2026-05-09.
-- Permanent admin user exists, is email-confirmed, and owner/operator confirmed access.
-- Correct AbreUSA Vercel account is authenticated as `abreusaonline-7459`.
-- Vercel project is linked. Current production deployment: `dpl_ioqnAy9LjaSz7xGv4utiuSz46pry` (P11-T06 + correction notes enhancement).
-- Custom domain is deferred; controlled launch continues on `https://abre-usa.vercel.app`.
-- AbreUSA domain email migration remains deferred; temporary Brightscale sender in use.
-- Manual physical deletion is implemented (P8-T11). In-browser verification against a real eligible document is recommended before enabling for production use.
-- Automated retention Cron (Vercel Cron) remains deferred until manual deletion is verified in production.
-- OCR extraction supports image files (JPEG, JPG, PNG, GIF, WebP, HEIC, HEIF) after sharp normalization. PDF uploads are accepted for Supabase storage but return `pdf_requires_image` error — customer sees specific guidance to upload as image and can continue manually.
-- Admin portal has no rate limiting or brute-force protection on the login page (acceptable for MVP internal use).
-- Customer accounts are implemented (signup, login, password reset, authenticated dashboard). Customer document downloads (P11-T05) and correction workflows (P11-T06) are implemented.
-- ADMIN_EMAIL env var is set in Vercel production; admin routes are protected from customer sessions.
-- Supabase Auth configuration confirmed (2026-05-14):
-  - Site URL set to `https://abre-usa.vercel.app` (was `http://localhost:3000` — caused confirmation links to open localhost on mobile).
-  - `https://abre-usa.vercel.app/auth/confirm` added to Allowed Redirect URLs.
-  - `http://localhost:3000/**` added to Redirect URLs for local dev.
-- Full P11-T04 email verification flow verified in production: signup → confirmation email received → link clicked → session established → authenticated dashboard shows order by email.
-- Default PATH does not include Node/npm on this machine; use `PATH=/usr/local/opt/node@22/bin:$PATH` for local commands.
-- The project path contains a curly apostrophe (U+2019); use Python subprocess or `pathlib.Path.cwd()` for shell commands — do not use shell `find | head -1` pattern.
+- Production alias: `https://abre-usa.vercel.app`. Current production deployment: `dpl_ioqnAy9LjaSz7xGv4utiuSz46pry`.
+- Supabase Auth Site URL: `https://abre-usa.vercel.app` (corrected 2026-05-14; was `http://localhost:3000`).
+- `https://abre-usa.vercel.app/auth/confirm` in Supabase Allowed Redirect URLs.
+- `http://localhost:3000/**` in Supabase Redirect URLs for local dev.
+- `ADMIN_EMAIL=contact@brightscalegroup.com` set in `.env.local` and Vercel production.
+- Admin user: email-confirmed, owner/operator verified access.
+- Vercel account: `abreusaonline-7459`. Project linked.
+- Confirmation email verified in production: `AUS-2026-0014` received at `brightscalegroup@gmail.com`.
+- Custom domain deferred; controlled launch continues on Vercel URL.
+- AbreUSA-branded email sender deferred; Brightscale sender in use.
+- Manual document deletion implemented (P8-T11). Verify against a real eligible document before enabling widely.
+- Vercel Cron retention automation remains deferred until manual deletion is validated in production.
+- OCR: images only (JPEG, JPG, PNG, GIF, WebP, HEIC, HEIF via sharp). PDFs accepted for storage but return `pdf_requires_image` with guidance.
+- Admin login has no rate limiting or brute-force protection (acceptable for MVP internal use).
+- Node/npm not in default PATH on this machine — use `PATH=/usr/local/opt/node@22/bin:$PATH` for local shell commands.
+- Project path contains a curly apostrophe (U+2019) — use Python subprocess for shell operations; avoid direct shell `cd` into the path.

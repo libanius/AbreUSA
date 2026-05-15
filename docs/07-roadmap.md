@@ -2055,7 +2055,7 @@ Stop checkpoint:
 
 ## Phase 11: Customer Dashboard Journey
 
-Status: Complete for the first production slice. Customer dashboard lookup MVP is implemented, deployed, and production-verified.
+Status: Complete. P11-T01 through P11-T06 (plus correction notes enhancement) are implemented, deployed, and production-verified.
 
 Purpose:
 
@@ -2303,4 +2303,16 @@ Phase 11 customer correction task:
   - Unauthenticated path unchanged.
   - `npm run lint` and `npm run build` pass.
   - Production deployment and verification recorded.
-- Status: Planned.
+- Status: Complete.
+- Result:
+  - `PATCH /api/customer/orders/[id]/correction`: session auth, status check (`customer_reviewing`), email ownership verification, updates safe applicant and LLC fields, moves order to `ready_for_review`, records `customer_correction_submitted` audit event.
+  - `CorrectionForm` component in authenticated `/dashboard`: orange banner, editable fields (phone, residential address, LLC name/activity/address), success state with `router.refresh()`.
+  - Enhancement: `correction_notes TEXT` column on `orders` (migration `20260514230000_correction_notes.sql`). Admin `StatusUpdater` shows textarea when `customer_reviewing` selected; notes saved alongside status change. Customer `CorrectionForm` displays notes prominently under "Instrucoes da equipe AbreUSA" heading.
+  - TypeScript build passed. Production deployment: `dpl_ioqnAy9LjaSz7xGv4utiuSz46pry`. Full end-to-end flow verified in production by owner/operator on 2026-05-14.
+
+Stop checkpoint:
+
+- Date: 2026-05-14.
+- Phase 11: P11-T01 through P11-T06 (plus correction notes enhancement) are complete and production-verified.
+- Phase 11 is considered complete for the current MVP scope.
+- Exact next roadmap action: owner/operator selects next priority. Top candidate — automated status-triggered email to customer when order moves to `customer_reviewing`.
