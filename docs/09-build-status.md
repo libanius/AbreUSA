@@ -8,11 +8,24 @@ Phases 1–11 first production slice are complete. Phase 11 dashboard lookup is 
 
 ## Last Completed Task
 
-Task ID: `P11-T03`
+Task ID: `P11-T06`
 
-Title: Add rate limiting to customer dashboard lookup.
+Title: Customer correction workflow.
 
 Result:
+
+- `PATCH /api/customer/orders/[id]/correction` route implemented with session auth, status check, and ownership verification.
+- Safe fields editable: phone, residential street/city/state/zip, LLC business activity, LLC principal address.
+- Order status moved from `customer_reviewing` to `ready_for_review` on submit.
+- `customer_correction_submitted` audit event recorded with corrected field data.
+- `CorrectionForm` React component with orange banner, missing-info hints, two-section form.
+- TypeScript build passed; production deployed: `dpl_2oKhEK8dwmULnshAH1vtdDCHFpev`.
+
+Previous Task ID: `P11-T03`
+
+Title (archived): Add rate limiting to customer dashboard lookup.
+
+Result (archived):
 
 - Supabase migration `20260514223000_customer_dashboard_rate_limits.sql` created and applied with `npx supabase db push`.
 - Added shared rate-limit table and RPC: `customer_dashboard_rate_limits` and `check_customer_dashboard_rate_limit`.
@@ -43,28 +56,15 @@ Result:
 
 ## Current Task
 
-Task ID: `P10-robustness`
-
-Title: Document extraction pipeline robustness fix — implemented and deployed to production.
-
-Result (local + production):
-
-- `lib/preprocess-document.ts` added: sharp-based image normalization pipeline. Auto-rotates EXIF orientation (critical for mobile photos), resizes to max 4096px, compresses to max 4MB, converts all images to JPEG for consistent OpenAI input.
-- MIME allowlist expanded: `image/heic`, `image/heif`, `image/jpg`, `application/pdf` now accepted.
-- PDF path: accepted in upload (input and MIME check), returns `pdf_requires_image` error with friendly customer guidance. PDF still uploaded to Supabase storage.
-- HEIC/HEIF: converted to JPEG via sharp. Falls back with `heic_conversion_failed` if libvips HEIC support is unavailable.
-- Image preprocessing errors surfaced with specific codes: `image_decode_failed`, `heic_conversion_failed`.
-- Upload `<input accept>` updated: `.pdf,.jpg,.jpeg,.png,.heic,.heif,.webp`.
-- Format hint updated: "Formatos aceitos: JPG, JPEG, PNG ou PDF. Fotos de celular também são aceitas quando compatíveis. Se estiver usando iPhone, prefira enviar como JPG/JPEG ou PDF caso a leitura automática falhe."
-- extraction_review failed message is now context-aware: PDF-specific guidance shown when `errorCode === "pdf_requires_image"`.
-- Lint and build verified.
-- Production deployed: `dpl_H154NdEVXc2WUm1UJqm9c1ZPY91U` at `https://abre-nfx5wxbjr-abre-usa-s-projects.vercel.app`.
-- Production alias: `https://abre-usa.vercel.app`.
-- Production `/` returns 200.
+None. Awaiting next priority selection.
 
 ## Next Task
 
-Verify P10-robustness in production with a real PNG and JPEG mobile photo upload (document-assisted flow). Then choose next Phase 11 slice (`P11-T04` authenticated customer access or magic-link strategy).
+Owner/operator selects next priority. Candidates:
+- Custom domain configuration.
+- AbreUSA-branded email sender migration.
+- Vercel Cron retention automation.
+- Automated status-triggered emails to applicant.
 
 ## Completed Tasks
 
@@ -191,6 +191,8 @@ Verify P10-robustness in production with a real PNG and JPEG mobile photo upload
     - Authenticated `/dashboard` shows orders by email without re-entering protocol.
     - Protocol+email lookup form preserved as unauthenticated fallback.
     - Admin routes protected against customer sessions via `ADMIN_EMAIL` env var check in `proxy.ts`.
+  - Customer document download (P11-T05): `GET /api/customer/documents/[id]/signed-url` with 60s signed URL; "Ver documento" button per document in authenticated dashboard.
+  - Customer correction workflow (P11-T06): `PATCH /api/customer/orders/[id]/correction`; `CorrectionForm` component on `/dashboard` when order is in `customer_reviewing` status; moves to `ready_for_review` on submit with audit event.
 - Strategic evolution operating model: `AGENTS.md`, `/docs/START-HERE.md`, `/docs/COMMANDS.md`, `/docs/10-decision-gates.md`.
 - Document retention: 90-day sensitive upload retention, 1-year generated files, long-term customer metadata.
 - Manual admin deletion workflow with audit events (`document_deletion_attempted`, `document_deleted`, `document_deletion_failed`).
@@ -213,10 +215,7 @@ Verify P10-robustness in production with a real PNG and JPEG mobile photo upload
 - Vercel Cron retention automation.
 - Reviewer access scope refinement beyond the single authenticated admin MVP model.
 - Payment processing (Post-MVP).
-- Customer document download.
-- Customer correction/missing-information workflow (deferred).
-- Customer document download.
-- Customer correction/missing-information workflow.
+
 - EIN-only and Registered Agent-only dedicated flows (Post-MVP).
 - Admin pagination (MVP assumes low order volume).
 - Automated status-triggered emails to applicant (Post-MVP).
@@ -250,20 +249,20 @@ Choose the next owner/operator-directed priority and update the App Spine before
 Phase 11: Customer Dashboard Journey.
 
 ### Last Completed Task
-`P11-T05` — Customer document download via authenticated signed URL.
-- `GET /api/customer/documents/[id]/signed-url`: session auth + email ownership check + 60s signed URL.
-- "Ver documento" button shown per document in authenticated dashboard only.
-- Deleted documents show no button; unauthenticated fallback unaffected.
-- Production deployment: `dpl_Ds9YAqLbn7psCoBv2ogtrSQBycs8`.
-- Health checks: `/` 200, `/dashboard` 200, unauthenticated `/api/customer/documents/*/signed-url` returns 401.
+`P11-T06` — Customer correction workflow.
+- `PATCH /api/customer/orders/[id]/correction`: session auth + status check (`customer_reviewing`) + email ownership check → updates applicant and LLC safe fields → moves order to `ready_for_review` → records `customer_correction_submitted` audit event.
+- `CorrectionForm` component rendered on `/dashboard` when `order.status === "customer_reviewing"`.
+- Shows orange banner, lists `missing_information_flags` as hints, two-section form (applicant data + LLC data).
+- Success state triggers `router.refresh()` so status re-renders without page reload.
+- Production deployment: `dpl_2oKhEK8dwmULnshAH1vtdDCHFpev`.
 
 ### Current Task
 None. Awaiting next priority.
 
 ### Next Action
 Choose the next owner/operator-directed priority:
-- Phase 11: customer correction/missing-information workflow.
-- Post-MVP: custom domain, branded email sender, Vercel Cron retention.
+- Post-MVP: custom domain, branded email sender, Vercel Cron retention automation.
+- Phase 11 additional: automated status-triggered emails to applicant.
 
 Resume command prompt:
 
@@ -274,14 +273,14 @@ Read `AGENTS.md`, `/docs/START-HERE.md`, `/docs/07-roadmap.md`, and this file. P
 - Production confirmation email verified: `AUS-2026-0014` received at `brightscalegroup@gmail.com` on 2026-05-09.
 - Permanent admin user exists, is email-confirmed, and owner/operator confirmed access.
 - Correct AbreUSA Vercel account is authenticated as `abreusaonline-7459`.
-- Vercel project is linked. Current production deployment: `dpl_Ds9YAqLbn7psCoBv2ogtrSQBycs8` (P11-T05).
+- Vercel project is linked. Current production deployment: `dpl_2oKhEK8dwmULnshAH1vtdDCHFpev` (P11-T06).
 - Custom domain is deferred; controlled launch continues on `https://abre-usa.vercel.app`.
 - AbreUSA domain email migration remains deferred; temporary Brightscale sender in use.
 - Manual physical deletion is implemented (P8-T11). In-browser verification against a real eligible document is recommended before enabling for production use.
 - Automated retention Cron (Vercel Cron) remains deferred until manual deletion is verified in production.
 - OCR extraction supports image files (JPEG, JPG, PNG, GIF, WebP, HEIC, HEIF) after sharp normalization. PDF uploads are accepted for Supabase storage but return `pdf_requires_image` error — customer sees specific guidance to upload as image and can continue manually.
 - Admin portal has no rate limiting or brute-force protection on the login page (acceptable for MVP internal use).
-- Customer accounts are implemented (signup, login, password reset, authenticated dashboard). Customer document downloads and correction workflows remain out of scope.
+- Customer accounts are implemented (signup, login, password reset, authenticated dashboard). Customer document downloads (P11-T05) and correction workflows (P11-T06) are implemented.
 - ADMIN_EMAIL env var is set in Vercel production; admin routes are protected from customer sessions.
 - Supabase Auth configuration confirmed (2026-05-14):
   - Site URL set to `https://abre-usa.vercel.app` (was `http://localhost:3000` — caused confirmation links to open localhost on mobile).
