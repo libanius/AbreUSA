@@ -255,6 +255,7 @@ Phase 11: Customer Dashboard Journey.
 - Shows orange banner, lists `missing_information_flags` as hints, two-section form (applicant data + LLC data).
 - Success state triggers `router.refresh()` so status re-renders without page reload.
 - Production deployment: `dpl_2oKhEK8dwmULnshAH1vtdDCHFpev`.
+- Enhancement deployed `dpl_ioqnAy9LjaSz7xGv4utiuSz46pry`: admin correction notes field (`correction_notes` column on `orders`); admin textarea on `customer_reviewing` status; notes shown prominently in customer CorrectionForm.
 
 ### Current Task
 None. Awaiting next priority.
@@ -273,7 +274,7 @@ Read `AGENTS.md`, `/docs/START-HERE.md`, `/docs/07-roadmap.md`, and this file. P
 - Production confirmation email verified: `AUS-2026-0014` received at `brightscalegroup@gmail.com` on 2026-05-09.
 - Permanent admin user exists, is email-confirmed, and owner/operator confirmed access.
 - Correct AbreUSA Vercel account is authenticated as `abreusaonline-7459`.
-- Vercel project is linked. Current production deployment: `dpl_2oKhEK8dwmULnshAH1vtdDCHFpev` (P11-T06).
+- Vercel project is linked. Current production deployment: `dpl_ioqnAy9LjaSz7xGv4utiuSz46pry` (P11-T06 + correction notes enhancement).
 - Custom domain is deferred; controlled launch continues on `https://abre-usa.vercel.app`.
 - AbreUSA domain email migration remains deferred; temporary Brightscale sender in use.
 - Manual physical deletion is implemented (P8-T11). In-browser verification against a real eligible document is recommended before enabling for production use.
