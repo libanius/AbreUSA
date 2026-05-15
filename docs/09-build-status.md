@@ -231,16 +231,23 @@ Verify P10-robustness in production with a real PNG and JPEG mobile photo upload
 
 ## Exact Next Step To Resume
 
-1. Verify P11-T04 in production:
-   - Configure Supabase Auth allowed redirect URLs in the Supabase dashboard to include `https://abre-usa.vercel.app/auth/confirm`.
-   - Create a test customer account at `/dashboard/register` with the same email used in an existing order.
-   - Confirm verification email received, click link, verify session and order summary visible.
-   - Confirm admin login still works and customer account cannot access `/admin/orders`.
-2. Then choose the next Phase 11 slice or Post-MVP priority.
+P11-T04 is fully deployed and verified:
+- All P11-T04 routes return correct HTTP status in production.
+- `/auth/confirm` with no params returns `307 /dashboard/login?error=link_invalido` (correct).
+- `/admin/orders` still redirects unauthenticated users to `/admin/login`.
+- Admin user (`contact@brightscalegroup.com`) is confirmed and unaffected.
+- Supabase Auth redirect URL `https://abre-usa.vercel.app/auth/confirm` confirmed added by owner/operator.
+- Full email verification flow (signup + click link + dashboard) requires a real browser test by the owner/operator.
+
+Next action:
+
+Choose the next owner/operator-directed priority. Options:
+- Next Phase 11 slice (customer document downloads, customer correction workflow).
+- Post-MVP priority (branded sender domain, custom domain, Vercel Cron retention automation).
 
 Resume command prompt:
 
-Read `AGENTS.md`, `/docs/START-HERE.md`, `/docs/07-roadmap.md`, and this file. P11-T04 is deployed. Verify Supabase Auth redirect URL configuration and run the production customer account test.
+Read `AGENTS.md`, `/docs/START-HERE.md`, `/docs/07-roadmap.md`, and this file. P11-T04 is complete and production-verified. Choose the next priority and update the App Spine before implementation.
 
 ## Blockers And Risks
 
@@ -256,6 +263,6 @@ Read `AGENTS.md`, `/docs/START-HERE.md`, `/docs/07-roadmap.md`, and this file. P
 - Admin portal has no rate limiting or brute-force protection on the login page (acceptable for MVP internal use).
 - Customer accounts are implemented (signup, login, password reset, authenticated dashboard). Customer document downloads and correction workflows remain out of scope.
 - ADMIN_EMAIL env var is set in Vercel production; admin routes are protected from customer sessions.
-- Supabase Auth redirect URLs must be configured in Supabase dashboard: add https://abre-usa.vercel.app/auth/confirm and http://localhost:3000/auth/confirm to allowed redirect URLs.
+- Supabase Auth redirect URL `https://abre-usa.vercel.app/auth/confirm` confirmed added by owner/operator (2026-05-14). Local dev redirect `http://localhost:3000/auth/confirm` may also be added for development.
 - Default PATH does not include Node/npm on this machine; use `PATH=/usr/local/opt/node@22/bin:$PATH` for local commands.
 - The project path contains a curly apostrophe (U+2019); use Python subprocess or `pathlib.Path.cwd()` for shell commands — do not use shell `find | head -1` pattern.
