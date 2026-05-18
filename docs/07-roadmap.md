@@ -2309,10 +2309,11 @@ Phase 11 customer correction task:
   - `CorrectionForm` component in authenticated `/dashboard`: orange banner, editable fields (phone, residential address, LLC name/activity/address), success state with `router.refresh()`.
   - Enhancement: `correction_notes TEXT` column on `orders` (migration `20260514230000_correction_notes.sql`). Admin `StatusUpdater` shows textarea when `customer_reviewing` selected; notes saved alongside status change. Customer `CorrectionForm` displays notes prominently under "Instrucoes da equipe AbreUSA" heading.
   - TypeScript build passed. Production deployment: `dpl_ioqnAy9LjaSz7xGv4utiuSz46pry`. Full end-to-end flow verified in production by owner/operator on 2026-05-14.
+  - Enhancement (2026-05-18): automated transactional email to customer when admin sets `customer_reviewing`. `lib/send-correction-email.ts` created; admin PATCH route extended. Fire-and-forget via Resend. Verified locally and in production. Deployment: `dpl_ilo4c9nen`.
 
 Stop checkpoint:
 
 - Date: 2026-05-14.
 - Phase 11: P11-T01 through P11-T06 (plus correction notes enhancement) are complete and production-verified.
 - Phase 11 is considered complete for the current MVP scope.
-- Exact next roadmap action: owner/operator selects next priority. Top candidate — automated status-triggered email to customer when order moves to `customer_reviewing`.
+- Exact next roadmap action: owner/operator selects next priority. Candidates: custom domain, AbreUSA-branded email sender, Vercel Cron retention automation.

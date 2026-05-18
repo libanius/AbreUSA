@@ -8,7 +8,7 @@ Phase 11: Customer Dashboard Journey. P11-T01 through P11-T06 (plus correction n
 
 ## Last Completed Task
 
-Task ID: `P11-T06` + correction notes enhancement
+Task ID: `P11-T06` + correction notes + automated correction email
 
 Title: Customer correction workflow — with admin-written instructions.
 
@@ -22,6 +22,7 @@ Result:
 - Notes cleared automatically when order leaves `customer_reviewing`.
 - Production deployment: `dpl_ioqnAy9LjaSz7xGv4utiuSz46pry`.
 - Full end-to-end flow verified in production by owner/operator (2026-05-14).
+- Enhancement deployed `dpl_ilo4c9nen...` (2026-05-18): automated transactional email to customer when admin sets `customer_reviewing`. Portuguese e-mail includes protocol, LLC name, correction notes, and dashboard link. Fire-and-forget via Resend. Only fires on status transition (not re-save). Verified locally and in production.
 
 ---
 
@@ -35,10 +36,10 @@ None. Awaiting next owner/operator priority.
 
 Owner/operator selects. Candidates in priority order:
 
-1. Automated status-triggered email to customer (e.g. notify when status changes to `customer_reviewing`).
-2. Custom production domain (abre-usa.com or similar).
-3. AbreUSA-branded transactional email sender migration (away from Brightscale domain).
-4. Vercel Cron retention automation (auto-delete eligible sensitive uploads after 90 days).
+1. Custom production domain (abre-usa.com or similar).
+2. AbreUSA-branded transactional email sender migration (away from Brightscale domain).
+3. Vercel Cron retention automation (auto-delete eligible sensitive uploads after 90 days).
+4. Automated email for other status transitions (e.g. `completed`, `approved`).
 
 ---
 
@@ -100,6 +101,7 @@ Owner/operator selects. Candidates in priority order:
 - Unauthenticated fallback: protocol + email lookup with rate limiting (IP + tuple, Supabase RPC).
 - Safe customer DTO: protocol, service, status, dates, applicant, LLC, document checklist, form checklist, timeline. No storage paths, signed URLs, or admin notes exposed.
 - "Ver documento" button (authenticated only): fetches 60s signed URL from `/api/customer/documents/[id]/signed-url`, opens in new tab. Deleted documents show no button; direct API call returns 410.
+- Automated correction email: when admin sets `customer_reviewing`, Resend sends a Portuguese email to the applicant with protocol, LLC name, correction notes (if any), and dashboard link. Fire-and-forget; only fires on transition into the status.
 - Correction form (authenticated, `customer_reviewing` status only): orange banner, shows admin correction notes prominently, editable fields (phone, residential address, LLC name/activity/address), submit → `ready_for_review` + audit event.
 
 ### Email
@@ -117,7 +119,6 @@ Owner/operator selects. Candidates in priority order:
 
 ## What Is NOT Implemented
 
-- Status-triggered automated emails to customer (e.g. notify on `customer_reviewing`).
 - Custom production domain.
 - AbreUSA-branded email sender (temporary Brightscale sender in use).
 - Vercel Cron retention automation (manual deletion only — manual workflow implemented, automation deferred).
@@ -141,7 +142,7 @@ Owner/operator selects. Candidates in priority order:
 Phase 11 complete (P11-T01 through P11-T06 + enhancement). Awaiting next phase or priority selection.
 
 ### Last Completed Task
-`P11-T06` + correction notes enhancement — verified in production by owner/operator on 2026-05-14.
+`P11-T06` + correction notes + automated correction email — verified in production by owner/operator on 2026-05-18.
 
 ### Current Task
 None.
