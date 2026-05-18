@@ -60,28 +60,6 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // PDF path: accepted for Supabase storage, not yet extractable
-    const passportIsPdf =
-      passportFile?.type?.toLowerCase() === "application/pdf";
-    const addressIsPdf =
-      addressFile?.type?.toLowerCase() === "application/pdf";
-    if (passportIsPdf || addressIsPdf) {
-      const labels = [
-        passportIsPdf && "passaporte",
-        addressIsPdf && "comprovante de endereço",
-      ]
-        .filter(Boolean)
-        .join(" e ");
-      console.log(
-        `[extract-document] PDF received for: ${labels}. Returning pdf_requires_image.`,
-      );
-      return extractionError(
-        "pdf_requires_image",
-        "PDF recebido. Para leitura automática, envie como imagem.",
-        `Arquivo(s) em PDF: ${labels}. Envie como JPG ou PNG para ativar a extração automática.`,
-      );
-    }
-
     // Read file buffers
     const [passportBuffer, addressBuffer] = await Promise.all([
       passportFile ? Buffer.from(await passportFile.arrayBuffer()) : null,
@@ -95,7 +73,7 @@ export async function POST(request: NextRequest) {
     if (passportBuffer && passportFile) {
       try {
         const result = await preprocessFile(passportBuffer, passportFile.type);
-        if (result.kind === "image") passportProcessed = result;
+        if (result.kind === "image" || result.kind === "pdf") passportProcessed = result;
       } catch (err) {
         const code =
           (err as Error & { errorCode?: string }).errorCode ??
@@ -115,7 +93,7 @@ export async function POST(request: NextRequest) {
     if (addressBuffer && addressFile) {
       try {
         const result = await preprocessFile(addressBuffer, addressFile.type);
-        if (result.kind === "image") addressProcessed = result;
+        if (result.kind === "image" || result.kind === "pdf") addressProcessed = result;
       } catch (err) {
         const code =
           (err as Error & { errorCode?: string }).errorCode ??

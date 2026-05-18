@@ -1,5 +1,12 @@
 import sharp from "sharp";
 
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const heicConvert = require("heic-convert") as (opts: {
+  buffer: ArrayBuffer;
+  format: "JPEG" | "PNG";
+  quality?: number;
+}) => Promise<ArrayBuffer>;
+
 const MAX_DIMENSION = 4096;
 const MAX_BYTES = 4 * 1024 * 1024; // 4 MB
 
@@ -22,7 +29,7 @@ export const ACCEPTED_MIME_TYPES = new Set([
 
 export type PreprocessedFile =
   | { kind: "image"; buffer: Buffer; mimeType: "image/jpeg" }
-  | { kind: "pdf" };
+  | { kind: "pdf"; buffer: Buffer; mimeType: "application/pdf" };
 
 export async function preprocessFile(
   buffer: Buffer,
@@ -31,7 +38,7 @@ export async function preprocessFile(
   const normalized = mimeType.toLowerCase().trim();
 
   if (PDF_MIME_TYPES.has(normalized)) {
-    return { kind: "pdf" };
+    return { kind: "pdf", buffer, mimeType: "application/pdf" };
   }
 
   if (IMAGE_MIME_TYPES.has(normalized)) {
@@ -46,6 +53,22 @@ export async function preprocessFile(
 
 async function normalizeImage(buffer: Buffer, mimeType: string): Promise<Buffer> {
   try {
+    // HEIC/HEIF: convert to JPEG first via heic-convert (pure JS — sharp does not
+    // support HEIC on Vercel Lambda because libvips is compiled without libheif).
+    if (mimeType.includes("heic") || mimeType.includes("heif")) {
+      const arrayBuffer = buffer.buffer.slice(
+        buffer.byteOffset,
+        buffer.byteOffset + buffer.byteLength,
+      );
+      const jpegArrayBuffer = await heicConvert({
+        buffer: arrayBuffer as ArrayBuffer,
+        format: "JPEG",
+        quality: 0.9,
+      });
+      buffer = Buffer.from(jpegArrayBuffer);
+      mimeType = "image/jpeg";
+    }
+
     // .rotate() with no args auto-rotates based on EXIF orientation and strips
     // the tag — critical for mobile phone photos (portrait shot saved as landscape).
     const pipeline = sharp(buffer)
@@ -58,7 +81,6 @@ async function normalizeImage(buffer: Buffer, mimeType: string): Promise<Buffer>
     const processed = await pipeline.jpeg({ quality: 85 }).toBuffer();
 
     if (processed.length > MAX_BYTES) {
-      // File is still large after 85% quality — reduce further
       return sharp(buffer)
         .rotate()
         .resize(MAX_DIMENSION, MAX_DIMENSION, {

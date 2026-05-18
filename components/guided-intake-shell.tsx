@@ -1068,7 +1068,7 @@ function StepFrame({
                 documentos facilitarão o preenchimento dos próximos campos.
               </p>
               <p className="mt-2 text-xs text-muted-foreground">
-                Formatos aceitos: JPG, JPEG, PNG ou PDF. Fotos de celular também são aceitas quando compatíveis. Se estiver usando iPhone, prefira enviar como JPG/JPEG ou PDF caso a leitura automática falhe.
+                Formatos aceitos: JPG, JPEG, PNG, PDF e HEIC (iPhone). A leitura automática funciona para todos esses formatos.
               </p>
             </StatusMessage>
           ) : null}
@@ -1325,11 +1325,9 @@ function StepFrame({
           {extractionState === "failed" ? (
             <StatusMessage title="Não foi possível ler os documentos automaticamente" tone="warning">
               <p>
-                {extractionError?.errorCode === "pdf_requires_image"
-                  ? "Os documentos foram recebidos como PDF. Envie o passaporte e o comprovante como imagem (JPG ou PNG) para ativar a leitura automática. Você ainda pode continuar preenchendo manualmente."
-                  : "Não conseguimos ler todos os dados automaticamente. Você ainda pode continuar preenchendo manualmente."}
+"Não conseguimos ler todos os dados automaticamente. Você ainda pode continuar preenchendo manualmente."
               </p>
-              {extractionError && extractionError.errorCode !== "pdf_requires_image" ? (
+              {extractionError ? (
                 <p className="mt-2 font-mono text-xs text-muted-foreground">
                   Código: {extractionError.errorCode}
                   {extractionError.details
