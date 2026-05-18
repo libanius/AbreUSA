@@ -1,5 +1,6 @@
 import { getSupabaseServerClient } from "@/lib/supabase-server";
 import { createSupabaseRouteHandlerClient } from "@/lib/supabase-ssr";
+import { sendCorrectionEmail } from "@/lib/send-correction-email";
 
 export const runtime = "nodejs";
 
@@ -39,7 +40,7 @@ export async function PATCH(
   const supabase = getSupabaseServerClient();
   const { data: currentOrder, error: currentOrderError } = await (supabase as ReturnType<typeof getSupabaseServerClient>)
     .from("orders")
-    .select("status")
+    .select("status, protocol_number, applicants(name, email), llcs(legal_name)")
     .eq("id", id)
     .single();
 
@@ -113,6 +114,30 @@ export async function PATCH(
 
   if (auditError) {
     return Response.json({ error: auditError.message }, { status: 500 });
+  }
+
+  // Fire-and-forget notification email when entering customer_reviewing
+  if (status === "customer_reviewing" && previousStatus !== "customer_reviewing") {
+    const orderRow = currentOrder as unknown as Record<string, unknown>;
+    const applicants = Array.isArray(orderRow.applicants) ? orderRow.applicants : [];
+    const applicant = (applicants[0] ?? {}) as Record<string, unknown>;
+    const llcs = Array.isArray(orderRow.llcs) ? orderRow.llcs : [];
+    const llc = (llcs[0] ?? {}) as Record<string, unknown>;
+
+    const applicantEmail = typeof applicant.email === "string" ? applicant.email : null;
+    const applicantName = typeof applicant.name === "string" ? applicant.name : "Cliente";
+    const protocolNumber = typeof orderRow.protocol_number === "string" ? orderRow.protocol_number : id;
+    const llcName = typeof llc.legal_name === "string" ? llc.legal_name : "sua LLC";
+
+    if (applicantEmail) {
+      void sendCorrectionEmail({
+        to: applicantEmail,
+        applicantName,
+        protocolNumber,
+        llcName,
+        correctionNotes: correction_notes ?? null,
+      });
+    }
   }
 
   return Response.json({ ok: true });
