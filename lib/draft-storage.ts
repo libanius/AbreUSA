@@ -47,3 +47,58 @@ export function clearDraft(): void {
     // ignore
   }
 }
+
+const DRAFT_VERSION_FOR_SYNC = DRAFT_VERSION;
+
+export async function syncDraftToServer(
+  email: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data: Record<string, any>,
+): Promise<void> {
+  try {
+    await fetch("/api/draft", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email,
+        draft_data: {
+          ...data,
+          version: DRAFT_VERSION_FOR_SYNC,
+          savedAt: new Date().toISOString(),
+        },
+      }),
+    });
+  } catch {
+    // fire-and-forget: network errors are silently ignored
+  }
+}
+
+export async function loadDraftFromServer(
+  email: string,
+): Promise<OnboardingDraft | null> {
+  try {
+    const res = await fetch(
+      "/api/draft?email=" + encodeURIComponent(email),
+      { method: "GET" },
+    );
+    if (!res.ok) return null;
+    const { draft } = (await res.json()) as { draft: unknown };
+    if (!draft || typeof draft !== "object") return null;
+    const parsed = draft as OnboardingDraft;
+    if (parsed.version !== DRAFT_VERSION) return null;
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+export async function clearServerDraft(email: string): Promise<void> {
+  try {
+    await fetch(
+      "/api/draft?email=" + encodeURIComponent(email),
+      { method: "DELETE" },
+    );
+  } catch {
+    // fire-and-forget
+  }
+}

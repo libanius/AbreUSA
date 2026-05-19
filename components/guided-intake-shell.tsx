@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { persistOrder } from "@/lib/persist-order";
-import { saveDraft, loadDraft, clearDraft } from "@/lib/draft-storage";
+import { saveDraft, loadDraft, clearDraft, syncDraftToServer, loadDraftFromServer, clearServerDraft, type OnboardingDraft } from "@/lib/draft-storage";
 import { ChatAssistant, type ChatAction } from "@/components/chat-assistant";
 
 import {
@@ -2689,6 +2689,9 @@ export function GuidedIntakeShell() {
   const [approvedOrderPayload, setApprovedOrderPayload] =
     useState<LocalOrderPayload | null>(null);
   const [hasDraftPrompt, setHasDraftPrompt] = useState(false);
+  const [serverDraftPrompt, setServerDraftPrompt] = useState<OnboardingDraft | null>(null);
+  const serverDraftCheckRef = useRef<string>("");
+  const serverCheckTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [showDocReuploadWarning, setShowDocReuploadWarning] = useState(false);
   const autoSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isDocumentAssisted = onboardingEntryMode === "document_assisted";
@@ -2767,12 +2770,33 @@ export function GuidedIntakeShell() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Server draft: check when email becomes valid in applicant_contact step
+  useEffect(() => {
+    if (activeStep !== "applicant_contact") return;
+    if (hasDraftPrompt) return;
+    const email = applicantContact.email.trim();
+    if (!email.includes("@") || email === serverDraftCheckRef.current) return;
+    if (serverCheckTimer.current) clearTimeout(serverCheckTimer.current);
+    serverCheckTimer.current = setTimeout(() => {
+      serverDraftCheckRef.current = email;
+      loadDraftFromServer(email).then((draft) => {
+        if (draft && draft.activeStep && draft.activeStep !== "service" && draft.activeStep !== "confirmation") {
+          setServerDraftPrompt(draft);
+        }
+      });
+    }, 1000);
+    return () => {
+      if (serverCheckTimer.current) clearTimeout(serverCheckTimer.current);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [applicantContact.email, activeStep, hasDraftPrompt]);
+
   // Draft: auto-save on state change (debounced 800ms)
   useEffect(() => {
     if (activeStep === "confirmation") return;
     if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
     autoSaveTimer.current = setTimeout(() => {
-      saveDraft({
+      const draftData = {
         activeStep,
         selectedService,
         onboardingEntryMode,
@@ -2789,7 +2813,12 @@ export function GuidedIntakeShell() {
         documents,
         approvalConfirmed,
         hadDocumentFiles: documentFiles.passport !== null || documentFiles.addressProof !== null,
-      });
+      };
+      saveDraft(draftData);
+      const emailForSync = applicantContact.email.trim();
+      if (emailForSync.includes("@")) {
+        void syncDraftToServer(emailForSync, draftData);
+      }
     }, 800);
     return () => {
       if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
@@ -3080,6 +3109,7 @@ export function GuidedIntakeShell() {
         order: { ...payload.order, protocolNumber },
       });
       clearDraft();
+      void clearServerDraft(applicantContact.email.trim());
       setActiveStep("confirmation");
     } catch (err) {
       console.error("Supabase persist failed:", err);
@@ -3201,6 +3231,28 @@ export function GuidedIntakeShell() {
     setHasDraftPrompt(false);
   }
 
+  function handleRestoreServerDraft() {
+    const draft = serverDraftPrompt;
+    if (!draft) return;
+    setSelectedService(draft.selectedService ?? null);
+    setOnboardingEntryMode(draft.onboardingEntryMode ?? null);
+    setApplicantContact(draft.applicantContact ?? { name: "", email: "", phone: "", residentialStreet: "", residentialCity: "", residentialState: "FL", residentialZip: "" });
+    setLlcName(draft.llcName ?? "");
+    setBusinessActivity(draft.businessActivity ?? null);
+    setCustomBusinessActivity(draft.customBusinessActivity ?? "");
+    setMemberCount(draft.memberCount ?? 1);
+    setMemberData(draft.memberData ?? [{ fullName: "", address: "", ownershipPercentage: "100" }]);
+    setBusinessAddress(draft.businessAddress ?? { street: "", city: "", state: "FL", zip: "" });
+    setBusinessAddressSameAsResidential(draft.businessAddressSameAsResidential ?? false);
+    setRegisteredAgent(draft.registeredAgent ?? { choice: null, name: "", address: "", city: "", state: "FL", zip: "" });
+    setEinQuestions(draft.einQuestions ?? { reasonForApplying: null, entityType: null, responsiblePartyName: "", responsiblePartyPassportNumber: "", startDate: "", fiscalClosingMonth: "" });
+    setDocuments(draft.documents ?? emptyDocumentCollection);
+    setApprovalConfirmed(draft.approvalConfirmed ?? false);
+    setActiveStep(draft.activeStep as FlowStep);
+    if (draft.hadDocumentFiles) setShowDocReuploadWarning(true);
+    setServerDraftPrompt(null);
+  }
+
   return (
     <div className="min-h-screen bg-muted/30">
       <ProgressHeader
@@ -3227,6 +3279,32 @@ export function GuidedIntakeShell() {
                 >
                   Começar do zero
                 </button>
+              </div>
+            </div>
+          )}
+          {!hasDraftPrompt && serverDraftPrompt && (
+            <div className="col-span-full mb-2 rounded-lg border border-blue-200 bg-blue-50 p-4">
+              <div className="flex items-start gap-3">
+                <div className="flex-1">
+                  <p className="text-sm font-semibold text-blue-900">Rascunho salvo encontrado</p>
+                  <p className="mt-0.5 text-xs text-blue-700">
+                    Encontramos um rascunho salvo em outro dispositivo. Continuar de onde parou?
+                  </p>
+                </div>
+                <div className="mt-0.5 flex shrink-0 gap-2">
+                  <button
+                    onClick={handleRestoreServerDraft}
+                    className="rounded-md bg-blue-700 px-4 py-1.5 text-sm font-medium text-white hover:bg-blue-800"
+                  >
+                    Recuperar
+                  </button>
+                  <button
+                    onClick={() => setServerDraftPrompt(null)}
+                    className="rounded-md border border-blue-300 px-4 py-1.5 text-sm font-medium text-blue-900 hover:bg-blue-100"
+                  >
+                    Ignorar
+                  </button>
+                </div>
               </div>
             </div>
           )}

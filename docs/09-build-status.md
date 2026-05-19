@@ -8,6 +8,22 @@ Phase 11: Customer Dashboard Journey. All tasks through P11-T06 (plus correction
 
 ## Last Completed Task
 
+Task ID: Cross-Device Draft via Supabase
+
+Title: `onboarding_drafts` table + `/api/draft` GET/PUT/DELETE + server sync + banner — deployed 2026-05-19.
+
+Result:
+
+- `supabase/schema.sql`: `onboarding_drafts (email PK, draft_data jsonb, updated_at)`. RLS enabled; anon/authenticated revoked.
+- `app/api/draft/route.ts`: GET (fetch draft by email), PUT (upsert), DELETE (clear). Service-role client. Normalizes email to lowercase.
+- `lib/draft-storage.ts`: `syncDraftToServer` (fire-and-forget PUT), `loadDraftFromServer` (GET), `clearServerDraft` (DELETE).
+- `components/guided-intake-shell.tsx`: server sync on every auto-save when email is valid; useEffect checks server 1s after valid email entered at `applicant_contact` step; blue "Rascunho salvo encontrado" banner with Recuperar/Ignorar; clears server draft on order confirmation.
+- Test suite: 56 tests, 6 files (12 new: `draft-api.test.ts` covering GET/PUT/DELETE happy paths and error cases).
+
+---
+
+## Previous Last Completed Task
+
 Task ID: Automated Test Suite + Document Upload Route
 
 Title: Vitest test suite (44 tests, 5 files, all passing) + `POST /api/customer/orders/[id]/documents` route — deployed 2026-05-19 (dpl_CXTXY5hLGL8xJqygw3c1nNSG2XpF).
@@ -18,7 +34,7 @@ Result:
 - Automated test suite: 44 tests, 5 test files (preprocess-document, draft-storage, send-status-email, extract-document, customer-documents), all passing.
 - `extract-document/route.ts`: restored `pdf_requires_image` check; updated to pass `null` for text params to match new 6-arg `extractDocuments` signature.
 - `__tests__/helpers/order-documents-route.ts`: helper re-export resolving `[id]` path for vitest.
-- Test infrastructure: vitest v4.1.6, plain-object request mocks, `vi.fn()` mocks for Supabase/auth.
+- Test infrastructure: vitest v4.1.6, plain-object request mocks, `vi.fn()` mocks for Supabase/auth. 56 tests, 6 files.
 
 ---
 
@@ -34,7 +50,6 @@ Owner/operator selects. Candidates in priority order:
 
 1. Custom production domain (abre-usa.com or similar).
 2. AbreUSA-branded transactional email sender migration (away from Brightscale domain).
-3. Draft resume via Supabase (cross-device, requires email identity — Phase 2 of draft system).
 
 ---
 
@@ -66,13 +81,14 @@ Owner/operator selects. Candidates in priority order:
 ## What Is Implemented
 
 ### Onboarding Draft / Resume
-- `lib/draft-storage.ts`: `saveDraft`, `loadDraft`, `clearDraft` (localStorage key `abreusa_onboarding_draft`, versioned).
-- Auto-save: debounced 800ms useEffect saves all serialisable form state on every change.
-- Resume banner: shown on mount if draft exists with step beyond "service" — two actions: "Continuar rascunho" or "Começar do zero".
+- `lib/draft-storage.ts`: `saveDraft`, `loadDraft`, `clearDraft` (localStorage key `abreusa_onboarding_draft`, versioned). Also: `syncDraftToServer`, `loadDraftFromServer`, `clearServerDraft` (fire-and-forget fetch wrappers for `/api/draft`).
+- Auto-save: debounced 800ms useEffect saves all serialisable form state on every change — also syncs to Supabase server when email is known.
+- Resume banner (local): shown on mount if localStorage draft exists with step beyond "service" — two actions: "Continuar rascunho" or "Começar do zero".
+- Resume banner (cross-device): shown in `applicant_contact` step when a server draft is found for the entered email — blue banner with "Recuperar" / "Ignorar".
 - Document re-upload warning: orange alert shown in the documents step when the customer had files in the previous session (`hadDocumentFiles: true`), with dismiss button.
-- Draft cleared automatically on successful order confirmation.
+- Draft cleared (local + server) automatically on successful order confirmation.
 - Does NOT persist actual `File` objects — customer must re-select documents on resume.
-- Scope: same browser only (localStorage). Cross-device resume is a future Phase 2.
+- `app/api/draft/route.ts`: GET/PUT/DELETE. Service-role. Email normalized to lowercase. `onboarding_drafts` table (RLS on, anon/authenticated revoked).
 
 ### Onboarding Flow
 - 15-step `document_assisted` path; 14-step `manual` path.
@@ -137,7 +153,7 @@ Owner/operator selects. Candidates in priority order:
 - Customer editing EIN details, members, or registered agent.
 - Admin-customer messaging thread within the portal.
 - Social auth (Google, GitHub).
-- Draft resume (server-side / cross-device) — localStorage draft is implemented; Supabase-backed draft for cross-device resume is not.
+- Draft resume (server-side / cross-device) — IMPLEMENTED: `onboarding_drafts` table + `/api/draft` route + server sync on auto-save + banner on new device.
 - EIN-only and Registered Agent-only dedicated flows (Post-MVP).
 - Payment processing (Post-MVP).
 - Multi-state LLC formation (Post-MVP).

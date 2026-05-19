@@ -2,6 +2,21 @@
 
 ## Confirmed Decisions
 
+### 2026-05-19: Rascunho Multiplataforma via Supabase
+
+**Decision:** Rascunho do formulário de onboarding sincronizado com Supabase via , usando email como chave.
+
+**Reason:**  só persiste no mesmo navegador/dispositivo. Usuário que começa no celular e retoma no desktop perdia o progresso. Com Supabase, o rascunho é recuperado assim que o email é digitado em outro dispositivo.
+
+**Scope:**
+- : tabela . RLS habilitado; acesso anon/authenticated revogado.
+- : GET (busca), PUT (upsert), DELETE (limpar). Usa service-role. Normaliza email para lowercase.
+- : , ,  — fire-and-forget via fetch.
+- : (a) auto-save também sincroniza com servidor quando email é válido; (b) useEffect detecta email válido no passo  e consulta servidor; (c) banner azul "Rascunho salvo encontrado" com ações Recuperar/Ignorar; (d) ao confirmar pedido, limpa rascunho no servidor.
+- Test suite: 56 testes, 6 arquivos (12 novos: draft-api GET/PUT/DELETE).
+
+---
+
 ### 2026-05-19: Assistente Virtual — Instruções Externalizadas em Arquivo Editável
 
 Decision:

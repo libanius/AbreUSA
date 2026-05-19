@@ -166,6 +166,12 @@ type AbreUsaDatabase = {
         Update: never;
         Relationships: [];
       };
+      onboarding_drafts: {
+        Row: { email: string; draft_data: Record<string, unknown>; updated_at: string };
+        Insert: { email: string; draft_data: Record<string, unknown>; updated_at?: string };
+        Update: { draft_data?: Record<string, unknown>; updated_at?: string };
+        Relationships: [];
+      };
       customer_dashboard_rate_limits: {
         Row: Record<string, unknown>;
         Insert: {

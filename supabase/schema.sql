@@ -274,3 +274,12 @@ alter table customer_dashboard_rate_limits enable row level security;
 revoke all on customer_dashboard_rate_limits from anon, authenticated;
 revoke all on function check_customer_dashboard_rate_limit(text, integer, integer, integer) from anon, authenticated;
 grant execute on function check_customer_dashboard_rate_limit(text, integer, integer, integer) to service_role;
+
+create table if not exists onboarding_drafts (
+  email      text        primary key,
+  draft_data jsonb       not null default '{}'::jsonb,
+  updated_at timestamptz not null default now()
+);
+
+alter table onboarding_drafts enable row level security;
+revoke all on onboarding_drafts from anon, authenticated;
