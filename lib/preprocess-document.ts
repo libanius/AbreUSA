@@ -7,6 +7,30 @@ const heicConvert = require("heic-convert") as (opts: {
   quality?: number;
 }) => Promise<ArrayBuffer>;
 
+// Suppress pdfjs canvas-rendering warnings (text extraction does not need canvas)
+if (typeof global !== "undefined") {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (global as any).DOMMatrix = (global as any).DOMMatrix ?? class {};
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (global as any).Path2D = (global as any).Path2D ?? class {};
+}
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const pdfjsLib = require("pdfjs-dist/legacy/build/pdf.js") as {
+  getDocument: (opts: {
+    data: Uint8Array;
+    useWorkerFetch: boolean;
+    isEvalSupported: boolean;
+    useSystemFonts: boolean;
+  }) => { promise: Promise<{
+    numPages: number;
+    getPage: (n: number) => Promise<{
+      getTextContent: () => Promise<{ items: Array<{ str: string }> }>;
+    }>;
+  }> };
+  GlobalWorkerOptions: { workerSrc: string };
+};
+pdfjsLib.GlobalWorkerOptions.workerSrc = "";
+
 const MAX_DIMENSION = 4096;
 const MAX_BYTES = 4 * 1024 * 1024; // 4 MB
 
@@ -29,7 +53,7 @@ export const ACCEPTED_MIME_TYPES = new Set([
 
 export type PreprocessedFile =
   | { kind: "image"; buffer: Buffer; mimeType: "image/jpeg" }
-  | { kind: "pdf"; buffer: Buffer; mimeType: "application/pdf" };
+  | { kind: "pdf"; buffer: Buffer; mimeType: "application/pdf"; text: string | null };
 
 export async function preprocessFile(
   buffer: Buffer,
@@ -38,7 +62,8 @@ export async function preprocessFile(
   const normalized = mimeType.toLowerCase().trim();
 
   if (PDF_MIME_TYPES.has(normalized)) {
-    return { kind: "pdf", buffer, mimeType: "application/pdf" };
+    const text = await extractPdfText(buffer);
+    return { kind: "pdf", buffer, mimeType: "application/pdf", text };
   }
 
   if (IMAGE_MIME_TYPES.has(normalized)) {
@@ -49,6 +74,37 @@ export async function preprocessFile(
   const err = new Error(`Unsupported MIME type: ${mimeType}`);
   (err as Error & { errorCode: string }).errorCode = "unsupported_file_type";
   throw err;
+}
+
+async function extractPdfText(buffer: Buffer): Promise<string | null> {
+  try {
+    const data = new Uint8Array(buffer);
+    const task = pdfjsLib.getDocument({
+      data,
+      useWorkerFetch: false,
+      isEvalSupported: false,
+      useSystemFonts: true,
+    });
+    const pdf = await task.promise;
+    const texts: string[] = [];
+    // Extract text from first 3 pages max (enough for passport/address data)
+    const pagesToRead = Math.min(pdf.numPages, 3);
+    for (let i = 1; i <= pagesToRead; i++) {
+      const page = await pdf.getPage(i);
+      const content = await page.getTextContent();
+      const pageText = content.items.map((item) => item.str).join(" ").trim();
+      if (pageText) texts.push(pageText);
+    }
+    const combined = texts.join("\n").trim();
+    console.log(
+      `[preprocess-document] PDF text extracted: ${combined.length} chars from ${pagesToRead} page(s)`,
+    );
+    return combined || null;
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.warn(`[preprocess-document] PDF text extraction failed: ${msg}`);
+    return null;
+  }
 }
 
 async function normalizeImage(buffer: Buffer, mimeType: string): Promise<Buffer> {

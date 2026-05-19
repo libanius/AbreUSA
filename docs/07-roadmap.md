@@ -2317,3 +2317,20 @@ Stop checkpoint:
 - Phase 11: P11-T01 through P11-T06 (plus correction notes enhancement) are complete and production-verified.
 - Phase 11 is considered complete for the current MVP scope.
 - Exact next roadmap action: owner/operator selects next priority. Candidates: custom domain, AbreUSA-branded email sender, Vercel Cron retention automation.
+
+
+---
+
+Post-Phase 11 extraction pipeline fix (2026-05-18):
+
+- Task: PDF + HEIC full extraction support.
+- Problem: HEIC uploads from iPhone failed (sharp on Vercel Lambda has no libheif). PDFs were blocked with `pdf_requires_image` error code — no extraction attempted.
+- Solution:
+  - `heic-convert` (pure JS/WASM) added: converts HEIC/HEIF→JPEG before sharp normalizes. Works on Vercel Lambda without native deps.
+  - `pdfjs-dist@3.11.174` (legacy/build): extracts text from PDFs in Node.js without canvas. Text sent to GPT-4o as text message (not image_url). GPT-4o Vision rejects `application/pdf` MIME — text path bypasses this.
+  - Blank/scanned PDFs (no extractable text): `extractDocuments` guard added — `passportMime !== "application/pdf"` prevents image extraction attempt; returns `confidence=0` gracefully.
+  - `next.config.ts`: `serverExternalPackages: ["pdfjs-dist", "heic-convert", "heic-decode"]` prevents Turbopack from bundling native-dep packages.
+  - `pdf_requires_image` error path removed from route and frontend.
+  - Automated test suite: `scripts/test-extraction.mjs` — 7 tests, all pass locally.
+- Files changed: `lib/preprocess-document.ts`, `lib/extract-document.ts`, `app/api/extract-document/route.ts`, `next.config.ts`, `components/guided-intake-shell.tsx`.
+- Status: complete. Awaiting production deployment.

@@ -67,13 +67,17 @@ export async function POST(request: NextRequest) {
     ]);
 
     // Preprocess images: auto-rotate EXIF, resize, convert to JPEG
-    let passportProcessed: { buffer: Buffer; mimeType: string } | null = null;
-    let addressProcessed: { buffer: Buffer; mimeType: string } | null = null;
+    let passportProcessed: { buffer: Buffer; mimeType: string; text?: string | null } | null = null;
+    let addressProcessed: { buffer: Buffer; mimeType: string; text?: string | null } | null = null;
 
     if (passportBuffer && passportFile) {
       try {
         const result = await preprocessFile(passportBuffer, passportFile.type);
-        if (result.kind === "image" || result.kind === "pdf") passportProcessed = result;
+        if (result.kind === "image") {
+          passportProcessed = result;
+        } else if (result.kind === "pdf") {
+          passportProcessed = { buffer: result.buffer, mimeType: result.mimeType, text: result.text };
+        }
       } catch (err) {
         const code =
           (err as Error & { errorCode?: string }).errorCode ??
@@ -93,7 +97,11 @@ export async function POST(request: NextRequest) {
     if (addressBuffer && addressFile) {
       try {
         const result = await preprocessFile(addressBuffer, addressFile.type);
-        if (result.kind === "image" || result.kind === "pdf") addressProcessed = result;
+        if (result.kind === "image") {
+          addressProcessed = result;
+        } else if (result.kind === "pdf") {
+          addressProcessed = { buffer: result.buffer, mimeType: result.mimeType, text: result.text };
+        }
       } catch (err) {
         const code =
           (err as Error & { errorCode?: string }).errorCode ??
@@ -113,8 +121,10 @@ export async function POST(request: NextRequest) {
     const result = await extractDocuments(
       passportProcessed?.buffer ?? null,
       passportProcessed?.mimeType ?? null,
+      passportProcessed?.text ?? null,
       addressProcessed?.buffer ?? null,
       addressProcessed?.mimeType ?? null,
+      addressProcessed?.text ?? null,
     );
 
     return NextResponse.json(result);

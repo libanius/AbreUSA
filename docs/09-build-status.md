@@ -54,6 +54,7 @@ Owner/operator selects. Candidates in priority order:
 - Phase 9: P9-T01 through P9-T03 complete — AI-ready onboarding, OpenAI GPT-4o Vision OCR.
 - Phase 10: P10-T01 through P10-T06 complete — OCR wired, prefill, extraction review, robustness pipeline (sharp), production verified with AUS-2026-0020.
 - Phase 10 robustness fix: image normalization pipeline, HEIC/HEIF, PDF guidance, MIME allowlist expansion.
+  - Post-Phase 11 extraction fix (2026-05-18): full PDF + HEIC extraction pipeline deployed. heic-convert (pure JS) converts HEIC→JPEG before sharp; pdfjs-dist 3.x extracts text from PDFs for GPT-4o text extraction path. Blank/scanned PDFs (no text) return confidence=0 gracefully. Automated test suite (scripts/test-extraction.mjs) — 7/7 tests pass.
 - Phase 11:
   - P11-T01: Customer dashboard lookup MVP (protocol + email, safe DTO).
   - P11-T02: Production deploy and verification.
@@ -169,7 +170,7 @@ Read `AGENTS.md`, `/docs/START-HERE.md`, `/docs/07-roadmap.md`, and this file. P
 - AbreUSA-branded email sender deferred; Brightscale sender in use.
 - Manual document deletion implemented (P8-T11). Verify against a real eligible document before enabling widely.
 - Vercel Cron retention automation remains deferred until manual deletion is validated in production.
-- OCR: images only (JPEG, JPG, PNG, GIF, WebP, HEIC, HEIF via sharp). PDFs accepted for storage but return `pdf_requires_image` with guidance.
+- OCR: full pipeline — images (JPEG, JPG, PNG, GIF, WebP) and HEIC/HEIF (via heic-convert, pure JS, no libheif required). PDFs: text extracted via pdfjs-dist 3.x (legacy/build); if no extractable text (scanned PDF), returns confidence=0 gracefully. GPT-4o Vision used for image inputs only.
 - Admin login has no rate limiting or brute-force protection (acceptable for MVP internal use).
 - Node/npm not in default PATH on this machine — use `PATH=/usr/local/opt/node@22/bin:$PATH` for local shell commands.
 - Project path contains a curly apostrophe (U+2019) — use Python subprocess for shell operations; avoid direct shell `cd` into the path.

@@ -286,7 +286,7 @@
 
         <aside class="card metric">
           <span class="pill" data-en="Last updated" data-pt="Última atualização">Last updated</span>
-          <p class="phase" data-en="May 14, 2026" data-pt="14 de maio de 2026">May 14, 2026</p>
+          <p class="phase" data-en="May 18, 2026" data-pt="18 de maio de 2026">May 18, 2026</p>
           <p
             class="updated"
             data-en="Source of truth: /docs App Spine and current build status."
@@ -428,12 +428,12 @@
 
         <article class="card task">
           <span class="pill done" data-en="Last completed" data-pt="Última concluída">Last completed</span>
-          <h2 data-en="P11-T03 — Dashboard Rate Limiting" data-pt="P11-T03 — Rate limiting do dashboard">P11-T03 — Dashboard Rate Limiting</h2>
+          <h2 data-en="PDF + HEIC Extraction Fix (2026-05-18)" data-pt="Correção de extração PDF + HEIC (2026-05-18)">PDF + HEIC Extraction Fix (2026-05-18)</h2>
           <p
-            data-en="/dashboard now checks a Supabase-backed shared rate limit before order lookup. Valid lookup, invalid lookup, exceeded-limit lookup, and production health checks passed."
-            data-pt="/dashboard agora checa um rate limit compartilhado via Supabase antes da consulta do pedido. Consulta válida, consulta inválida, consulta bloqueada por limite e health checks de produção foram aprovados."
+            data-en="Full PDF and HEIC extraction pipeline deployed. HEIC→JPEG via heic-convert (pure JS, no libheif). PDF text extraction via pdfjs-dist 3.x. Blank/scanned PDFs return confidence=0 gracefully. Automated test suite: 7/7 tests pass."
+            data-pt="Pipeline completo de extração PDF e HEIC. HEIC→JPEG via heic-convert (JS puro, sem libheif). Extração de texto PDF via pdfjs-dist 3.x. PDFs sem texto retornam confidence=0 sem erro. Suite de testes automáticos: 7/7 aprovados."
           >
-            /dashboard now checks a Supabase-backed shared rate limit before order lookup. Valid lookup, invalid lookup, exceeded-limit lookup, and production health checks passed.
+            Full PDF and HEIC extraction pipeline deployed. HEIC→JPEG via heic-convert (pure JS, no libheif). PDF text extraction via pdfjs-dist 3.x. Blank/scanned PDFs return confidence=0 gracefully. Automated test suite: 7/7 tests pass.
           </p>
         </article>
 
@@ -441,10 +441,10 @@
           <span class="pill needed" data-en="Next task" data-pt="Próxima tarefa">Next task</span>
           <h2 data-en="Owner/operator selects next priority" data-pt="Operador seleciona a próxima prioridade">Owner/operator selects next priority</h2>
           <p
-            data-en="Phase 11 is complete including automated correction email. Next: custom domain or AbreUSA-branded email sender."
-            data-pt="Fase 11 concluída incluindo e-mail automático de correção. Próximo: domínio personalizado ou remetente com marca AbreUSA."
+            data-en="Owner/operator selects next priority. PDF+HEIC extraction fix complete (2026-05-18). Top candidates: production deploy of extraction fix, custom domain, AbreUSA-branded email sender."
+            data-pt="Operador seleciona a próxima prioridade. Correção de extração PDF+HEIC concluída (2026-05-18). Principais candidatos: deploy de produção da correção, domínio personalizado, remetente com marca AbreUSA."
           >
-            Phase 11 is complete. Top candidate: automated email notification to customer when admin sets order to correction review status.
+            Owner/operator selects next priority. PDF+HEIC extraction fix complete (2026-05-18) — deploy to production pending.
           </p>
           <p
             data-en="Candidates: custom production domain, AbreUSA-branded email sender, Vercel Cron retention automation."
@@ -460,8 +460,6 @@
         <h2 data-en="Decision Needed Before Later Phases" data-pt="Decisões necessárias antes das próximas fases">Decision Needed Before Later Phases</h2>
         <ul>
           <li data-en="EIN-only dedicated flow requirements." data-pt="Requisitos do fluxo dedicado de EIN-only.">EIN-only dedicated flow requirements.</li>
-            <li data-en="P11-T06: Customer correction workflow. Customers can edit safe fields when order is in correction-review status; submission moves order back to ready-for-review with audit log." data-pt="P11-T06: Fluxo de correção pelo cliente. Clientes podem editar campos seguros quando o pedido está em revisão; envio move o pedido de volta para pronto-para-revisão com log de auditoria.">P11-T06: Customer correction workflow. Customers can edit safe fields when order is in correction-review status; submission moves order back to ready-for-review with audit log.</li>
-            <li data-en="P11 enhancement: automated correction email sent to customer when admin sets order to correction-review status, with protocol, LLC name, admin notes, and dashboard link." data-pt="Melhoria P11: e-mail automático enviado ao cliente quando admin define o pedido como em revisão, com protocolo, nome da LLC, instruções do admin e link do dashboard.">P11 enhancement: automated correction email sent to customer when admin sets order to correction-review status, with protocol, LLC name, admin notes, and dashboard link.</li>
           <li data-en="Registered Agent-only dedicated flow requirements." data-pt="Requisitos do fluxo dedicado de Registered Agent-only.">Registered Agent-only dedicated flow requirements.</li>
           <li data-en="Payment timing if payment is added later." data-pt="Momento do pagamento caso pagamento seja adicionado depois.">Payment timing if payment is added later.</li>
           <li data-en="PDF/export strategy beyond HTML preview." data-pt="Estratégia de PDF/exportação além do preview em HTML.">PDF/export strategy beyond HTML preview.</li>
