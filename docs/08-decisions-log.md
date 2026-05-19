@@ -2,6 +2,29 @@
 
 ## Confirmed Decisions
 
+### 2026-05-19: Assistente Virtual — Instruções Externalizadas em Arquivo Editável
+
+Decision:
+
+As instruções de comportamento do assistente virtual são mantidas em
+`content/assistant-instructions.md`, fora do código-fonte da rota da API.
+A rota `app/api/chat-assistant/route.ts` lê esse arquivo em runtime via `fs.readFileSync`.
+O arquivo é incluído no bundle serverless do Vercel via `outputFileTracingIncludes`.
+
+Reason:
+
+O produto precisa de capacidade de "treinamento" do assistente sem ciclos de
+desenvolvimento — o usuário responsável pelo produto deve poder editar respostas,
+adicionar conhecimento e ajustar tom sem alterar código.
+A separação também torna as instruções auditáveis e versionáveis no repositório.
+
+Scope:
+
+- `content/assistant-instructions.md`: identidade, papel, tom, escopo, conhecimento técnico,
+  perguntas frequentes, regras de comportamento e exemplos de boas respostas.
+- Código (rota): contexto dinâmico do formulário, formato JSON obrigatório, lista de ações
+  disponíveis no formulário — tudo que depende do estado da aplicação.
+
 ### 2026-05-04: App Spine Created
 
 Decision:
