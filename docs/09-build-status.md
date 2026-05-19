@@ -146,7 +146,7 @@ Owner/operator selects. Candidates in priority order:
 - Payment processing (Post-MVP).
 - Multi-state LLC formation (Post-MVP).
 - Operating Agreement generation (Post-MVP).
-- Conversational onboarding UI.
+
 
 ---
 
@@ -156,7 +156,7 @@ Owner/operator selects. Candidates in priority order:
 Phase 11 complete (P11-T01 through P11-T06 + enhancement). Awaiting next phase or priority selection.
 
 ### Last Completed Task
-`P11-T06` + correction notes + automated correction email — verified in production by owner/operator on 2026-05-18.
+`Onboarding Enhancement` — Chat assistant (Modelo B), localStorage draft save/resume, and doc re-upload warning. Deployed 2026-05-19.
 
 ### Current Task
 None.
@@ -171,7 +171,7 @@ Read `AGENTS.md`, `/docs/START-HERE.md`, `/docs/07-roadmap.md`, and this file. P
 
 ## Blockers And Risks
 
-- Production alias: `https://abre-usa.vercel.app`. Current production deployment: `dpl_ioqnAy9LjaSz7xGv4utiuSz46pry`.
+- Production alias: `https://abre-usa.vercel.app`. Current production deployment: `dpl_9GrzP7cT62kDLu42dr9QmtSDkdE9`.
 - Supabase Auth Site URL: `https://abre-usa.vercel.app` (corrected 2026-05-14; was `http://localhost:3000`).
 - `https://abre-usa.vercel.app/auth/confirm` in Supabase Allowed Redirect URLs.
 - `http://localhost:3000/**` in Supabase Redirect URLs for local dev.

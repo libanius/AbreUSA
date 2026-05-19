@@ -1,4 +1,5 @@
 import { createSupabaseRouteHandlerClient } from "@/lib/supabase-ssr";
+import { sendAdminCorrectionNotification } from "@/lib/send-status-email";
 import { getSupabaseServerClient } from "@/lib/supabase-server";
 
 export const runtime = "nodejs";
@@ -148,6 +149,39 @@ export async function PATCH(
     reason: "Customer submitted correction via dashboard",
     metadata: { corrected_fields: { applicant: body.applicant ?? null, llc: body.llc ?? null } },
   });
+
+  // Notify admin — fire and forget
+  const orderForEmail = orderRow as Record<string, unknown>;
+  void (async () => {
+    try {
+      const { data: emailData } = await supabase
+        .from("orders")
+        .select("protocol_number, llcs(legal_name), applicants(name)")
+        .eq("id", id)
+        .single();
+      const emailRow = emailData as Record<string, unknown> | null;
+      const protocolNumber =
+        typeof emailRow?.protocol_number === "string" ? emailRow.protocol_number : id;
+      const llcs = Array.isArray(emailRow?.llcs) ? emailRow?.llcs : [];
+      const llcName =
+        typeof (llcs[0] as Record<string, unknown>)?.legal_name === "string"
+          ? (llcs[0] as Record<string, unknown>).legal_name as string
+          : "LLC";
+      const applicantsArr = Array.isArray(emailRow?.applicants) ? emailRow?.applicants : [];
+      const applicantName =
+        typeof (applicantsArr[0] as Record<string, unknown>)?.name === "string"
+          ? (applicantsArr[0] as Record<string, unknown>).name as string
+          : "Cliente";
+      await sendAdminCorrectionNotification({
+        protocolNumber,
+        llcName,
+        applicantName,
+        eventType: "correction_submitted",
+      });
+    } catch (err) {
+      console.error("[correction] Admin notification failed:", err);
+    }
+  })();
 
   return Response.json({ ok: true });
 }

@@ -51,6 +51,50 @@ function Field({
   );
 }
 
+function DocUploadField({
+  label,
+  fieldId,
+  file,
+  status,
+  onChange,
+}: {
+  label: string;
+  fieldId: string;
+  file: File | null;
+  status: "idle" | "uploading" | "done" | "error";
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}) {
+  return (
+    <div>
+      <label htmlFor={fieldId} className="block text-xs font-semibold text-gray-600 mb-1">
+        {label}
+      </label>
+      <div className="flex items-center gap-3">
+        <input
+          id={fieldId}
+          type="file"
+          accept="image/jpeg,image/jpg,image/png,image/webp,image/heic,image/heif,application/pdf"
+          onChange={onChange}
+          disabled={status === "uploading"}
+          className="text-sm text-gray-700 file:mr-3 file:rounded file:border-0 file:bg-gray-100 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-gray-700 hover:file:bg-gray-200 disabled:opacity-60"
+        />
+        {status === "uploading" && (
+          <span className="text-xs text-gray-500">Enviando…</span>
+        )}
+        {status === "done" && (
+          <span className="text-xs font-semibold text-green-700">✓ Enviado</span>
+        )}
+        {status === "error" && (
+          <span className="text-xs font-semibold text-red-600">✗ Erro</span>
+        )}
+      </div>
+      {file && status !== "uploading" && (
+        <p className="mt-1 text-xs text-gray-400">{file.name}</p>
+      )}
+    </div>
+  );
+}
+
 export default function CorrectionForm({
   orderId,
   correctionNotes,
@@ -64,6 +108,44 @@ export default function CorrectionForm({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+
+  type DocStatus = "idle" | "uploading" | "done" | "error";
+  const [passportFile, setPassportFile] = useState<File | null>(null);
+  const [passportStatus, setPassportStatus] = useState<DocStatus>("idle");
+  const [addressFile, setAddressFile] = useState<File | null>(null);
+  const [addressStatus, setAddressStatus] = useState<DocStatus>("idle");
+
+  async function uploadDocument(field: "passport" | "addressProof", file: File) {
+    const setter = field === "passport" ? setPassportStatus : setAddressStatus;
+    setter("uploading");
+    try {
+      const fd = new FormData();
+      fd.append(field, file);
+      const res = await fetch(`/api/customer/orders/${orderId}/documents`, {
+        method: "POST",
+        body: fd,
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({})) as { error?: string };
+        throw new Error(body.error ?? "Falha no upload.");
+      }
+      setter("done");
+    } catch (err) {
+      setter("error");
+      setError(err instanceof Error ? err.message : "Falha ao enviar documento.");
+    }
+  }
+
+  function handleFileChange(
+    field: "passport" | "addressProof",
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) {
+    const file = e.target.files?.[0] ?? null;
+    if (!file) return;
+    if (field === "passport") { setPassportFile(file); setPassportStatus("idle"); }
+    else { setAddressFile(file); setAddressStatus("idle"); }
+    void uploadDocument(field, file);
+  }
 
   function setA(field: keyof typeof applicant, value: string) {
     setApplicant((prev) => ({ ...prev, [field]: value }));
@@ -219,11 +301,35 @@ export default function CorrectionForm({
           />
         </section>
 
+        {/* Document replacement section */}
+        <section className="rounded-lg bg-white border border-gray-200 p-4 space-y-4">
+          <div>
+            <h3 className="text-sm font-semibold text-gray-950">Substituir documentos</h3>
+            <p className="mt-1 text-xs text-gray-500">
+              Opcional — envie somente se a equipe solicitou novos documentos.
+            </p>
+          </div>
+          <DocUploadField
+            label="Passaporte"
+            fieldId="passport-upload"
+            file={passportFile}
+            status={passportStatus}
+            onChange={(e) => handleFileChange("passport", e)}
+          />
+          <DocUploadField
+            label="Comprovante de endereco"
+            fieldId="address-upload"
+            file={addressFile}
+            status={addressStatus}
+            onChange={(e) => handleFileChange("addressProof", e)}
+          />
+        </section>
+
         {error && <p className="text-sm text-red-600">{error}</p>}
 
         <button
           type="submit"
-          disabled={loading}
+          disabled={loading || passportStatus === "uploading" || addressStatus === "uploading"}
           className="w-full rounded-lg bg-green-700 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-green-800 disabled:opacity-60"
         >
           {loading ? "Enviando…" : "Enviar correcao"}

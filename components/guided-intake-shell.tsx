@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { persistOrder } from "@/lib/persist-order";
 import { saveDraft, loadDraft, clearDraft } from "@/lib/draft-storage";
+import { ChatAssistant, type ChatAction } from "@/components/chat-assistant";
 
 import {
   ConfirmationShell,
@@ -2810,6 +2811,69 @@ export function GuidedIntakeShell() {
     setActiveStep(mode === "document_assisted" ? "documents" : "applicant_contact");
   }
 
+  function handleChatAction(action: ChatAction) {
+    const { type, payload } = action;
+    switch (type) {
+      case "select_service": {
+        const svc = payload.value as ServiceId;
+        setSelectedService(svc);
+        setActiveStep("entry_mode");
+        break;
+      }
+      case "select_entry_mode": {
+        const mode = payload.value as OnboardingEntryMode;
+        setOnboardingEntryMode(mode);
+        setActiveStep(mode === "document_assisted" ? "documents" : "applicant_contact");
+        break;
+      }
+      case "set_llc_name": {
+        setLlcName(payload.value as string);
+        break;
+      }
+      case "set_member_count": {
+        const count = Number(payload.value);
+        if (!Number.isFinite(count) || count < 1) break;
+        setMemberCount(count);
+        setMemberData((prev) => {
+          const next = [...prev];
+          while (next.length < count) next.push({ fullName: "", address: "", ownershipPercentage: "" });
+          next.splice(count);
+          return next;
+        });
+        break;
+      }
+      case "set_business_activity": {
+        setBusinessActivity(payload.value as BusinessActivityId);
+        if (typeof payload.custom === "string") setCustomBusinessActivity(payload.custom);
+        break;
+      }
+      case "set_registered_agent_choice": {
+        setRegisteredAgent((prev) => ({ ...prev, choice: payload.value as RegisteredAgentChoice }));
+        break;
+      }
+      case "advance_step": {
+        const nextStep: Partial<Record<FlowStep, FlowStep>> = {
+          service: "entry_mode",
+          entry_mode: onboardingEntryMode === "document_assisted" ? "documents" : "applicant_contact",
+          applicant_contact: "llc_name",
+          llc_name: "business_activity",
+          business_activity: "member_count",
+          member_count: "member_data",
+          member_data: "business_address",
+          business_address: "registered_agent",
+          registered_agent: selectedService === "complete" ? "ein_questions" : "documents",
+          ein_questions: "documents",
+          documents: "review",
+          extraction_review: "review",
+          review: "approval",
+        };
+        const next = nextStep[activeStep];
+        if (next) setActiveStep(next);
+        break;
+      }
+    }
+  }
+
   function handleResetService() {
     setSelectedService(null);
     setOnboardingEntryMode(null);
@@ -3291,6 +3355,25 @@ export function GuidedIntakeShell() {
           </aside>
         </div>
       </main>
+      {activeStep !== "confirmation" && (
+        <ChatAssistant
+          activeStep={activeStep}
+          selectedService={selectedService}
+          formContext={{
+            step: activeStep,
+            service: selectedService,
+            entryMode: onboardingEntryMode,
+            llcName,
+            memberCount,
+            businessActivity,
+            customBusinessActivity,
+            registeredAgentChoice: registeredAgent.choice,
+            applicantName: applicantContact.name,
+            applicantEmail: applicantContact.email,
+          }}
+          onAction={handleChatAction}
+        />
+      )}
     </div>
   );
 }

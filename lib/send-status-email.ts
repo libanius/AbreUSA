@@ -110,3 +110,59 @@ export async function sendCompletedEmail(params: StatusEmailParams): Promise<voi
     console.error("[email] Failed to send completed email:", error);
   }
 }
+
+type AdminCorrectionParams = {
+  protocolNumber: string;
+  llcName: string;
+  applicantName: string;
+  eventType: "correction_submitted" | "documents_replaced";
+};
+
+export async function sendAdminCorrectionNotification(
+  params: AdminCorrectionParams,
+): Promise<void> {
+  const adminEmail = process.env.ADMIN_EMAIL;
+  if (!adminEmail) {
+    console.info("[email] ADMIN_EMAIL not configured — skipping admin correction notification.");
+    return;
+  }
+  if (!resend) {
+    console.info("[email] RESEND_API_KEY not configured — skipping admin correction notification.");
+    return;
+  }
+
+  const isDocUpload = params.eventType === "documents_replaced";
+  const subject = isDocUpload
+    ? `Cliente enviou documentos — ${params.protocolNumber}`
+    : `Correcao enviada pelo cliente — ${params.protocolNumber}`;
+
+  const action = isDocUpload
+    ? "enviou novos documentos"
+    : "enviou uma correcao de dados";
+
+  const lines = [
+    `[AbreUSA Admin]`,
+    "",
+    `O cliente ${params.applicantName} ${action} no pedido ${params.protocolNumber} (${params.llcName}).`,
+    "",
+    `O pedido voltou para revisao interna (ready_for_review).`,
+    "",
+    `Acesse o painel para revisar: https://abre-usa.vercel.app/admin/orders`,
+    "",
+    "AbreUSA — Notificacao automatica",
+  ];
+
+  try {
+    await resend.emails.send({
+      from: FROM,
+      to: adminEmail,
+      subject,
+      text: lines.join("\n"),
+    });
+    console.info(
+      `[email] Admin correction notification sent for order ${params.protocolNumber} (${params.eventType})`,
+    );
+  } catch (error) {
+    console.error("[email] Failed to send admin correction notification:", error);
+  }
+}
