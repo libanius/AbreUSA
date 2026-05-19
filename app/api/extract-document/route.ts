@@ -60,6 +60,28 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // PDF path: accepted for Supabase storage, not yet auto-extractable
+    const passportIsPdf =
+      passportFile?.type?.toLowerCase() === "application/pdf";
+    const addressIsPdf =
+      addressFile?.type?.toLowerCase() === "application/pdf";
+    if (passportIsPdf || addressIsPdf) {
+      const labels = [
+        passportIsPdf && "passaporte",
+        addressIsPdf && "comprovante de endereço",
+      ]
+        .filter(Boolean)
+        .join(" e ");
+      console.log(
+        `[extract-document] PDF received for: ${labels}. Returning pdf_requires_image.`,
+      );
+      return extractionError(
+        "pdf_requires_image",
+        "PDF recebido. Para leitura automática, envie como imagem.",
+        `Arquivo(s) em PDF: ${labels}. Envie como JPG ou PNG para ativar a extração automática.`,
+      );
+    }
+
     // Read file buffers
     const [passportBuffer, addressBuffer] = await Promise.all([
       passportFile ? Buffer.from(await passportFile.arrayBuffer()) : null,
@@ -67,17 +89,13 @@ export async function POST(request: NextRequest) {
     ]);
 
     // Preprocess images: auto-rotate EXIF, resize, convert to JPEG
-    let passportProcessed: { buffer: Buffer; mimeType: string; text?: string | null } | null = null;
-    let addressProcessed: { buffer: Buffer; mimeType: string; text?: string | null } | null = null;
+    let passportProcessed: { buffer: Buffer; mimeType: string } | null = null;
+    let addressProcessed: { buffer: Buffer; mimeType: string } | null = null;
 
     if (passportBuffer && passportFile) {
       try {
         const result = await preprocessFile(passportBuffer, passportFile.type);
-        if (result.kind === "image") {
-          passportProcessed = result;
-        } else if (result.kind === "pdf") {
-          passportProcessed = { buffer: result.buffer, mimeType: result.mimeType, text: result.text };
-        }
+        if (result.kind === "image") passportProcessed = result;
       } catch (err) {
         const code =
           (err as Error & { errorCode?: string }).errorCode ??
@@ -97,11 +115,7 @@ export async function POST(request: NextRequest) {
     if (addressBuffer && addressFile) {
       try {
         const result = await preprocessFile(addressBuffer, addressFile.type);
-        if (result.kind === "image") {
-          addressProcessed = result;
-        } else if (result.kind === "pdf") {
-          addressProcessed = { buffer: result.buffer, mimeType: result.mimeType, text: result.text };
-        }
+        if (result.kind === "image") addressProcessed = result;
       } catch (err) {
         const code =
           (err as Error & { errorCode?: string }).errorCode ??
@@ -121,10 +135,10 @@ export async function POST(request: NextRequest) {
     const result = await extractDocuments(
       passportProcessed?.buffer ?? null,
       passportProcessed?.mimeType ?? null,
-      passportProcessed?.text ?? null,
+      null,
       addressProcessed?.buffer ?? null,
       addressProcessed?.mimeType ?? null,
-      addressProcessed?.text ?? null,
+      null,
     );
 
     return NextResponse.json(result);

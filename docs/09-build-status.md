@@ -2,27 +2,23 @@
 
 ## Current Phase
 
-Phase 11: Customer Dashboard Journey. P11-T01 through P11-T06 (plus correction notes enhancement) are complete, deployed, and production-verified.
+Phase 11: Customer Dashboard Journey. All tasks through P11-T06 (plus correction flow + document upload + admin notifications + automated test suite) are complete, deployed, and production-verified.
 
 ---
 
 ## Last Completed Task
 
-Task ID: Onboarding draft / resume (localStorage)
+Task ID: Automated Test Suite + Document Upload Route
 
-Title: Auto-save + resume rascunho do formulário via localStorage — deployed 2026-05-19 (dpl_HDaLLiQqzTX43w8wbPNvqyPSUGpV).
+Title: Vitest test suite (44 tests, 5 files, all passing) + `POST /api/customer/orders/[id]/documents` route — deployed 2026-05-19 (dpl_CXTXY5hLGL8xJqygw3c1nNSG2XpF).
 
 Result:
 
-- `PATCH /api/customer/orders/[id]/correction`: session auth + status check (`customer_reviewing`) + email ownership check → updates safe applicant and LLC fields → moves order to `ready_for_review` → records `customer_correction_submitted` audit event.
-- `CorrectionForm` component on `/dashboard`: orange banner, displays admin correction notes prominently, lists `missing_information_flags` as hints, two-section form (Seus Dados / Dados da LLC).
-- `correction_notes TEXT` column added to `orders` via Supabase migration `20260514230000_correction_notes.sql`.
-- `StatusUpdater` admin component updated: selecting `customer_reviewing` reveals a textarea "Instrucoes para o cliente"; notes are sent alongside the status and stored in `correction_notes`.
-- Customer `CorrectionForm` shows notes in a bordered white box with the heading "Instrucoes da equipe AbreUSA" when notes are present.
-- Notes cleared automatically when order leaves `customer_reviewing`.
-- Production deployment: `dpl_ioqnAy9LjaSz7xGv4utiuSz46pry`.
-- Full end-to-end flow verified in production by owner/operator (2026-05-14).
-- Enhancement deployed `dpl_ilo4c9nen...` (2026-05-18): automated transactional email to customer when admin sets `customer_reviewing`. Portuguese e-mail includes protocol, LLC name, correction notes, and dashboard link. Fire-and-forget via Resend. Only fires on status transition (not re-save). Verified locally and in production.
+- `POST /api/customer/orders/[id]/documents`: session auth + order status check (`customer_reviewing`) + email ownership → validates MIME type → uploads to Supabase storage (`{orderId}/{doc_type}_r{timestamp}.{ext}`) → inserts document record with 90-day retention → fires admin email notification.
+- Automated test suite: 44 tests, 5 test files (preprocess-document, draft-storage, send-status-email, extract-document, customer-documents), all passing.
+- `extract-document/route.ts`: restored `pdf_requires_image` check; updated to pass `null` for text params to match new 6-arg `extractDocuments` signature.
+- `__tests__/helpers/order-documents-route.ts`: helper re-export resolving `[id]` path for vitest.
+- Test infrastructure: vitest v4.1.6, plain-object request mocks, `vi.fn()` mocks for Supabase/auth.
 
 ---
 
