@@ -8,9 +8,9 @@ Phase 11: Customer Dashboard Journey. P11-T01 through P11-T06 (plus correction n
 
 ## Last Completed Task
 
-Task ID: Vercel Cron — automatic retention deletion
+Task ID: Onboarding draft / resume (localStorage)
 
-Title: Automated 90-day sensitive upload deletion via Vercel Cron — deployed 2026-05-19 (dpl_DFEovHc3TEUVF8wsq7MkqFqbviHb).
+Title: Auto-save + resume rascunho do formulário via localStorage — deployed 2026-05-19 (dpl_HDaLLiQqzTX43w8wbPNvqyPSUGpV).
 
 Result:
 
@@ -38,6 +38,7 @@ Owner/operator selects. Candidates in priority order:
 
 1. Custom production domain (abre-usa.com or similar).
 2. AbreUSA-branded transactional email sender migration (away from Brightscale domain).
+3. Draft resume via Supabase (cross-device, requires email identity — Phase 2 of draft system).
 
 ---
 
@@ -54,7 +55,8 @@ Owner/operator selects. Candidates in priority order:
 - Phase 10 robustness fix: image normalization pipeline, HEIC/HEIF, PDF guidance, MIME allowlist expansion.
   - Post-Phase 11 extraction fix (2026-05-18): full PDF + HEIC extraction pipeline deployed.
   - Status email notifications (2026-05-18): `lib/send-status-email.ts` created with `sendApprovedEmail`, `sendSubmittedEmail`, `sendCompletedEmail`. Admin PATCH route fires appropriate email on status transition (approved, submitted, completed). Fire-and-forget, same pattern as correction email. Deployment: `dpl_2n3kLz7Ktpt1wPTb18pokjmDq3sN`.
-  - Vercel Cron retention automation (2026-05-19): `app/api/cron/delete-eligible-documents/route.ts` + `vercel.json` with `0 3 * * *` schedule. Processes up to 20 documents/run. `CRON_SECRET` added to Vercel env. Unauthorized requests return 401. Deployment: `dpl_DFEovHc3TEUVF8wsq7MkqFqbviHb`. `lib/send-status-email.ts` created with `sendApprovedEmail`, `sendSubmittedEmail`, `sendCompletedEmail`. Admin PATCH route fires appropriate email on status transition (approved, submitted, completed). Fire-and-forget, same pattern as correction email. Deployment: `dpl_2n3kLz7Ktpt1wPTb18pokjmDq3sN`. heic-convert (pure JS) converts HEIC→JPEG before sharp; pdfjs-dist 3.x extracts text from PDFs for GPT-4o text extraction path. Blank/scanned PDFs (no text) return confidence=0 gracefully. Automated test suite (scripts/test-extraction.mjs) — 7/7 tests pass.
+  - Vercel Cron retention automation (2026-05-19): `app/api/cron/delete-eligible-documents/route.ts` + `vercel.json` with `0 3 * * *` schedule. Processes up to 20 documents/run. `CRON_SECRET` added to Vercel env. Unauthorized requests return 401. Deployment: `dpl_DFEovHc3TEUVF8wsq7MkqFqbviHb`.
+  - Onboarding draft / resume (2026-05-19): `lib/draft-storage.ts` + auto-save useEffect (800ms debounce) + resume banner + document re-upload warning. localStorage, same-browser scope. Deployment: `dpl_HDaLLiQqzTX43w8wbPNvqyPSUGpV`. `app/api/cron/delete-eligible-documents/route.ts` + `vercel.json` with `0 3 * * *` schedule. Processes up to 20 documents/run. `CRON_SECRET` added to Vercel env. Unauthorized requests return 401. Deployment: `dpl_DFEovHc3TEUVF8wsq7MkqFqbviHb`. `lib/send-status-email.ts` created with `sendApprovedEmail`, `sendSubmittedEmail`, `sendCompletedEmail`. Admin PATCH route fires appropriate email on status transition (approved, submitted, completed). Fire-and-forget, same pattern as correction email. Deployment: `dpl_2n3kLz7Ktpt1wPTb18pokjmDq3sN`. heic-convert (pure JS) converts HEIC→JPEG before sharp; pdfjs-dist 3.x extracts text from PDFs for GPT-4o text extraction path. Blank/scanned PDFs (no text) return confidence=0 gracefully. Automated test suite (scripts/test-extraction.mjs) — 7/7 tests pass.
 - Phase 11:
   - P11-T01: Customer dashboard lookup MVP (protocol + email, safe DTO).
   - P11-T02: Production deploy and verification.
@@ -66,6 +68,15 @@ Owner/operator selects. Candidates in priority order:
 ---
 
 ## What Is Implemented
+
+### Onboarding Draft / Resume
+- `lib/draft-storage.ts`: `saveDraft`, `loadDraft`, `clearDraft` (localStorage key `abreusa_onboarding_draft`, versioned).
+- Auto-save: debounced 800ms useEffect saves all serialisable form state on every change.
+- Resume banner: shown on mount if draft exists with step beyond "service" — two actions: "Continuar rascunho" or "Começar do zero".
+- Document re-upload warning: orange alert shown in the documents step when the customer had files in the previous session (`hadDocumentFiles: true`), with dismiss button.
+- Draft cleared automatically on successful order confirmation.
+- Does NOT persist actual `File` objects — customer must re-select documents on resume.
+- Scope: same browser only (localStorage). Cross-device resume is a future Phase 2.
 
 ### Onboarding Flow
 - 15-step `document_assisted` path; 14-step `manual` path.
@@ -130,7 +141,7 @@ Owner/operator selects. Candidates in priority order:
 - Customer editing EIN details, members, or registered agent.
 - Admin-customer messaging thread within the portal.
 - Social auth (Google, GitHub).
-- Draft resume / progressive onboarding.
+- Draft resume (server-side / cross-device) — localStorage draft is implemented; Supabase-backed draft for cross-device resume is not.
 - EIN-only and Registered Agent-only dedicated flows (Post-MVP).
 - Payment processing (Post-MVP).
 - Multi-state LLC formation (Post-MVP).

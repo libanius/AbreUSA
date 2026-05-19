@@ -2364,3 +2364,20 @@ Vercel Cron retention automation (2026-05-19):
 - `CRON_SECRET` added to Vercel production env and `.env.local`.
 - TypeScript clean, 19 routes. Deployment: `dpl_DFEovHc3TEUVF8wsq7MkqFqbviHb`.
 - Status: complete and deployed.
+
+
+---
+
+Onboarding draft / resume (2026-05-19):
+
+- Task: Auto-save form progress and allow same-browser resume.
+- Scope: localStorage only (Phase 1). Cross-device (Supabase) is deferred as Phase 2.
+- Files: `lib/draft-storage.ts` (new), `components/guided-intake-shell.tsx` (updated).
+- Behaviour:
+  - Auto-save debounced 800ms on any state change. Key: `abreusa_onboarding_draft`, versioned.
+  - On mount: if draft with step > "service" found → show amber resume banner ("Continuar rascunho" / "Começar do zero").
+  - File objects (`documentFiles`) excluded — not serialisable. `hadDocumentFiles` flag saved instead.
+  - On resume: if `hadDocumentFiles === true` → show orange warning in documents step ("Por favor, selecione os arquivos novamente").
+  - On order confirmation: draft cleared automatically.
+- Build: TypeScript clean, 19 routes. Deployment: `dpl_HDaLLiQqzTX43w8wbPNvqyPSUGpV`.
+- Status: complete and deployed.

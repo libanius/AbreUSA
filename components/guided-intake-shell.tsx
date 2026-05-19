@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { persistOrder } from "@/lib/persist-order";
+import { saveDraft, loadDraft, clearDraft } from "@/lib/draft-storage";
 
 import {
   ConfirmationShell,
@@ -528,6 +529,8 @@ function StepFrame({
   onSelectOnboardingEntryMode,
   currentStep,
   totalSteps,
+  showDocReuploadWarning,
+  onDocReuploadWarningDismiss,
 }: {
   activeStep: FlowStep;
   businessActivity: BusinessActivityId | null;
@@ -599,6 +602,8 @@ function StepFrame({
   onSelectOnboardingEntryMode: (mode: OnboardingEntryMode) => void;
   currentStep: number;
   totalSteps: number;
+  showDocReuploadWarning?: boolean;
+  onDocReuploadWarningDismiss?: () => void;
 }) {
   const selectedLabel = useMemo(() => {
     return serviceOptions.find((service) => service.id === selectedService)
@@ -1061,6 +1066,27 @@ function StepFrame({
         title="Envie os documentos necessários"
       >
         <div className="grid gap-3">
+          {showDocReuploadWarning && (
+            <div className="rounded-lg border border-orange-200 bg-orange-50 p-4">
+              <div className="flex items-start justify-between gap-2">
+                <div>
+                  <p className="text-sm font-semibold text-orange-900">Documentos precisam ser reenviados</p>
+                  <p className="mt-1 text-sm text-orange-800">
+                    Você enviou documentos em uma sessão anterior, mas eles não puderam ser salvos no rascunho. Por favor, selecione os arquivos novamente.
+                  </p>
+                </div>
+                {onDocReuploadWarningDismiss && (
+                  <button
+                    onClick={onDocReuploadWarningDismiss}
+                    className="shrink-0 text-orange-500 hover:text-orange-700 text-lg leading-none"
+                    aria-label="Fechar aviso"
+                  >
+                    ×
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
           {onboardingEntryMode === "document_assisted" ? (
             <StatusMessage title="Documentos para facilitar o cadastro" tone="info">
               <p>
@@ -2661,6 +2687,9 @@ export function GuidedIntakeShell() {
   const [extractionError, setExtractionError] = useState<{ errorCode: string; message: string; details?: string } | null>(null);
   const [approvedOrderPayload, setApprovedOrderPayload] =
     useState<LocalOrderPayload | null>(null);
+  const [hasDraftPrompt, setHasDraftPrompt] = useState(false);
+  const [showDocReuploadWarning, setShowDocReuploadWarning] = useState(false);
+  const autoSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isDocumentAssisted = onboardingEntryMode === "document_assisted";
   const totalSteps = isDocumentAssisted ? 15 : 14;
   const progressItems = isDocumentAssisted
@@ -2727,6 +2756,49 @@ export function GuidedIntakeShell() {
       : activeStep === "entry_mode"
       ? "Modo"
       : "Serviço";
+
+  // Draft: check for existing draft on mount
+  useEffect(() => {
+    const draft = loadDraft();
+    if (draft && draft.activeStep && draft.activeStep !== "service" && draft.activeStep !== "confirmation") {
+      setHasDraftPrompt(true);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Draft: auto-save on state change (debounced 800ms)
+  useEffect(() => {
+    if (activeStep === "confirmation") return;
+    if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
+    autoSaveTimer.current = setTimeout(() => {
+      saveDraft({
+        activeStep,
+        selectedService,
+        onboardingEntryMode,
+        applicantContact,
+        llcName,
+        businessActivity,
+        customBusinessActivity,
+        memberCount,
+        memberData,
+        businessAddress,
+        businessAddressSameAsResidential,
+        registeredAgent,
+        einQuestions,
+        documents,
+        approvalConfirmed,
+        hadDocumentFiles: documentFiles.passport !== null || documentFiles.addressProof !== null,
+      });
+    }, 800);
+    return () => {
+      if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
+    };
+  }, [
+    activeStep, selectedService, onboardingEntryMode, applicantContact, llcName,
+    businessActivity, customBusinessActivity, memberCount, memberData,
+    businessAddress, businessAddressSameAsResidential, registeredAgent,
+    einQuestions, documents, approvalConfirmed, documentFiles,
+  ]);
 
   function handleSelectService(service: ServiceId) {
     setSelectedService(service);
@@ -2943,6 +3015,7 @@ export function GuidedIntakeShell() {
         ...payload,
         order: { ...payload.order, protocolNumber },
       });
+      clearDraft();
       setActiveStep("confirmation");
     } catch (err) {
       console.error("Supabase persist failed:", err);
@@ -3037,6 +3110,33 @@ export function GuidedIntakeShell() {
     }));
   }
 
+  function handleRestoreDraft() {
+    const draft = loadDraft();
+    if (!draft) return;
+    setSelectedService(draft.selectedService ?? null);
+    setOnboardingEntryMode(draft.onboardingEntryMode ?? null);
+    setApplicantContact(draft.applicantContact ?? { name: "", email: "", phone: "", residentialStreet: "", residentialCity: "", residentialState: "FL", residentialZip: "" });
+    setLlcName(draft.llcName ?? "");
+    setBusinessActivity(draft.businessActivity ?? null);
+    setCustomBusinessActivity(draft.customBusinessActivity ?? "");
+    setMemberCount(draft.memberCount ?? 1);
+    setMemberData(draft.memberData ?? [{ fullName: "", address: "", ownershipPercentage: "100" }]);
+    setBusinessAddress(draft.businessAddress ?? { street: "", city: "", state: "FL", zip: "" });
+    setBusinessAddressSameAsResidential(draft.businessAddressSameAsResidential ?? false);
+    setRegisteredAgent(draft.registeredAgent ?? { choice: null, name: "", address: "", city: "", state: "FL", zip: "" });
+    setEinQuestions(draft.einQuestions ?? { reasonForApplying: null, entityType: null, responsiblePartyName: "", responsiblePartyPassportNumber: "", startDate: "", fiscalClosingMonth: "" });
+    setDocuments(draft.documents ?? emptyDocumentCollection);
+    setApprovalConfirmed(draft.approvalConfirmed ?? false);
+    setActiveStep(draft.activeStep as FlowStep);
+    if (draft.hadDocumentFiles) setShowDocReuploadWarning(true);
+    setHasDraftPrompt(false);
+  }
+
+  function handleDiscardDraft() {
+    clearDraft();
+    setHasDraftPrompt(false);
+  }
+
   return (
     <div className="min-h-screen bg-muted/30">
       <ProgressHeader
@@ -3046,6 +3146,26 @@ export function GuidedIntakeShell() {
       />
       <main className="mx-auto flex w-full max-w-6xl flex-1 px-4 py-8 sm:px-6 lg:px-8">
         <div className="grid w-full gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
+          {hasDraftPrompt && (
+            <div className="col-span-full mb-2 rounded-lg border border-amber-200 bg-amber-50 p-4">
+              <p className="text-sm font-semibold text-amber-900">Você tem um rascunho salvo</p>
+              <p className="mt-1 text-sm text-amber-800">Deseja continuar de onde parou?</p>
+              <div className="mt-3 flex gap-3">
+                <button
+                  onClick={handleRestoreDraft}
+                  className="rounded-md bg-amber-700 px-4 py-1.5 text-sm font-medium text-white hover:bg-amber-800"
+                >
+                  Continuar rascunho
+                </button>
+                <button
+                  onClick={handleDiscardDraft}
+                  className="rounded-md border border-amber-300 px-4 py-1.5 text-sm font-medium text-amber-900 hover:bg-amber-100"
+                >
+                  Começar do zero
+                </button>
+              </div>
+            </div>
+          )}
           <StepFrame
             activeStep={activeStep}
             approvalConfirmed={approvalConfirmed}
@@ -3137,6 +3257,8 @@ export function GuidedIntakeShell() {
             selectedService={selectedService}
             currentStep={currentStep}
             totalSteps={totalSteps}
+            showDocReuploadWarning={showDocReuploadWarning}
+            onDocReuploadWarningDismiss={() => setShowDocReuploadWarning(false)}
           />
 
           <aside className="h-fit rounded-lg border bg-card p-5 shadow-sm">
