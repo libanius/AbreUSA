@@ -1,6 +1,7 @@
 import { getSupabaseServerClient } from "@/lib/supabase-server";
 import { createSupabaseRouteHandlerClient } from "@/lib/supabase-ssr";
 import { sendCorrectionEmail } from "@/lib/send-correction-email";
+import { sendApprovedEmail, sendSubmittedEmail, sendCompletedEmail } from "@/lib/send-status-email";
 
 export const runtime = "nodejs";
 
@@ -116,27 +117,28 @@ export async function PATCH(
     return Response.json({ error: auditError.message }, { status: 500 });
   }
 
-  // Fire-and-forget notification email when entering customer_reviewing
-  if (status === "customer_reviewing" && previousStatus !== "customer_reviewing") {
-    const orderRow = currentOrder as unknown as Record<string, unknown>;
-    const applicants = Array.isArray(orderRow.applicants) ? orderRow.applicants : [];
-    const applicant = (applicants[0] ?? {}) as Record<string, unknown>;
-    const llcs = Array.isArray(orderRow.llcs) ? orderRow.llcs : [];
-    const llc = (llcs[0] ?? {}) as Record<string, unknown>;
+  // Fire-and-forget notification emails on status transitions
+  const orderRow = currentOrder as unknown as Record<string, unknown>;
+  const applicants = Array.isArray(orderRow.applicants) ? orderRow.applicants : [];
+  const applicant = (applicants[0] ?? {}) as Record<string, unknown>;
+  const llcs = Array.isArray(orderRow.llcs) ? orderRow.llcs : [];
+  const llc = (llcs[0] ?? {}) as Record<string, unknown>;
+  const applicantEmail = typeof applicant.email === "string" ? applicant.email : null;
+  const applicantName = typeof applicant.name === "string" ? applicant.name : "Cliente";
+  const protocolNumber = typeof orderRow.protocol_number === "string" ? orderRow.protocol_number : id;
+  const llcName = typeof llc.legal_name === "string" ? llc.legal_name : "sua LLC";
 
-    const applicantEmail = typeof applicant.email === "string" ? applicant.email : null;
-    const applicantName = typeof applicant.name === "string" ? applicant.name : "Cliente";
-    const protocolNumber = typeof orderRow.protocol_number === "string" ? orderRow.protocol_number : id;
-    const llcName = typeof llc.legal_name === "string" ? llc.legal_name : "sua LLC";
+  if (applicantEmail) {
+    const emailParams = { to: applicantEmail, applicantName, protocolNumber, llcName };
 
-    if (applicantEmail) {
-      void sendCorrectionEmail({
-        to: applicantEmail,
-        applicantName,
-        protocolNumber,
-        llcName,
-        correctionNotes: correction_notes ?? null,
-      });
+    if (status === "customer_reviewing" && previousStatus !== "customer_reviewing") {
+      void sendCorrectionEmail({ ...emailParams, correctionNotes: correction_notes ?? null });
+    } else if (status === "approved" && previousStatus !== "approved") {
+      void sendApprovedEmail(emailParams);
+    } else if (status === "submitted" && previousStatus !== "submitted") {
+      void sendSubmittedEmail(emailParams);
+    } else if (status === "completed" && previousStatus !== "completed") {
+      void sendCompletedEmail(emailParams);
     }
   }
 

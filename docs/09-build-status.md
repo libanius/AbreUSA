@@ -8,9 +8,9 @@ Phase 11: Customer Dashboard Journey. P11-T01 through P11-T06 (plus correction n
 
 ## Last Completed Task
 
-Task ID: `P11-T06` + correction notes + automated correction email
+Task ID: Vercel Cron — automatic retention deletion
 
-Title: Customer correction workflow — with admin-written instructions.
+Title: Automated 90-day sensitive upload deletion via Vercel Cron — deployed 2026-05-19 (dpl_DFEovHc3TEUVF8wsq7MkqFqbviHb).
 
 Result:
 
@@ -38,8 +38,6 @@ Owner/operator selects. Candidates in priority order:
 
 1. Custom production domain (abre-usa.com or similar).
 2. AbreUSA-branded transactional email sender migration (away from Brightscale domain).
-3. Vercel Cron retention automation (auto-delete eligible sensitive uploads after 90 days).
-4. Automated email for other status transitions (e.g. `completed`, `approved`).
 
 ---
 
@@ -54,7 +52,9 @@ Owner/operator selects. Candidates in priority order:
 - Phase 9: P9-T01 through P9-T03 complete — AI-ready onboarding, OpenAI GPT-4o Vision OCR.
 - Phase 10: P10-T01 through P10-T06 complete — OCR wired, prefill, extraction review, robustness pipeline (sharp), production verified with AUS-2026-0020.
 - Phase 10 robustness fix: image normalization pipeline, HEIC/HEIF, PDF guidance, MIME allowlist expansion.
-  - Post-Phase 11 extraction fix (2026-05-18): full PDF + HEIC extraction pipeline deployed. heic-convert (pure JS) converts HEIC→JPEG before sharp; pdfjs-dist 3.x extracts text from PDFs for GPT-4o text extraction path. Blank/scanned PDFs (no text) return confidence=0 gracefully. Automated test suite (scripts/test-extraction.mjs) — 7/7 tests pass.
+  - Post-Phase 11 extraction fix (2026-05-18): full PDF + HEIC extraction pipeline deployed.
+  - Status email notifications (2026-05-18): `lib/send-status-email.ts` created with `sendApprovedEmail`, `sendSubmittedEmail`, `sendCompletedEmail`. Admin PATCH route fires appropriate email on status transition (approved, submitted, completed). Fire-and-forget, same pattern as correction email. Deployment: `dpl_2n3kLz7Ktpt1wPTb18pokjmDq3sN`.
+  - Vercel Cron retention automation (2026-05-19): `app/api/cron/delete-eligible-documents/route.ts` + `vercel.json` with `0 3 * * *` schedule. Processes up to 20 documents/run. `CRON_SECRET` added to Vercel env. Unauthorized requests return 401. Deployment: `dpl_DFEovHc3TEUVF8wsq7MkqFqbviHb`. `lib/send-status-email.ts` created with `sendApprovedEmail`, `sendSubmittedEmail`, `sendCompletedEmail`. Admin PATCH route fires appropriate email on status transition (approved, submitted, completed). Fire-and-forget, same pattern as correction email. Deployment: `dpl_2n3kLz7Ktpt1wPTb18pokjmDq3sN`. heic-convert (pure JS) converts HEIC→JPEG before sharp; pdfjs-dist 3.x extracts text from PDFs for GPT-4o text extraction path. Blank/scanned PDFs (no text) return confidence=0 gracefully. Automated test suite (scripts/test-extraction.mjs) — 7/7 tests pass.
 - Phase 11:
   - P11-T01: Customer dashboard lookup MVP (protocol + email, safe DTO).
   - P11-T02: Production deploy and verification.
@@ -93,6 +93,7 @@ Owner/operator selects. Candidates in priority order:
 - Document signed URLs (60 min): view and download.
 - Document retention: 90-day window for sensitive uploads, 1-year for generated forms.
 - Manual deletion workflow with audit events.
+- Vercel Cron retention automation: `/api/cron/delete-eligible-documents` runs daily at 03:00 UTC. Deletes up to 20 eligible `sensitive_upload` documents per run (retention_eligible_at ≤ now, deletion_status ≠ success). Records `document_deletion_attempted`, `document_deleted`, or `document_deletion_failed` audit events with `actor_type: system`. Protected by `CRON_SECRET`.
 - `ADMIN_EMAIL` env var protects admin routes from customer sessions.
 
 ### Customer Dashboard
@@ -107,6 +108,8 @@ Owner/operator selects. Candidates in priority order:
 
 ### Email
 - Resend transactional email: order confirmation to applicant after approval.
+- Automated correction email: sent when admin sets `customer_reviewing` (with correction notes, protocol, LLC name, dashboard link).
+- Automated status emails: sent to customer on `approved`, `submitted`, and `completed` transitions. Fire-and-forget, only fires on transition (not re-save).
 - Sender: `noreply@notifications.brightscalegroup.com` (temporary Brightscale domain).
 
 ### Infrastructure
@@ -122,7 +125,6 @@ Owner/operator selects. Candidates in priority order:
 
 - Custom production domain.
 - AbreUSA-branded email sender (temporary Brightscale sender in use).
-- Vercel Cron retention automation (manual deletion only — manual workflow implemented, automation deferred).
 - Admin pagination (MVP: low order volume assumed).
 - Customer uploading replacement documents.
 - Customer editing EIN details, members, or registered agent.
@@ -168,9 +170,8 @@ Read `AGENTS.md`, `/docs/START-HERE.md`, `/docs/07-roadmap.md`, and this file. P
 - Confirmation email verified in production: `AUS-2026-0014` received at `brightscalegroup@gmail.com`.
 - Custom domain deferred; controlled launch continues on Vercel URL.
 - AbreUSA-branded email sender deferred; Brightscale sender in use.
-- Manual document deletion implemented (P8-T11). Verify against a real eligible document before enabling widely.
-- Vercel Cron retention automation remains deferred until manual deletion is validated in production.
-- OCR: full pipeline — images (JPEG, JPG, PNG, GIF, WebP) and HEIC/HEIF (via heic-convert, pure JS, no libheif required). PDFs: text extracted via pdfjs-dist 3.x (legacy/build); if no extractable text (scanned PDF), returns confidence=0 gracefully. GPT-4o Vision used for image inputs only.
+- Manual document deletion (P8-T11) and Vercel Cron automation (daily 03:00 UTC) both implemented. Verify against a real eligible document to confirm end-to-end cron flow.
+- OCR: full pipeline deployed to production (2026-05-18, dpl_8ww61dyucHw2TUeLMqYm2GXCanDk). Images (JPEG, JPG, PNG, GIF, WebP) and HEIC/HEIF (via heic-convert, pure JS, no libheif required). PDFs: text extracted via pdfjs-dist 3.x (legacy/build); if no extractable text (scanned PDF), returns confidence=0 gracefully. GPT-4o Vision used for image inputs only.
 - Admin login has no rate limiting or brute-force protection (acceptable for MVP internal use).
 - Node/npm not in default PATH on this machine — use `PATH=/usr/local/opt/node@22/bin:$PATH` for local shell commands.
 - Project path contains a curly apostrophe (U+2019) — use Python subprocess for shell operations; avoid direct shell `cd` into the path.

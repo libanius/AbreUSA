@@ -2334,3 +2334,33 @@ Post-Phase 11 extraction pipeline fix (2026-05-18):
   - Automated test suite: `scripts/test-extraction.mjs` — 7 tests, all pass locally.
 - Files changed: `lib/preprocess-document.ts`, `lib/extract-document.ts`, `app/api/extract-document/route.ts`, `next.config.ts`, `components/guided-intake-shell.tsx`.
 - Status: complete. Awaiting production deployment.
+
+
+---
+
+Status email notifications (2026-05-18):
+
+- Task: Automated transactional emails for customer-facing status transitions.
+- Scope: `approved`, `submitted`, `completed` statuses.
+- Files: `lib/send-status-email.ts` (new), `app/api/admin/orders/[id]/route.ts` (updated).
+- Pattern: fire-and-forget, transition-only (guard: `previousStatus !== newStatus`), same Resend setup as correction email.
+- Emails:
+  - `approved`: "Seu pedido foi aprovado pela nossa equipe. Estamos preparando para envio ao Estado."
+  - `submitted`: "Sua LLC foi enviada ao Estado da Florida. Aguarde aprovacao."
+  - `completed`: "Parabens! Sua LLC esta oficialmente registrada."
+- Build: TypeScript clean, 18 routes. Deployment: `dpl_2n3kLz7Ktpt1wPTb18pokjmDq3sN`.
+- Status: complete and deployed.
+
+
+---
+
+Vercel Cron retention automation (2026-05-19):
+
+- Task: Automatic 90-day deletion of sensitive uploads via Vercel Cron.
+- Files: `app/api/cron/delete-eligible-documents/route.ts` (new), `vercel.json` (new).
+- Schedule: `0 3 * * *` (03:00 UTC daily).
+- Logic: queries documents where `retention_category = sensitive_upload`, `retention_eligible_at <= now`, `deletion_status != success`, `retention_status != deleted`. Processes up to 20 per run. Records 3 audit events per document: attempt, success/failure.
+- Auth: `CRON_SECRET` env var; Vercel sends `Authorization: Bearer <secret>` header. Returns 401 if missing or wrong.
+- `CRON_SECRET` added to Vercel production env and `.env.local`.
+- TypeScript clean, 19 routes. Deployment: `dpl_DFEovHc3TEUVF8wsq7MkqFqbviHb`.
+- Status: complete and deployed.
