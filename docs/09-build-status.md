@@ -2,199 +2,188 @@
 
 ## Current Phase
 
-Phase 11: Customer Dashboard Journey. All tasks through P11-T06 (plus correction flow + document upload + admin notifications + automated test suite) are complete, deployed, and production-verified.
+Phase 12: Platform Quality, Externalised Content & Cross-Device Draft. All tasks complete, deployed, and production-verified on 2026-05-19.
 
 ---
 
 ## Last Completed Task
 
-Task ID: Cross-Device Draft via Supabase
+Task ID: P12-T03 — Cross-Device Draft via Supabase
 
-Title: `onboarding_drafts` table + `/api/draft` GET/PUT/DELETE + server sync + banner — deployed 2026-05-19.
+Title: `onboarding_drafts` table + `/api/draft` GET/PUT/DELETE + server sync on auto-save + "Recuperar rascunho" banner. Deployed 2026-05-19 (`dpl_FAk6M1cnX29C3z89zJ8Th5bbtB8b`).
 
 Result:
 
-- `supabase/schema.sql`: `onboarding_drafts (email PK, draft_data jsonb, updated_at)`. RLS enabled; anon/authenticated revoked.
-- `app/api/draft/route.ts`: GET (fetch draft by email), PUT (upsert), DELETE (clear). Service-role client. Normalizes email to lowercase.
-- `lib/draft-storage.ts`: `syncDraftToServer` (fire-and-forget PUT), `loadDraftFromServer` (GET), `clearServerDraft` (DELETE).
-- `components/guided-intake-shell.tsx`: server sync on every auto-save when email is valid; useEffect checks server 1s after valid email entered at `applicant_contact` step; blue "Rascunho salvo encontrado" banner with Recuperar/Ignorar; clears server draft on order confirmation.
-- Test suite: 56 tests, 6 files (12 new: `draft-api.test.ts` covering GET/PUT/DELETE happy paths and error cases).
+- `supabase/migrations/20260519120000_onboarding_drafts.sql`: table `onboarding_drafts (email PK, draft_data jsonb, updated_at)`. RLS enabled; anon/authenticated revoked. Pushed to production via `supabase db push`.
+- `lib/supabase-server.ts`: `onboarding_drafts` table added to `AbreUsaDatabase` type.
+- `app/api/draft/route.ts`: GET (fetch draft by email), PUT (upsert), DELETE (clear). Service-role client. Email normalized to lowercase. Handles invalid email, invalid JSON, DB errors.
+- `lib/draft-storage.ts`: `syncDraftToServer` (fire-and-forget PUT), `loadDraftFromServer` (GET + version check), `clearServerDraft` (DELETE).
+- `components/guided-intake-shell.tsx`: (a) auto-save also syncs to server when email is valid; (b) 1s debounced useEffect checks server when email becomes valid at `applicant_contact` step; (c) blue banner "Rascunho salvo encontrado" with Recuperar/Ignorar; (d) order confirmation clears server draft.
+- `__tests__/draft-api.test.ts`: 12 new tests (GET valid/invalid/not-found/found/normalizes, PUT valid/invalid-email/invalid-draft/invalid-JSON/db-error, DELETE valid/invalid). All pass.
+- Test suite: 56 tests, 6 files — all passing.
 
 ---
 
-## Previous Last Completed Task
+## Phase 12 Completed Tasks
 
-Task ID: Automated Test Suite + Document Upload Route
-
-Title: Vitest test suite (44 tests, 5 files, all passing) + `POST /api/customer/orders/[id]/documents` route — deployed 2026-05-19 (dpl_CXTXY5hLGL8xJqygw3c1nNSG2XpF).
-
-Result:
-
-- `POST /api/customer/orders/[id]/documents`: session auth + order status check (`customer_reviewing`) + email ownership → validates MIME type → uploads to Supabase storage (`{orderId}/{doc_type}_r{timestamp}.{ext}`) → inserts document record with 90-day retention → fires admin email notification.
-- Automated test suite: 44 tests, 5 test files (preprocess-document, draft-storage, send-status-email, extract-document, customer-documents), all passing.
-- `extract-document/route.ts`: restored `pdf_requires_image` check; updated to pass `null` for text params to match new 6-arg `extractDocuments` signature.
-- `__tests__/helpers/order-documents-route.ts`: helper re-export resolving `[id]` path for vitest.
-- Test infrastructure: vitest v4.1.6, plain-object request mocks, `vi.fn()` mocks for Supabase/auth. 56 tests, 6 files.
+- **P12-T01** — Automated test suite (44 tests, 5 files): `preprocess-document`, `draft-storage`, `send-status-email`, `extract-document`, `customer-documents`. Restored `pdf_requires_image` check in `extract-document/route.ts`; updated to 6-arg `extractDocuments` call; `__tests__/helpers/order-documents-route.ts` re-export bridge for `[id]` path resolution.
+- **P12-T02** — Assistente Virtual com instruções externalizadas: `content/assistant-instructions.md` (identidade, tom, escopo, conhecimento técnico, FAQs, regras). `app/api/chat-assistant/route.ts` lê via `fs.readFileSync`. `next.config.ts` com `outputFileTracingIncludes` para bundling no Vercel.
+- **P12-T03** — Cross-device draft via Supabase (descrito acima).
 
 ---
 
 ## Current Task
 
-None. Awaiting next owner/operator priority.
+None. Awaiting Phase 13 priority selection.
 
 ---
 
 ## Next Task
 
-Owner/operator selects. Candidates in priority order:
+Owner/operator selects domain to unlock Phase 13. Two tasks are blocked on the same decision:
 
-1. Custom production domain (abre-usa.com or similar).
-2. AbreUSA-branded transactional email sender migration (away from Brightscale domain).
+1. **Custom production domain** — configure `abreusa.com` (or chosen domain) in Vercel + update Supabase Auth redirect URLs. No code required.
+2. **AbreUSA-branded email sender** — update `FROM` address in `lib/send-status-email.ts` (1 line) + verify domain in Resend (DNS TXT/CNAME). Code is ready; blocked on domain.
+
+Both unlock together once the owner/operator confirms the target domain.
 
 ---
 
-## Completed Tasks
+## Completed Tasks (all phases)
 
 - App Spine approved as official source of truth.
-- Phases 1–5 complete (planning, foundation, UI scaffold, step flow, review/approval).
-- Phase 6: P6-T01 through P6-T09 complete.
-- Phase 7: P7-T01 through P7-T05 complete — RLS, storage lockdown, service-role enforcement.
-- Phase 8: P8-T01 through P8-T14 complete — Resend email, admin portal, retention metadata, audit log, manual deletion, production launch (AUS-2026-0014 verified).
-- Phase 8.5: P8.5-T01 through P8.5-T04 complete — UX cleanup, address reuse, production redeploy.
-- Phase 9: P9-T01 through P9-T03 complete — AI-ready onboarding, OpenAI GPT-4o Vision OCR.
-- Phase 10: P10-T01 through P10-T06 complete — OCR wired, prefill, extraction review, robustness pipeline (sharp), production verified with AUS-2026-0020.
-- Phase 10 robustness fix: image normalization pipeline, HEIC/HEIF, PDF guidance, MIME allowlist expansion.
-  - Post-Phase 11 extraction fix (2026-05-18): full PDF + HEIC extraction pipeline deployed.
-  - Status email notifications (2026-05-18): `lib/send-status-email.ts` created with `sendApprovedEmail`, `sendSubmittedEmail`, `sendCompletedEmail`. Admin PATCH route fires appropriate email on status transition (approved, submitted, completed). Fire-and-forget, same pattern as correction email. Deployment: `dpl_2n3kLz7Ktpt1wPTb18pokjmDq3sN`.
-  - Vercel Cron retention automation (2026-05-19): `app/api/cron/delete-eligible-documents/route.ts` + `vercel.json` with `0 3 * * *` schedule. Processes up to 20 documents/run. `CRON_SECRET` added to Vercel env. Unauthorized requests return 401. Deployment: `dpl_DFEovHc3TEUVF8wsq7MkqFqbviHb`.
-  - Onboarding draft / resume (2026-05-19): `lib/draft-storage.ts` + auto-save useEffect (800ms debounce) + resume banner + document re-upload warning. localStorage, same-browser scope. Deployment: `dpl_HDaLLiQqzTX43w8wbPNvqyPSUGpV`. `app/api/cron/delete-eligible-documents/route.ts` + `vercel.json` with `0 3 * * *` schedule. Processes up to 20 documents/run. `CRON_SECRET` added to Vercel env. Unauthorized requests return 401. Deployment: `dpl_DFEovHc3TEUVF8wsq7MkqFqbviHb`. `lib/send-status-email.ts` created with `sendApprovedEmail`, `sendSubmittedEmail`, `sendCompletedEmail`. Admin PATCH route fires appropriate email on status transition (approved, submitted, completed). Fire-and-forget, same pattern as correction email. Deployment: `dpl_2n3kLz7Ktpt1wPTb18pokjmDq3sN`. heic-convert (pure JS) converts HEIC→JPEG before sharp; pdfjs-dist 3.x extracts text from PDFs for GPT-4o text extraction path. Blank/scanned PDFs (no text) return confidence=0 gracefully. Automated test suite (scripts/test-extraction.mjs) — 7/7 tests pass.
-- Phase 11:
+- Phases 1–5: planning, foundation, UI scaffold, step flow, review/approval.
+- Phase 6 (P6-T01–T09): full onboarding flow, persistence, approval, confirmation.
+- Phase 7 (P7-T01–T05): RLS, storage lockdown, service-role enforcement.
+- Phase 8 (P8-T01–T14): Resend email, admin portal, retention metadata, audit log, manual deletion, production launch (AUS-2026-0014 verified).
+- Phase 8.5 (P8.5-T01–T04): UX cleanup, address reuse, production redeploy.
+- Phase 9 (P9-T01–T03): AI-ready onboarding, OpenAI GPT-4o Vision OCR.
+- Phase 10 (P10-T01–T06): OCR wired, prefill, extraction review, robustness pipeline (sharp), HEIC/HEIF, PDF text extraction, production verified (AUS-2026-0020).
+- Phase 11 (P11-T01–T06 + enhancements):
   - P11-T01: Customer dashboard lookup MVP (protocol + email, safe DTO).
   - P11-T02: Production deploy and verification.
   - P11-T03: Rate limiting (IP + lookup tuple, Supabase RPC).
-  - P11-T04: Full authenticated customer account — signup, login, password reset, email verification, session-based dashboard.
+  - P11-T04: Full authenticated customer account (signup, login, password reset, email verification, session-based dashboard).
   - P11-T05: Customer document download via 60s signed URL with ownership check.
-  - P11-T06: Customer correction workflow — admin sets `customer_reviewing`, writes correction notes; customer corrects safe fields; status returns to `ready_for_review` with audit event.
+  - P11-T06: Customer correction workflow (admin sets `customer_reviewing` + correction notes; customer corrects safe fields; status → `ready_for_review` + audit event).
+  - Post-P11: Status email notifications (`sendApprovedEmail`, `sendSubmittedEmail`, `sendCompletedEmail`) on admin status transitions. Deployed `dpl_2n3kLz7Ktpt1wPTb18pokjmDq3sN`.
+  - Post-P11: Vercel Cron retention automation (`/api/cron/delete-eligible-documents`, daily 03:00 UTC, up to 20 docs/run, protected by `CRON_SECRET`). Deployed `dpl_DFEovHc3TEUVF8wsq7MkqFqbviHb`.
+  - Post-P11: `POST /api/customer/orders/[id]/documents` — customer document upload during correction (session auth + status check + MIME validation + Supabase storage + DB insert + admin notification).
+- Phase 12 (P12-T01–T03): automated test suite (56 tests), externalised assistant instructions, cross-device draft via Supabase. Deployed `dpl_FAk6M1cnX29C3z89zJ8Th5bbtB8b`.
 
 ---
 
 ## What Is Implemented
 
 ### Onboarding Draft / Resume
-- `lib/draft-storage.ts`: `saveDraft`, `loadDraft`, `clearDraft` (localStorage key `abreusa_onboarding_draft`, versioned). Also: `syncDraftToServer`, `loadDraftFromServer`, `clearServerDraft` (fire-and-forget fetch wrappers for `/api/draft`).
-- Auto-save: debounced 800ms useEffect saves all serialisable form state on every change — also syncs to Supabase server when email is known.
-- Resume banner (local): shown on mount if localStorage draft exists with step beyond "service" — two actions: "Continuar rascunho" or "Começar do zero".
-- Resume banner (cross-device): shown in `applicant_contact` step when a server draft is found for the entered email — blue banner with "Recuperar" / "Ignorar".
-- Document re-upload warning: orange alert shown in the documents step when the customer had files in the previous session (`hadDocumentFiles: true`), with dismiss button.
-- Draft cleared (local + server) automatically on successful order confirmation.
-- Does NOT persist actual `File` objects — customer must re-select documents on resume.
-- `app/api/draft/route.ts`: GET/PUT/DELETE. Service-role. Email normalized to lowercase. `onboarding_drafts` table (RLS on, anon/authenticated revoked).
+- `lib/draft-storage.ts`: `saveDraft`, `loadDraft`, `clearDraft` (localStorage, key `abreusa_onboarding_draft`, versioned). `syncDraftToServer`, `loadDraftFromServer`, `clearServerDraft` (fire-and-forget fetch wrappers for `/api/draft`).
+- Auto-save: debounced 800ms useEffect on every state change — also syncs to Supabase when email is valid.
+- Resume banner (same device): shown on mount if localStorage draft exists beyond "service" step. Actions: "Continuar rascunho" / "Começar do zero".
+- Resume banner (cross-device): shown at `applicant_contact` step when server draft found for entered email. Actions: "Recuperar" / "Ignorar". Blue banner, distinct from the amber local-draft banner.
+- Document re-upload warning: orange alert in documents step when `hadDocumentFiles: true`. Dismiss button.
+- Draft cleared (localStorage + Supabase) on successful order confirmation.
+- File objects not persisted — customer must re-select documents on resume.
+- `app/api/draft/route.ts`: GET/PUT/DELETE. Service-role. Email normalized to lowercase.
+- `supabase/migrations/20260519120000_onboarding_drafts.sql`: `onboarding_drafts` table. RLS on; anon/authenticated revoked.
 
 ### Onboarding Flow
 - 15-step `document_assisted` path; 14-step `manual` path.
-- Step 3 (doc_assisted): document upload (passport + address proof); EXIF auto-rotation, JPEG normalization, HEIC/HEIF support via sharp.
-- Step 4 (doc_assisted): extraction review — GPT-4o Vision OCR, editable pre-filled fields, fallback on failure.
-- Step 5 (doc_assisted): applicant contact pre-filled from extraction.
-- Steps 6–12 (doc_assisted): LLC data with stepOffset = 2.
-- Step 9: member/owner checkbox pre-fills from applicant contact.
-- Step 12: EIN responsible party checkbox pre-fills from primary member.
+- Document upload with EXIF auto-rotation, JPEG normalization, HEIC/HEIF (heic-convert), PDF (pdfjs-dist text extraction).
+- GPT-4o Vision OCR → extraction review → editable pre-fill.
+- Member/owner and EIN responsible-party checkbox pre-fills.
 - Approval step: loading state, fail-closed, retry on error.
 - Confirmation screen links to `/dashboard` with protocol prefilled.
 
+### Virtual Assistant
+- `app/api/chat-assistant/route.ts`: streams GPT-4o responses with form context injected per step.
+- `content/assistant-instructions.md`: editable training file (identity, role, tone, scope, technical knowledge, 8 FAQs, behavior rules). Read at runtime via `fs.readFileSync`. Included in Vercel bundle via `outputFileTracingIncludes`.
+
 ### Persistence
-- Server-side `/api/orders` route (service-role) persists: `orders`, `applicants`, `llcs`, `members`, `registered_agents`, `ein_details`, `generated_forms`, `documents`.
-- Private Supabase `documents` storage bucket.
-- RLS enabled on all 8 order tables; anon/authenticated roles revoked.
-- Phase 9/10 fields: entry mode, extraction status, extracted data, confidence, extraction errors, user confirmation, agent summary, missing information flags.
+- `/api/orders` (service-role): persists `orders`, `applicants`, `llcs`, `members`, `registered_agents`, `ein_details`, `generated_forms`, `documents`.
+- Private Supabase `documents` storage bucket. RLS on all 8 order tables; anon/authenticated revoked.
 - `correction_notes` column on `orders`.
 
 ### Admin Portal
 - Supabase Auth login at `/admin/login`.
-- Order list at `/admin/orders` (newest first, with applicant data).
-- Full order detail at `/admin/orders/[id]`: applicant, LLC, members, registered agent, EIN, forms, documents with signed URLs.
-- Status dropdown: auto-saves for all statuses; when `customer_reviewing` is selected, reveals textarea for correction notes (saved alongside status).
-- Document signed URLs (60 min): view and download.
-- Document retention: 90-day window for sensitive uploads, 1-year for generated forms.
-- Manual deletion workflow with audit events.
-- Vercel Cron retention automation: `/api/cron/delete-eligible-documents` runs daily at 03:00 UTC. Deletes up to 20 eligible `sensitive_upload` documents per run (retention_eligible_at ≤ now, deletion_status ≠ success). Records `document_deletion_attempted`, `document_deleted`, or `document_deletion_failed` audit events with `actor_type: system`. Protected by `CRON_SECRET`.
-- `ADMIN_EMAIL` env var protects admin routes from customer sessions.
+- Order list (`/admin/orders`): newest first, with applicant data.
+- Order detail (`/admin/orders/[id]`): full data + signed document URLs (60 min) + status dropdown + correction notes textarea.
+- Status transitions fire appropriate emails (approved → `sendApprovedEmail`; submitted → `sendSubmittedEmail`; completed → `sendCompletedEmail`; customer_reviewing → correction email with notes).
+- Manual document deletion with audit events.
+- Vercel Cron: `/api/cron/delete-eligible-documents` daily 03:00 UTC — deletes up to 20 eligible `sensitive_upload` documents/run, records audit events. Protected by `CRON_SECRET`.
+- `ADMIN_EMAIL` env var guards admin routes from customer sessions.
 
 ### Customer Dashboard
 - `/dashboard/login`, `/dashboard/register`, `/dashboard/reset-password`, `/dashboard/update-password`: full Supabase Auth email+password flow.
 - `/auth/confirm`: OTP token exchange for signup confirmation and password recovery.
-- Authenticated `/dashboard`: session-based, fetches all orders by email, no re-entry of credentials.
-- Unauthenticated fallback: protocol + email lookup with rate limiting (IP + tuple, Supabase RPC).
-- Safe customer DTO: protocol, service, status, dates, applicant, LLC, document checklist, form checklist, timeline. No storage paths, signed URLs, or admin notes exposed.
-- "Ver documento" button (authenticated only): fetches 60s signed URL from `/api/customer/documents/[id]/signed-url`, opens in new tab. Deleted documents show no button; direct API call returns 410.
-- Automated correction email: when admin sets `customer_reviewing`, Resend sends a Portuguese email to the applicant with protocol, LLC name, correction notes (if any), and dashboard link. Fire-and-forget; only fires on transition into the status.
-- Correction form (authenticated, `customer_reviewing` status only): orange banner, shows admin correction notes prominently, editable fields (phone, residential address, LLC name/activity/address), submit → `ready_for_review` + audit event.
+- Authenticated `/dashboard`: session-based, all orders by email, no credential re-entry.
+- Unauthenticated fallback: protocol + email lookup with IP + tuple rate limiting (Supabase RPC).
+- Safe customer DTO: protocol, service, status, dates, applicant, LLC, document checklist, form checklist, timeline.
+- "Ver documento" (authenticated only): 60s signed URL from `/api/customer/documents/[id]/signed-url`. Deleted docs show no button; direct call returns 410.
+- Correction form (`customer_reviewing` status, authenticated): orange banner + admin notes + editable fields (phone, residential address, LLC name/activity/address) + document re-upload (`POST /api/customer/orders/[id]/documents`) → `ready_for_review` + audit event.
 
 ### Email
-- Resend transactional email: order confirmation to applicant after approval.
-- Automated correction email: sent when admin sets `customer_reviewing` (with correction notes, protocol, LLC name, dashboard link).
-- Automated status emails: sent to customer on `approved`, `submitted`, and `completed` transitions. Fire-and-forget, only fires on transition (not re-save).
-- Sender: `noreply@notifications.brightscalegroup.com` (temporary Brightscale domain).
+- Order confirmation after approval.
+- Correction notification when admin sets `customer_reviewing`.
+- Status emails on `approved`, `submitted`, `completed` transitions.
+- Sender: `noreply@notifications.brightscalegroup.com` (temporary; migration pending).
+
+### Test Suite
+- vitest v4.1.6. 56 tests, 6 files: `preprocess-document`, `draft-storage`, `send-status-email`, `extract-document`, `customer-documents`, `draft-api`. All passing.
 
 ### Infrastructure
-- Next.js 16 App Router + React 19 + Tailwind 4.
-- Supabase (Auth, Postgres, Storage).
-- Vercel (deployment, production alias `https://abre-usa.vercel.app`).
-- `proxy.ts` middleware: admin route protection, customer redirect logic.
+- Next.js 16 App Router + React 19 + Tailwind 4 + Supabase + Vercel + OpenAI GPT-4o.
+- `proxy.ts` middleware: admin route protection + customer redirect logic.
 - `/progress/index.html`: bilingual stakeholder progress dashboard.
 
 ---
 
 ## What Is NOT Implemented
 
-- Custom production domain.
-- AbreUSA-branded email sender (temporary Brightscale sender in use).
-- Admin pagination (MVP: low order volume assumed).
-- Customer uploading replacement documents.
-- Customer editing EIN details, members, or registered agent.
-- Admin-customer messaging thread within the portal.
-- Social auth (Google, GitHub).
-- Draft resume (server-side / cross-device) — IMPLEMENTED: `onboarding_drafts` table + `/api/draft` route + server sync on auto-save + banner on new device.
+- **Custom production domain** — awaiting owner domain decision. No code required.
+- **AbreUSA-branded email sender** — code ready (1-line change); awaiting domain verification in Resend.
+- Admin pagination (MVP: low order volume; not a priority).
+- Customer editing EIN details, members, or registered agent (Post-MVP).
+- Admin-customer messaging thread (Post-MVP).
+- Social auth — Google, GitHub (Post-MVP).
 - EIN-only and Registered Agent-only dedicated flows (Post-MVP).
 - Payment processing (Post-MVP).
 - Multi-state LLC formation (Post-MVP).
 - Operating Agreement generation (Post-MVP).
-
 
 ---
 
 ## Exact Next Step To Resume
 
 ### Current Phase
-Phase 11 complete (P11-T01 through P11-T06 + enhancement). Awaiting next phase or priority selection.
+Phase 12 complete. Awaiting Phase 13 priority selection.
 
 ### Last Completed Task
-`Onboarding Enhancement` — Chat assistant (Modelo B), localStorage draft save/resume, and doc re-upload warning. Deployed 2026-05-19.
+P12-T03 — Cross-device draft via Supabase. 56 tests passing. Deployed 2026-05-19 (`dpl_FAk6M1cnX29C3z89zJ8Th5bbtB8b`).
 
 ### Current Task
 None.
 
 ### Next Action
-Owner/operator selects next priority. Top candidate: automated status-triggered email to customer when admin sets `customer_reviewing` (so customer is notified immediately without checking the dashboard manually).
+Owner/operator confirms target domain (e.g. `abreusa.com`). Phase 13 starts immediately:
+1. Vercel: add custom domain → DNS records provided by Vercel → propagate.
+2. Supabase Auth: update Site URL + Allowed Redirect URLs to new domain.
+3. Resend: add and verify same domain → update `FROM` in `lib/send-status-email.ts` → deploy.
 
 Resume command:
-Read `AGENTS.md`, `/docs/START-HERE.md`, `/docs/07-roadmap.md`, and this file. P11-T06 with correction notes is complete and verified. Choose the next priority and update the App Spine before implementation.
+Read `AGENTS.md`, `docs/START-HERE.md`, `docs/07-roadmap.md`, and this file. Confirm domain. Execute Phase 13 tasks in order above.
 
 ---
 
 ## Blockers And Risks
 
-- Production alias: `https://abre-usa.vercel.app`. Current production deployment: `dpl_9GrzP7cT62kDLu42dr9QmtSDkdE9`.
-- Supabase Auth Site URL: `https://abre-usa.vercel.app` (corrected 2026-05-14; was `http://localhost:3000`).
-- `https://abre-usa.vercel.app/auth/confirm` in Supabase Allowed Redirect URLs.
-- `http://localhost:3000/**` in Supabase Redirect URLs for local dev.
-- `ADMIN_EMAIL=contact@brightscalegroup.com` set in `.env.local` and Vercel production.
-- Admin user: email-confirmed, owner/operator verified access.
-- Vercel account: `abreusaonline-7459`. Project linked.
-- Confirmation email verified in production: `AUS-2026-0014` received at `brightscalegroup@gmail.com`.
-- Custom domain deferred; controlled launch continues on Vercel URL.
+- **Production alias**: `https://abre-usa.vercel.app`. Current production deployment: `dpl_FAk6M1cnX29C3z89zJ8Th5bbtB8b`.
+- Supabase Auth Site URL: `https://abre-usa.vercel.app`. Allowed Redirect: `https://abre-usa.vercel.app/auth/confirm`. Local dev: `http://localhost:3000/**`.
+- `ADMIN_EMAIL=contact@brightscalegroup.com` in `.env.local` and Vercel production.
+- Admin user: email-confirmed, owner/operator verified.
+- Vercel account: `abreusaonline-7459`. Supabase project: `wihfneccjwmtxzvivfzf`.
+- Custom domain deferred; controlled launch on Vercel URL.
 - AbreUSA-branded email sender deferred; Brightscale sender in use.
-- Manual document deletion (P8-T11) and Vercel Cron automation (daily 03:00 UTC) both implemented. Verify against a real eligible document to confirm end-to-end cron flow.
-- OCR: full pipeline deployed to production (2026-05-18, dpl_8ww61dyucHw2TUeLMqYm2GXCanDk). Images (JPEG, JPG, PNG, GIF, WebP) and HEIC/HEIF (via heic-convert, pure JS, no libheif required). PDFs: text extracted via pdfjs-dist 3.x (legacy/build); if no extractable text (scanned PDF), returns confidence=0 gracefully. GPT-4o Vision used for image inputs only.
-- Admin login has no rate limiting or brute-force protection (acceptable for MVP internal use).
-- Node/npm not in default PATH on this machine — use `PATH=/usr/local/opt/node@22/bin:$PATH` for local shell commands.
-- Project path contains a curly apostrophe (U+2019) — use Python subprocess for shell operations; avoid direct shell `cd` into the path.
+- Vercel Cron (daily 03:00 UTC) implemented but not yet verified against a real eligible document in production.
+- Admin login has no rate limiting (acceptable for MVP internal use).
+- Node/npm not in default PATH — use `PATH=/usr/local/opt/node@22/bin:$PATH`.
+- Project path contains curly apostrophe (U+2019) — use Python subprocess for shell operations.

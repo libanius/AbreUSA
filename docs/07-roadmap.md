@@ -2381,3 +2381,49 @@ Onboarding draft / resume (2026-05-19):
   - On order confirmation: draft cleared automatically.
 - Build: TypeScript clean, 19 routes. Deployment: `dpl_HDaLLiQqzTX43w8wbPNvqyPSUGpV`.
 - Status: complete and deployed.
+
+
+## Phase 12: Platform Quality, Externalised Content & Cross-Device Draft
+
+Status: Complete. All tasks deployed on 2026-05-19 (`dpl_FAk6M1cnX29C3z89zJ8Th5bbtB8b`).
+
+Purpose:
+
+Raise platform quality with a comprehensive automated test suite, decouple the virtual assistant's training content from code, and extend the draft-save system to work across devices via Supabase.
+
+Deliverables:
+
+- Automated test suite (vitest v4.1.6): 56 tests, 6 files — `preprocess-document`, `draft-storage`, `send-status-email`, `extract-document`, `customer-documents`, `draft-api`.
+- `content/assistant-instructions.md`: editable training file for the virtual assistant (identity, role, tone, scope, technical knowledge, FAQs, behavior rules). Read at runtime via `fs.readFileSync`. Bundled in Vercel via `outputFileTracingIncludes`.
+- Cross-device draft: `onboarding_drafts` Supabase table (RLS on, service-role only). `/api/draft` GET/PUT/DELETE route. Auto-sync on every localStorage save when email is known. 1s-debounced server check at `applicant_contact` step. Blue "Rascunho salvo encontrado" banner with Recuperar/Ignorar. Draft cleared on confirmation.
+
+Completed tasks:
+
+- P12-T01: Automated test suite — 56 tests, 6 files, all passing. Restored `pdf_requires_image` check in `extract-document/route.ts`; `[id]` path resolution via helper re-export.
+- P12-T02: Externalised assistant instructions — `content/assistant-instructions.md` read at runtime; `outputFileTracingIncludes` in `next.config.ts`.
+- P12-T03: Cross-device draft via Supabase — `onboarding_drafts` table, `/api/draft` route, shell integration, 12 new tests.
+
+---
+
+## Phase 13: Domain & Email Branding
+
+Status: Awaiting owner/operator domain decision.
+
+Purpose:
+
+Replace the temporary `abre-usa.vercel.app` URL and `noreply@notifications.brightscalegroup.com` sender with AbreUSA-branded equivalents.
+
+Blocked on:
+
+- Owner/operator selecting and confirming target domain (e.g. `abreusa.com`).
+
+Tasks (executable once domain is confirmed):
+
+- P13-T01: Configure custom domain in Vercel → set DNS records → verify propagation → update Supabase Auth Site URL and Allowed Redirect URLs.
+- P13-T02: Verify domain in Resend → update `FROM` in `lib/send-status-email.ts` → deploy → verify email delivery on new sender.
+
+Exit criteria:
+
+- `https://[domain]` serves the app without redirect from Vercel URL.
+- All transactional emails arrive from `noreply@notifications.[domain]`.
+- Supabase Auth flows (signup confirmation, password reset) use the new domain in redirect URLs.
