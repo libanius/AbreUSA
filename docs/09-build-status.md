@@ -2,25 +2,32 @@
 
 ## Current Phase
 
-Production incident remediation after Phase 12. Phase 13 remains blocked on the domain decision.
+Phase 12 complete. The mobile upload production incident is closed. Phase 13 remains blocked on the domain decision.
 
 ---
 
 ## Last Completed Task
 
-Task ID: P12-T03 — Cross-Device Draft via Supabase
+Task ID: `INC-2026-06-08-01`
 
-Title: `onboarding_drafts` table + `/api/draft` GET/PUT/DELETE + server sync on auto-save + "Recuperar rascunho" banner. Deployed 2026-05-19 (`dpl_FAk6M1cnX29C3z89zJ8Th5bbtB8b`).
+Title: Prevent mobile document uploads from exceeding the Vercel function payload limit.
 
 Result:
 
-- `supabase/migrations/20260519120000_onboarding_drafts.sql`: table `onboarding_drafts (email PK, draft_data jsonb, updated_at)`. RLS enabled; anon/authenticated revoked. Pushed to production via `supabase db push`.
-- `lib/supabase-server.ts`: `onboarding_drafts` table added to `AbreUsaDatabase` type.
-- `app/api/draft/route.ts`: GET (fetch draft by email), PUT (upsert), DELETE (clear). Service-role client. Email normalized to lowercase. Handles invalid email, invalid JSON, DB errors.
-- `lib/draft-storage.ts`: `syncDraftToServer` (fire-and-forget PUT), `loadDraftFromServer` (GET + version check), `clearServerDraft` (DELETE).
-- `components/guided-intake-shell.tsx`: (a) auto-save also syncs to server when email is valid; (b) 1s debounced useEffect checks server when email becomes valid at `applicant_contact` step; (c) blue banner "Rascunho salvo encontrado" with Recuperar/Ignorar; (d) order confirmation clears server draft.
-- `__tests__/draft-api.test.ts`: 12 new tests (GET valid/invalid/not-found/found/normalizes, PUT valid/invalid-email/invalid-draft/invalid-JSON/db-error, DELETE valid/invalid). All pass.
-- Test suite: 56 tests, 6 files — all passing.
+- Root cause confirmed: Vercel returned `413 FUNCTION_PAYLOAD_TOO_LARGE` before OCR/order route execution for large mobile files.
+- Added browser-side image preparation with 1.75 MB per-file and 3.75 MB combined budgets.
+- Large browser-decodable images are resized/compressed before OCR and persistence.
+- Oversized PDF/HEIC/HEIF files are blocked with clear Portuguese guidance.
+- Added explicit payload-limit feedback.
+- Production deployment: `dpl_9ADQThH1xMa88FwjA8EcWF4Pm76z`.
+- Production alias: `https://abre-usa.vercel.app`.
+- Mobile verification: 16.04 MB JPEG reduced to 1.3 MB per file at 390 x 844 with no horizontal overflow.
+- Production OCR returned `200` and reached extraction review.
+- Production order persistence with two prepared files totaling 2.37 MB returned `200` and stored both private documents.
+- Verification order `AUS-2026-0025` and both storage objects were removed.
+- 65 tests across 8 files pass.
+- Lint passes with zero errors and two pre-existing warnings.
+- Production build passes.
 
 ---
 
@@ -34,30 +41,11 @@ Result:
 
 ## Current Task
 
-Task ID: `INC-2026-06-08-01`
-
-Title: Prevent mobile document uploads from exceeding the Vercel function payload limit.
-
-Incident evidence:
-
-- Real mobile JPG/JPEG passport upload failed during OCR.
-- The manual fallback later failed at final order creation, with no confirmation or email.
-- Supabase is healthy and accepted a controlled production order.
-- A 5 MB upload reproducibly returns `413 FUNCTION_PAYLOAD_TOO_LARGE` on both `/api/extract-document` and `/api/orders`.
-- No customer order was created by the failed attempt.
-
-Current implementation scope:
-
-- Browser-side image resize/compression before onboarding state.
-- Safe combined upload budget.
-- Clear rejection for oversized PDF/HEIC/HEIF files that cannot be compressed safely in the browser.
-- Reuse prepared files for OCR and final persistence.
-- Better payload-specific error feedback.
-- Automated tests, mobile verification, deploy, and production verification.
+None. Awaiting Phase 13 domain decision.
 
 ## Next Task
 
-Complete `INC-2026-06-08-01`, deploy it, and verify the full mobile onboarding flow in production. Resume Phase 13 planning only after the incident is closed.
+Owner/operator confirms the target AbreUSA domain, then execute Phase 13 domain and email branding tasks.
 
 ---
 
@@ -167,29 +155,27 @@ Complete `INC-2026-06-08-01`, deploy it, and verify the full mobile onboarding f
 ## Exact Next Step To Resume
 
 ### Current Phase
-Production incident remediation after Phase 12.
+Phase 12 complete. Incident `INC-2026-06-08-01` closed.
 
 ### Last Completed Task
-P12-T03 — Cross-device draft via Supabase. 56 tests passing. Deployed 2026-05-19 (`dpl_FAk6M1cnX29C3z89zJ8Th5bbtB8b`).
+`INC-2026-06-08-01` — mobile upload payload fix. Deployed and production-verified as `dpl_9ADQThH1xMa88FwjA8EcWF4Pm76z`.
 
 ### Current Task
-`INC-2026-06-08-01` — mobile upload payload remediation.
+None.
 
 ### Next Action
-1. Implement browser-side upload preparation and validation.
-2. Add tests and run test/lint/build.
-3. Verify OCR and order creation in a mobile viewport.
-4. Deploy and verify production.
-5. Update roadmap, build status, decisions log if needed, and progress page.
+1. Owner/operator confirms the target domain.
+2. Configure the custom domain in Vercel and update Supabase Auth URLs.
+3. Verify the domain in Resend, change the sender, deploy, and verify delivery.
 
 Resume command:
-Read `AGENTS.md`, `docs/START-HERE.md`, `docs/07-roadmap.md`, and this file. Resume `INC-2026-06-08-01` and do not resume Phase 13 until production verification passes.
+Read `AGENTS.md`, `docs/START-HERE.md`, `docs/07-roadmap.md`, and this file. Confirm the target domain and execute Phase 13 in the documented order.
 
 ---
 
 ## Blockers And Risks
 
-- **Production alias**: `https://abre-usa.vercel.app`. Current production deployment: `dpl_FAk6M1cnX29C3z89zJ8Th5bbtB8b`.
+- **Production alias**: `https://abre-usa.vercel.app`. Current production deployment: `dpl_9ADQThH1xMa88FwjA8EcWF4Pm76z`.
 - Supabase Auth Site URL: `https://abre-usa.vercel.app`. Allowed Redirect: `https://abre-usa.vercel.app/auth/confirm`. Local dev: `http://localhost:3000/**`.
 - `ADMIN_EMAIL=contact@brightscalegroup.com` in `.env.local` and Vercel production.
 - Admin user: email-confirmed, owner/operator verified.
@@ -198,6 +184,6 @@ Read `AGENTS.md`, `docs/START-HERE.md`, `docs/07-roadmap.md`, and this file. Res
 - AbreUSA-branded email sender deferred; Brightscale sender in use.
 - Vercel Cron (daily 03:00 UTC) implemented but not yet verified against a real eligible document in production.
 - Admin login has no rate limiting (acceptable for MVP internal use).
-- Vercel functions reject request bodies above the platform payload limit before route code executes. Onboarding document files must be prepared below the safe client-side budget.
+- Onboarding now prepares large browser-decodable images below the safe client-side budget. Oversized PDF/HEIC/HEIF files require a smaller file or JPG conversion.
 - Node/npm not in default PATH — use `PATH=/usr/local/opt/node@22/bin:$PATH`.
 - Project path contains curly apostrophe (U+2019) — use Python subprocess for shell operations.

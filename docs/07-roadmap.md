@@ -2432,7 +2432,7 @@ Exit criteria:
 
 ## Production Incident: Mobile Upload Payload
 
-Status: In progress.
+Status: Complete and production-verified.
 
 Task ID: `INC-2026-06-08-01`.
 
@@ -2473,3 +2473,40 @@ Acceptance criteria:
 - Existing order persistence, private document storage, confirmation email, admin review, and draft behavior remain working.
 - Automated tests, lint, and build pass.
 - Mobile viewport verification and production verification are recorded.
+
+Result:
+
+- Added `lib/prepare-upload-file.ts` with a 1.75 MB per-file budget and 3.75 MB combined document budget.
+- Large JPG, JPEG, PNG, and WebP images are resized and compressed to JPEG in the browser before entering onboarding state.
+- Oversized PDF, HEIC, and HEIF files show actionable Portuguese guidance before network submission.
+- OCR and final order persistence use the same prepared files rather than the original heavy files.
+- Added explicit `413` handling to OCR and order persistence feedback.
+- Added automated upload preparation and persistence tests.
+- Test suite now passes with 65 tests across 8 files.
+- `npm run lint` passes with zero errors and two pre-existing warnings.
+- `npm run build` passes.
+- Mobile local verification at 390 x 844:
+  - 16.04 MB JPEG reduced to 1.3 MB.
+  - Both document inputs accepted prepared files.
+  - No horizontal overflow.
+  - OCR returned `200` and reached extraction review.
+- Local order regression:
+  - Two prepared files totaling 2.37 MB returned `200`.
+  - Supabase order and private storage records were confirmed, then removed.
+- Production deployment:
+  - Deployment ID: `dpl_9ADQThH1xMa88FwjA8EcWF4Pm76z`.
+  - Production alias: `https://abre-usa.vercel.app`.
+  - Status: Ready.
+- Production verification:
+  - `/` and `/dashboard` return `200`.
+  - 16.04 MB JPEG reduced to 1.3 MB per document in a 390 x 844 mobile viewport.
+  - Production OCR returned `200` and reached extraction review.
+  - Production `/api/orders` with two prepared documents totaling 2.37 MB returned `200`.
+  - Supabase stored both private document records.
+  - Verification order `AUS-2026-0025` and both storage objects were removed after validation.
+
+Stop checkpoint:
+
+- Date: 2026-06-08.
+- `INC-2026-06-08-01` is closed.
+- Exact next roadmap action: return to Phase 13 domain and email branding when the owner/operator confirms the target domain.
