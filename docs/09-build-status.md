@@ -2,7 +2,7 @@
 
 ## Current Phase
 
-Phase 12: Platform Quality, Externalised Content & Cross-Device Draft. All tasks complete, deployed, and production-verified on 2026-05-19.
+Production incident remediation after Phase 12. Phase 13 remains blocked on the domain decision.
 
 ---
 
@@ -34,18 +34,30 @@ Result:
 
 ## Current Task
 
-None. Awaiting Phase 13 priority selection.
+Task ID: `INC-2026-06-08-01`
 
----
+Title: Prevent mobile document uploads from exceeding the Vercel function payload limit.
+
+Incident evidence:
+
+- Real mobile JPG/JPEG passport upload failed during OCR.
+- The manual fallback later failed at final order creation, with no confirmation or email.
+- Supabase is healthy and accepted a controlled production order.
+- A 5 MB upload reproducibly returns `413 FUNCTION_PAYLOAD_TOO_LARGE` on both `/api/extract-document` and `/api/orders`.
+- No customer order was created by the failed attempt.
+
+Current implementation scope:
+
+- Browser-side image resize/compression before onboarding state.
+- Safe combined upload budget.
+- Clear rejection for oversized PDF/HEIC/HEIF files that cannot be compressed safely in the browser.
+- Reuse prepared files for OCR and final persistence.
+- Better payload-specific error feedback.
+- Automated tests, mobile verification, deploy, and production verification.
 
 ## Next Task
 
-Owner/operator selects domain to unlock Phase 13. Two tasks are blocked on the same decision:
-
-1. **Custom production domain** — configure `abreusa.com` (or chosen domain) in Vercel + update Supabase Auth redirect URLs. No code required.
-2. **AbreUSA-branded email sender** — update `FROM` address in `lib/send-status-email.ts` (1 line) + verify domain in Resend (DNS TXT/CNAME). Code is ready; blocked on domain.
-
-Both unlock together once the owner/operator confirms the target domain.
+Complete `INC-2026-06-08-01`, deploy it, and verify the full mobile onboarding flow in production. Resume Phase 13 planning only after the incident is closed.
 
 ---
 
@@ -155,22 +167,23 @@ Both unlock together once the owner/operator confirms the target domain.
 ## Exact Next Step To Resume
 
 ### Current Phase
-Phase 12 complete. Awaiting Phase 13 priority selection.
+Production incident remediation after Phase 12.
 
 ### Last Completed Task
 P12-T03 — Cross-device draft via Supabase. 56 tests passing. Deployed 2026-05-19 (`dpl_FAk6M1cnX29C3z89zJ8Th5bbtB8b`).
 
 ### Current Task
-None.
+`INC-2026-06-08-01` — mobile upload payload remediation.
 
 ### Next Action
-Owner/operator confirms target domain (e.g. `abreusa.com`). Phase 13 starts immediately:
-1. Vercel: add custom domain → DNS records provided by Vercel → propagate.
-2. Supabase Auth: update Site URL + Allowed Redirect URLs to new domain.
-3. Resend: add and verify same domain → update `FROM` in `lib/send-status-email.ts` → deploy.
+1. Implement browser-side upload preparation and validation.
+2. Add tests and run test/lint/build.
+3. Verify OCR and order creation in a mobile viewport.
+4. Deploy and verify production.
+5. Update roadmap, build status, decisions log if needed, and progress page.
 
 Resume command:
-Read `AGENTS.md`, `docs/START-HERE.md`, `docs/07-roadmap.md`, and this file. Confirm domain. Execute Phase 13 tasks in order above.
+Read `AGENTS.md`, `docs/START-HERE.md`, `docs/07-roadmap.md`, and this file. Resume `INC-2026-06-08-01` and do not resume Phase 13 until production verification passes.
 
 ---
 
@@ -185,5 +198,6 @@ Read `AGENTS.md`, `docs/START-HERE.md`, `docs/07-roadmap.md`, and this file. Con
 - AbreUSA-branded email sender deferred; Brightscale sender in use.
 - Vercel Cron (daily 03:00 UTC) implemented but not yet verified against a real eligible document in production.
 - Admin login has no rate limiting (acceptable for MVP internal use).
+- Vercel functions reject request bodies above the platform payload limit before route code executes. Onboarding document files must be prepared below the safe client-side budget.
 - Node/npm not in default PATH — use `PATH=/usr/local/opt/node@22/bin:$PATH`.
 - Project path contains curly apostrophe (U+2019) — use Python subprocess for shell operations.

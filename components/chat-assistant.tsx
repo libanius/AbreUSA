@@ -46,11 +46,12 @@ export function ChatAssistant({ activeStep, selectedService, formContext, onActi
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
 
-  async function sendToAPI(history: Message[], userText: string) {
+  async function sendToAPI(history: Message[]) {
     setLoading(true);
-    const apiMessages = history
-      .filter((m): m is Message => true)
-      .map((m) => ({ role: m.role, content: m.content }));
+    const apiMessages = history.map((message) => ({
+      role: message.role,
+      content: message.content,
+    }));
 
     try {
       const res = await fetch("/api/chat-assistant", {
@@ -95,7 +96,7 @@ export function ChatAssistant({ activeStep, selectedService, formContext, onActi
     const userMsg: UserMessage = { role: "user", content };
     const next = [...messages, userMsg];
     setMessages(next);
-    await sendToAPI(next, content);
+    await sendToAPI(next);
   }
 
   async function handleSuggestionClick(suggestion: string) {
@@ -171,7 +172,9 @@ export function ChatAssistant({ activeStep, selectedService, formContext, onActi
               <div className="text-center text-sm text-muted-foreground py-6">
                 <p className="text-2xl mb-2">👋</p>
                 <p>Olá! Posso responder suas dúvidas ou ajudar a preencher o formulário.</p>
-                <p className="mt-1 text-xs">Ex: "Preciso de EIN?" ou "Pode escolher o serviço pra mim?"</p>
+                <p className="mt-1 text-xs">
+                  Ex: &quot;Preciso de EIN?&quot; ou &quot;Pode escolher o serviço pra mim?&quot;
+                </p>
               </div>
             )}
 

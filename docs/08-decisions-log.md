@@ -2,6 +2,24 @@
 
 ## Confirmed Decisions
 
+### 2026-06-08: Mobile Documents Must Be Prepared Before Function Upload
+
+Decision:
+
+Document images selected during onboarding must be resized/compressed in the browser before they are stored in intake state or sent to Vercel functions. The prepared files, not the original heavy files, are used for OCR and final order persistence.
+
+Result:
+
+- Large JPG, JPEG, PNG, and WebP files are converted to a safe JPEG upload size in the browser.
+- The two-document upload uses an explicit combined payload budget below the Vercel function limit.
+- Oversized PDF, HEIC, and HEIF files that cannot be safely compressed in the browser are rejected with actionable Portuguese guidance.
+- Server-side image normalization remains in place for OCR quality and orientation handling.
+- Direct-to-Supabase upload remains a future architectural option, not part of this incident fix.
+
+Reason:
+
+Vercel rejects oversized multipart requests with `413 FUNCTION_PAYLOAD_TOO_LARGE` before application code runs. Because onboarding previously sent the original documents to both OCR and order persistence, a large mobile photo could cause both extraction and final submission to fail even while Supabase remained healthy.
+
 ### 2026-05-19: Rascunho Multiplataforma via Supabase
 
 **Decision:** Rascunho do formulário de onboarding sincronizado com Supabase via , usando email como chave.
@@ -969,4 +987,3 @@ Decision:
 - New error codes: `image_decode_failed`, `heic_conversion_failed`, `pdf_requires_image`.
 - Upload UI updated with correct format list and iPhone guidance.
 - This is a Phase 10 robustness fix, not a new phase.
-

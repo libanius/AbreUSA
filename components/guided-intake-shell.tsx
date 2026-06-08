@@ -1,7 +1,12 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { persistOrder } from "@/lib/persist-order";
+import { OrderPersistenceError, persistOrder } from "@/lib/persist-order";
+import {
+  prepareUploadFile,
+  UploadPreparationError,
+  validateCombinedUploadSize,
+} from "@/lib/prepare-upload-file";
 import { saveDraft, loadDraft, clearDraft, syncDraftToServer, loadDraftFromServer, clearServerDraft, type OnboardingDraft } from "@/lib/draft-storage";
 import { ChatAssistant, type ChatAction } from "@/components/chat-assistant";
 
@@ -532,6 +537,8 @@ function StepFrame({
   totalSteps,
   showDocReuploadWarning,
   onDocReuploadWarningDismiss,
+  documentFileError,
+  processingDocumentKind,
 }: {
   activeStep: FlowStep;
   businessActivity: BusinessActivityId | null;
@@ -571,7 +578,7 @@ function StepFrame({
     field: keyof DocumentExtractionDraft,
     value: string,
   ) => void;
-  onChangeDocumentFile: (kind: DocumentKind, file: File | null) => void;
+  onChangeDocumentFile: (kind: DocumentKind, file: File | null) => Promise<void>;
   onChangeEinQuestions: (field: keyof EinQuestionsDraft, value: string) => void;
   onChangeLlcName: (name: string) => void;
   onChangeMemberData: (
@@ -605,6 +612,8 @@ function StepFrame({
   totalSteps: number;
   showDocReuploadWarning?: boolean;
   onDocReuploadWarningDismiss?: () => void;
+  documentFileError: string | null;
+  processingDocumentKind: DocumentKind | null;
 }) {
   const selectedLabel = useMemo(() => {
     return serviceOptions.find((service) => service.id === selectedService)
@@ -1115,6 +1124,12 @@ function StepFrame({
             </p>
           </StatusMessage>
 
+          {documentFileError ? (
+            <StatusMessage title="Não foi possível preparar o arquivo" tone="warning">
+              <p>{documentFileError}</p>
+            </StatusMessage>
+          ) : null}
+
           <FieldGroup title="Arquivos obrigatórios">
             {[
               {
@@ -1157,14 +1172,20 @@ function StepFrame({
 
                 <Input
                   accept=".pdf,.jpg,.jpeg,.png,.heic,.heif,.webp"
-                  onChange={(event) =>
-                    onChangeDocumentFile(
-                      documentItem.kind,
-                      event.target.files?.[0] ?? null,
-                    )
-                  }
+                  disabled={processingDocumentKind !== null}
+                  onChange={(event) => {
+                    const file = event.target.files?.[0] ?? null;
+                    event.target.value = "";
+                    void onChangeDocumentFile(documentItem.kind, file);
+                  }}
                   type="file"
                 />
+
+                {processingDocumentKind === documentItem.kind ? (
+                  <p className="text-sm font-medium text-blue-800">
+                    Preparando imagem para envio seguro...
+                  </p>
+                ) : null}
 
                 {documentItem.file ? (
                   <div className="rounded-md border bg-background p-3 text-sm text-muted-foreground">
@@ -1308,9 +1329,17 @@ function StepFrame({
           totalSteps={totalSteps}
           backDisabled={false}
           backLabel="Voltar"
-          nextDisabled={!isDocumentCollectionComplete}
+          nextDisabled={
+            !isDocumentCollectionComplete ||
+            processingDocumentKind !== null ||
+            documentFileError !== null
+          }
           nextLabel={
-            isDocumentCollectionComplete ? "Continuar" : "Anexar documentos"
+            processingDocumentKind
+              ? "Preparando arquivo..."
+              : isDocumentCollectionComplete
+                ? "Continuar"
+                : "Anexar documentos"
           }
           onBack={onBackFromDocuments}
           onNext={onContinueFromDocuments}
@@ -1352,7 +1381,8 @@ function StepFrame({
           {extractionState === "failed" ? (
             <StatusMessage title="Não foi possível ler os documentos automaticamente" tone="warning">
               <p>
-"Não conseguimos ler todos os dados automaticamente. Você ainda pode continuar preenchendo manualmente."
+                Não conseguimos ler todos os dados automaticamente. Você ainda
+                pode continuar preenchendo manualmente.
               </p>
               {extractionError ? (
                 <p className="mt-2 font-mono text-xs text-muted-foreground">
@@ -2684,6 +2714,9 @@ export function GuidedIntakeShell() {
       residentialZip: "",
     });
   const [documentFiles, setDocumentFiles] = useState<{ passport: File | null; addressProof: File | null }>({ passport: null, addressProof: null });
+  const [documentFileError, setDocumentFileError] = useState<string | null>(null);
+  const [processingDocumentKind, setProcessingDocumentKind] =
+    useState<DocumentKind | null>(null);
   const [extractionState, setExtractionState] = useState<ExtractionState>("idle");
   const [extractionError, setExtractionError] = useState<{ errorCode: string; message: string; details?: string } | null>(null);
   const [approvedOrderPayload, setApprovedOrderPayload] =
@@ -2763,11 +2796,19 @@ export function GuidedIntakeShell() {
 
   // Draft: check for existing draft on mount
   useEffect(() => {
-    const draft = loadDraft();
-    if (draft && draft.activeStep && draft.activeStep !== "service" && draft.activeStep !== "confirmation") {
-      setHasDraftPrompt(true);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    const timer = setTimeout(() => {
+      const draft = loadDraft();
+      if (
+        draft &&
+        draft.activeStep &&
+        draft.activeStep !== "service" &&
+        draft.activeStep !== "confirmation"
+      ) {
+        setHasDraftPrompt(true);
+      }
+    }, 0);
+
+    return () => clearTimeout(timer);
   }, []);
 
   // Server draft: check when email becomes valid in applicant_contact step
@@ -2788,7 +2829,6 @@ export function GuidedIntakeShell() {
     return () => {
       if (serverCheckTimer.current) clearTimeout(serverCheckTimer.current);
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [applicantContact.email, activeStep, hasDraftPrompt]);
 
   // Draft: auto-save on state change (debounced 800ms)
@@ -2925,6 +2965,8 @@ export function GuidedIntakeShell() {
       residentialZip: "",
     });
     setDocumentFiles({ passport: null, addressProof: null });
+    setDocumentFileError(null);
+    setProcessingDocumentKind(null);
     setEinQuestions({
       reasonForApplying: null,
       entityType: null,
@@ -3054,8 +3096,12 @@ export function GuidedIntakeShell() {
         if (documentFiles.addressProof) formData.append("addressProof", documentFiles.addressProof);
         const res = await fetch("/api/extract-document", { method: "POST", body: formData });
         if (!res.ok) {
-          let errorCode = "unknown_extraction_error";
-          let message = "Extraction failed";
+          let errorCode =
+            res.status === 413 ? "payload_too_large" : "unknown_extraction_error";
+          let message =
+            res.status === 413
+              ? "Os documentos ultrapassaram o limite de envio."
+              : "Extraction failed";
           let details: string | undefined;
           try {
             const errorBody = await res.json();
@@ -3114,7 +3160,9 @@ export function GuidedIntakeShell() {
     } catch (err) {
       console.error("Supabase persist failed:", err);
       setPersistError(
-        "Ocorreu um erro ao finalizar o pedido. Verifique sua conexão e tente novamente.",
+        err instanceof OrderPersistenceError
+          ? err.message
+          : "Ocorreu um erro ao finalizar o pedido. Verifique sua conexão e tente novamente.",
       );
     } finally {
       setIsPersisting(false);
@@ -3177,18 +3225,40 @@ export function GuidedIntakeShell() {
     setEinQuestions((current) => ({ ...current, [field]: value }));
   }
 
-  function handleChangeDocumentFile(kind: DocumentKind, file: File | null) {
-    setDocuments((current) => ({
-      ...current,
-      [kind]: file
-        ? {
-            name: file.name,
-            size: file.size,
-            type: file.type,
-          }
-        : null,
-    }));
-    setDocumentFiles((current) => ({ ...current, [kind]: file }));
+  async function handleChangeDocumentFile(kind: DocumentKind, file: File | null) {
+    setDocumentFileError(null);
+
+    if (!file) {
+      setDocuments((current) => ({ ...current, [kind]: null }));
+      setDocumentFiles((current) => ({ ...current, [kind]: null }));
+      return;
+    }
+
+    setProcessingDocumentKind(kind);
+
+    try {
+      const preparedFile = await prepareUploadFile(file);
+      const nextFiles = { ...documentFiles, [kind]: preparedFile };
+      validateCombinedUploadSize([nextFiles.passport, nextFiles.addressProof]);
+
+      setDocuments((current) => ({
+        ...current,
+        [kind]: {
+          name: preparedFile.name,
+          size: preparedFile.size,
+          type: preparedFile.type,
+        },
+      }));
+      setDocumentFiles(nextFiles);
+    } catch (error) {
+      const message =
+        error instanceof UploadPreparationError
+          ? error.message
+          : "Não foi possível preparar este arquivo. Tente outro documento.";
+      setDocumentFileError(message);
+    } finally {
+      setProcessingDocumentKind(null);
+    }
   }
 
   function handleChangeDocumentExtraction(
@@ -3401,6 +3471,8 @@ export function GuidedIntakeShell() {
             totalSteps={totalSteps}
             showDocReuploadWarning={showDocReuploadWarning}
             onDocReuploadWarningDismiss={() => setShowDocReuploadWarning(false)}
+            documentFileError={documentFileError}
+            processingDocumentKind={processingDocumentKind}
           />
 
           <aside className="h-fit rounded-lg border bg-card p-5 shadow-sm">

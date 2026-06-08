@@ -2427,3 +2427,49 @@ Exit criteria:
 - `https://[domain]` serves the app without redirect from Vercel URL.
 - All transactional emails arrive from `noreply@notifications.[domain]`.
 - Supabase Auth flows (signup confirmation, password reset) use the new domain in redirect URLs.
+
+---
+
+## Production Incident: Mobile Upload Payload
+
+Status: In progress.
+
+Task ID: `INC-2026-06-08-01`.
+
+Title: Prevent mobile document uploads from exceeding the Vercel function payload limit.
+
+Evidence:
+
+- A real mobile onboarding attempt could not read a Portuguese passport uploaded as JPG/JPEG.
+- The same attempt later failed to create the order, show confirmation, or send email.
+- Supabase remained available and accepted a controlled order.
+- Reproduction with a 5 MB file returned `413 FUNCTION_PAYLOAD_TOO_LARGE` from both `/api/extract-document` and `/api/orders`.
+- The `413` occurs at the Vercel boundary before application code and Supabase execute.
+
+Scope:
+
+- Prepare supported image uploads in the browser before storing them in onboarding state.
+- Resize/compress large JPG, JPEG, PNG, and WebP images to a safe per-file budget.
+- Reject oversized PDF, HEIC, and HEIF files with a clear Portuguese message when the browser cannot safely compress them.
+- Use the prepared file for OCR and final order persistence instead of the original heavy file.
+- Improve persistence errors so payload-limit failures are distinguishable from generic connectivity failures.
+- Add automated tests for upload sizing rules.
+- Verify the complete mobile flow before production deployment.
+
+Out of scope:
+
+- Changing Supabase storage architecture.
+- Direct-to-storage uploads.
+- Payment, domain, sender migration, or Phase 13 work.
+- Changes to OCR legal/tax behavior.
+
+Acceptance criteria:
+
+- A large mobile JPEG is reduced below the configured safe upload budget before network submission.
+- The combined document payload remains below the Vercel function payload limit.
+- Oversized non-browser-compressible files show an actionable message before submission.
+- OCR receives prepared files.
+- `/api/orders` receives the same prepared files and can complete persistence.
+- Existing order persistence, private document storage, confirmation email, admin review, and draft behavior remain working.
+- Automated tests, lint, and build pass.
+- Mobile viewport verification and production verification are recorded.
