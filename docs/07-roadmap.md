@@ -2399,7 +2399,7 @@ Deliverables:
 
 Completed tasks:
 
-- P12-T01: Automated test suite — 56 tests, 6 files, all passing. Restored `pdf_requires_image` check in `extract-document/route.ts`; `[id]` path resolution via helper re-export.
+- P12-T01: Automated test suite — 56 tests, 6 files, all passing. `[id]` path resolution via helper re-export. The temporary `pdf_requires_image` regression introduced here was corrected by `INC-2026-06-08-02`.
 - P12-T02: Externalised assistant instructions — `content/assistant-instructions.md` read at runtime; `outputFileTracingIncludes` in `next.config.ts`.
 - P12-T03: Cross-device draft via Supabase — `onboarding_drafts` table, `/api/draft` route, shell integration, 12 new tests.
 
@@ -2509,4 +2509,42 @@ Stop checkpoint:
 
 - Date: 2026-06-08.
 - `INC-2026-06-08-01` is closed.
+- Exact next roadmap action: return to Phase 13 domain and email branding when the owner/operator confirms the target domain.
+
+---
+
+## Production Incident: PDF Extraction Regression
+
+Status: Complete and production-verified.
+
+Task ID: `INC-2026-06-08-02`.
+
+Title: Restore automatic extraction for uploaded PDF documents.
+
+Evidence:
+
+- Production accepted PDF uploads but returned `422 pdf_requires_image` before preprocessing.
+- `lib/preprocess-document.ts` already accepted PDFs, but the API route contained an explicit early return restored during P12-T01.
+- The failure was unrelated to Supabase or document persistence.
+
+Result:
+
+- Removed the obsolete `pdf_requires_image` early return.
+- The extraction route now preserves PDF buffers through preprocessing.
+- Passport and address PDFs are sent as `input_file` to the OpenAI Responses API.
+- Structured JSON schemas are used for passport and address extraction.
+- Text PDFs and scanned/image-based PDFs are supported by the same API path.
+- Existing JPG, PNG, WebP, and HEIC extraction paths remain unchanged.
+- 65 tests across 8 files pass.
+- Lint passes with zero errors and two pre-existing warnings.
+- Production build passes.
+- Local PDF verification returned `200` and extracted all five passport fields.
+- Production PDF verification returned `200` and extracted all five passport fields.
+- Production deployment: `dpl_EqSrgJ3wqcA9dUaqwX47pXWGXBVu`.
+- Production alias: `https://abre-usa.vercel.app`.
+
+Stop checkpoint:
+
+- Date: 2026-06-08.
+- `INC-2026-06-08-02` is closed.
 - Exact next roadmap action: return to Phase 13 domain and email branding when the owner/operator confirms the target domain.

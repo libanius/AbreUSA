@@ -987,3 +987,20 @@ Decision:
 - New error codes: `image_decode_failed`, `heic_conversion_failed`, `pdf_requires_image`.
 - Upload UI updated with correct format list and iPhone guidance.
 - This is a Phase 10 robustness fix, not a new phase.
+
+## 2026-06-08: Direct PDF Extraction Through OpenAI File Input
+
+Decision:
+
+Uploaded passport and address PDFs are sent directly to the OpenAI Responses API as `input_file`. The previous `pdf_requires_image` fallback is removed.
+
+Result:
+
+- PDFs with selectable text and scanned/image-based PDFs use the same extraction path.
+- Passport and address responses use strict structured JSON schemas.
+- Image extraction and Supabase persistence remain unchanged.
+- The browser continues to reject PDFs above the safe 1.75 MB request budget.
+
+Reason:
+
+Accepting PDF in the upload control while refusing automatic extraction created a broken customer promise. Direct PDF file input lets the model inspect both extracted text and rendered page images without requiring customers to convert documents manually.

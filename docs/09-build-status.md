@@ -2,29 +2,26 @@
 
 ## Current Phase
 
-Phase 12 complete. The mobile upload production incident is closed. Phase 13 remains blocked on the domain decision.
+Phase 12 complete. Mobile upload and PDF extraction incidents are closed. Phase 13 remains blocked on the domain decision.
 
 ---
 
 ## Last Completed Task
 
-Task ID: `INC-2026-06-08-01`
+Task ID: `INC-2026-06-08-02`
 
-Title: Prevent mobile document uploads from exceeding the Vercel function payload limit.
+Title: Restore automatic extraction for uploaded PDF documents.
 
 Result:
 
-- Root cause confirmed: Vercel returned `413 FUNCTION_PAYLOAD_TOO_LARGE` before OCR/order route execution for large mobile files.
-- Added browser-side image preparation with 1.75 MB per-file and 3.75 MB combined budgets.
-- Large browser-decodable images are resized/compressed before OCR and persistence.
-- Oversized PDF/HEIC/HEIF files are blocked with clear Portuguese guidance.
-- Added explicit payload-limit feedback.
-- Production deployment: `dpl_9ADQThH1xMa88FwjA8EcWF4Pm76z`.
+- Root cause confirmed: `/api/extract-document` returned `pdf_requires_image` before the existing PDF preprocessing path.
+- Removed the obsolete early return.
+- PDF buffers now reach the OpenAI Responses API as `input_file` with structured JSON output.
+- Supports PDFs with selectable text and scanned/image-based PDFs.
+- PDF fix verification deployment: `dpl_EqSrgJ3wqcA9dUaqwX47pXWGXBVu`.
 - Production alias: `https://abre-usa.vercel.app`.
-- Mobile verification: 16.04 MB JPEG reduced to 1.3 MB per file at 390 x 844 with no horizontal overflow.
-- Production OCR returned `200` and reached extraction review.
-- Production order persistence with two prepared files totaling 2.37 MB returned `200` and stored both private documents.
-- Verification order `AUS-2026-0025` and both storage objects were removed.
+- Local PDF verification returned `200` and extracted name, birth date, nationality, passport number, and expiration.
+- Production PDF verification returned `200` with the same five fields.
 - 65 tests across 8 files pass.
 - Lint passes with zero errors and two pre-existing warnings.
 - Production build passes.
@@ -33,7 +30,7 @@ Result:
 
 ## Phase 12 Completed Tasks
 
-- **P12-T01** — Automated test suite (44 tests, 5 files): `preprocess-document`, `draft-storage`, `send-status-email`, `extract-document`, `customer-documents`. Restored `pdf_requires_image` check in `extract-document/route.ts`; updated to 6-arg `extractDocuments` call; `__tests__/helpers/order-documents-route.ts` re-export bridge for `[id]` path resolution.
+- **P12-T01** — Automated test suite (44 tests, 5 files): `preprocess-document`, `draft-storage`, `send-status-email`, `extract-document`, `customer-documents`. The temporary `pdf_requires_image` regression was corrected by `INC-2026-06-08-02`; `__tests__/helpers/order-documents-route.ts` remains the re-export bridge for `[id]` path resolution.
 - **P12-T02** — Assistente Virtual com instruções externalizadas: `content/assistant-instructions.md` (identidade, tom, escopo, conhecimento técnico, FAQs, regras). `app/api/chat-assistant/route.ts` lê via `fs.readFileSync`. `next.config.ts` com `outputFileTracingIncludes` para bundling no Vercel.
 - **P12-T03** — Cross-device draft via Supabase (descrito acima).
 
@@ -88,7 +85,7 @@ Owner/operator confirms the target AbreUSA domain, then execute Phase 13 domain 
 
 ### Onboarding Flow
 - 15-step `document_assisted` path; 14-step `manual` path.
-- Document upload with EXIF auto-rotation, JPEG normalization, HEIC/HEIF (heic-convert), PDF (pdfjs-dist text extraction).
+- Document upload with EXIF auto-rotation, JPEG normalization, HEIC/HEIF conversion, and direct PDF extraction through OpenAI file input.
 - GPT-4o Vision OCR → extraction review → editable pre-fill.
 - Member/owner and EIN responsible-party checkbox pre-fills.
 - Approval step: loading state, fail-closed, retry on error.
@@ -128,7 +125,7 @@ Owner/operator confirms the target AbreUSA domain, then execute Phase 13 domain 
 - Sender: `noreply@notifications.brightscalegroup.com` (temporary; migration pending).
 
 ### Test Suite
-- vitest v4.1.6. 56 tests, 6 files: `preprocess-document`, `draft-storage`, `send-status-email`, `extract-document`, `customer-documents`, `draft-api`. All passing.
+- vitest v4.1.6. 65 tests, 8 files. All passing.
 
 ### Infrastructure
 - Next.js 16 App Router + React 19 + Tailwind 4 + Supabase + Vercel + OpenAI GPT-4o.
@@ -155,10 +152,10 @@ Owner/operator confirms the target AbreUSA domain, then execute Phase 13 domain 
 ## Exact Next Step To Resume
 
 ### Current Phase
-Phase 12 complete. Incident `INC-2026-06-08-01` closed.
+Phase 12 complete. Incidents `INC-2026-06-08-01` and `INC-2026-06-08-02` closed.
 
 ### Last Completed Task
-`INC-2026-06-08-01` — mobile upload payload fix. Deployed and production-verified as `dpl_9ADQThH1xMa88FwjA8EcWF4Pm76z`.
+`INC-2026-06-08-02` — PDF extraction regression fix. Deployed and production-verified as `dpl_EqSrgJ3wqcA9dUaqwX47pXWGXBVu`.
 
 ### Current Task
 None.
@@ -175,7 +172,7 @@ Read `AGENTS.md`, `docs/START-HERE.md`, `docs/07-roadmap.md`, and this file. Con
 
 ## Blockers And Risks
 
-- **Production alias**: `https://abre-usa.vercel.app`. Current production deployment: `dpl_9ADQThH1xMa88FwjA8EcWF4Pm76z`.
+- **Production alias**: `https://abre-usa.vercel.app`.
 - Supabase Auth Site URL: `https://abre-usa.vercel.app`. Allowed Redirect: `https://abre-usa.vercel.app/auth/confirm`. Local dev: `http://localhost:3000/**`.
 - `ADMIN_EMAIL=contact@brightscalegroup.com` in `.env.local` and Vercel production.
 - Admin user: email-confirmed, owner/operator verified.
@@ -185,5 +182,6 @@ Read `AGENTS.md`, `docs/START-HERE.md`, `docs/07-roadmap.md`, and this file. Con
 - Vercel Cron (daily 03:00 UTC) implemented but not yet verified against a real eligible document in production.
 - Admin login has no rate limiting (acceptable for MVP internal use).
 - Onboarding now prepares large browser-decodable images below the safe client-side budget. Oversized PDF/HEIC/HEIF files require a smaller file or JPG conversion.
+- PDF extraction depends on OpenAI Responses file input and remains subject to the 1.75 MB client upload budget.
 - Node/npm not in default PATH — use `PATH=/usr/local/opt/node@22/bin:$PATH`.
 - Project path contains curly apostrophe (U+2019) — use Python subprocess for shell operations.
