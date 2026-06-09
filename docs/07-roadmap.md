@@ -2515,7 +2515,7 @@ Stop checkpoint:
 
 ## Production Incident: Combined Real Document Payload
 
-Status: Complete locally; awaiting production deployment and verification.
+Status: Complete and production-verified.
 
 Task ID: `INC-2026-06-08-03`.
 
@@ -2541,6 +2541,23 @@ Local verification:
 - Both extraction requests returned `200`.
 - All five passport fields and all four address fields were populated in extraction review.
 - 65 tests pass; lint has zero errors and two pre-existing warnings; production build passes.
+
+Production verification:
+
+- Deployment: `dpl_6jAGSPdajkCoHbvbLmdzqatWA4cG`.
+- Alias: `https://abre-usa.vercel.app`.
+- Mobile viewport: 390 x 844.
+- Real `11.pdf`: 4.34 MB PDF → 427 KB JPEG in production.
+- Real bank statement: remained a 196 KB PDF.
+- No browser console errors.
+- Both extraction requests returned `200`.
+- Extraction review displayed all five passport fields and all four address fields populated.
+
+Stop checkpoint:
+
+- Date: 2026-06-08.
+- `INC-2026-06-08-03` is closed.
+- Exact next roadmap action: return to Phase 13 domain and email branding when the owner/operator confirms the target domain.
 
 ---
 

@@ -2,26 +2,28 @@
 
 ## Current Phase
 
-Phase 12 complete. Combined real-document payload remediation is in progress. Phase 13 remains blocked on the domain decision.
+Phase 12 complete. All three mobile/PDF production incidents are closed. Phase 13 remains blocked on the domain decision.
 
 ---
 
 ## Last Completed Task
 
-Task ID: `INC-2026-06-08-02`
+Task ID: `INC-2026-06-08-03`
 
-Title: Restore automatic extraction for uploaded PDF documents.
+Title: Support the real 4.34 MB passport PDF and 196 KB bank statement together.
 
 Result:
 
-- Root cause confirmed: `/api/extract-document` returned `pdf_requires_image` before the existing PDF preprocessing path.
-- Removed the obsolete early return.
-- PDF buffers now reach the OpenAI Responses API as `input_file` with structured JSON output.
-- Supports PDFs with selectable text and scanned/image-based PDFs.
-- PDF fix verification deployment: `dpl_EqSrgJ3wqcA9dUaqwX47pXWGXBVu`.
+- Root cause confirmed: each real PDF returned `200` alone, but the combined multipart request returned `413 FUNCTION_PAYLOAD_TOO_LARGE`.
+- Oversized PDFs now rasterize their first page to an optimized JPEG in the browser.
+- Passport and address OCR requests run separately.
+- Prepared files are reused for final order persistence.
+- Production deployment: `dpl_6jAGSPdajkCoHbvbLmdzqatWA4cG`.
 - Production alias: `https://abre-usa.vercel.app`.
-- Local PDF verification returned `200` and extracted name, birth date, nationality, passport number, and expiration.
-- Production PDF verification returned `200` with the same five fields.
+- Production mobile verification converted the real 4.34 MB passport PDF to a 427 KB JPEG.
+- The real 196 KB bank statement remained PDF.
+- Both extraction requests returned `200`.
+- All five passport fields and all four address fields were populated.
 - 65 tests across 8 files pass.
 - Lint passes with zero errors and two pre-existing warnings.
 - Production build passes.
@@ -38,21 +40,11 @@ Result:
 
 ## Current Task
 
-Task ID: `INC-2026-06-08-03`
-
-Title: Support the real 4.34 MB passport PDF and 196 KB bank statement together.
-
-Status:
-
-- Root cause reproduced: each file returns `200` alone; both together return Vercel `413`.
-- Large PDF browser rasterization implemented.
-- OCR requests split by document.
-- Local browser verification passed with both real files and all nine extraction fields populated.
-- Awaiting production deployment and verification.
+None. Awaiting Phase 13 domain decision.
 
 ## Next Task
 
-Deploy and production-verify `INC-2026-06-08-03`, then return to the Phase 13 domain decision.
+Owner/operator confirms the target AbreUSA domain, then execute Phase 13 domain and email branding tasks.
 
 ---
 
@@ -162,10 +154,10 @@ Deploy and production-verify `INC-2026-06-08-03`, then return to the Phase 13 do
 ## Exact Next Step To Resume
 
 ### Current Phase
-Phase 12 complete. Incidents `INC-2026-06-08-01` and `INC-2026-06-08-02` closed.
+Phase 12 complete. Incidents `INC-2026-06-08-01`, `INC-2026-06-08-02`, and `INC-2026-06-08-03` closed.
 
 ### Last Completed Task
-`INC-2026-06-08-02` — PDF extraction regression fix. Deployed and production-verified as `dpl_EqSrgJ3wqcA9dUaqwX47pXWGXBVu`.
+`INC-2026-06-08-03` — real combined PDF payload fix. Deployed and production-verified as `dpl_6jAGSPdajkCoHbvbLmdzqatWA4cG`.
 
 ### Current Task
 None.
