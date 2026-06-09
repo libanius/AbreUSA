@@ -2,7 +2,7 @@
 
 ## Current Phase
 
-Phase 12 complete. Mobile upload and PDF extraction incidents are closed. Phase 13 remains blocked on the domain decision.
+Phase 12 complete. Combined real-document payload remediation is in progress. Phase 13 remains blocked on the domain decision.
 
 ---
 
@@ -38,11 +38,21 @@ Result:
 
 ## Current Task
 
-None. Awaiting Phase 13 domain decision.
+Task ID: `INC-2026-06-08-03`
+
+Title: Support the real 4.34 MB passport PDF and 196 KB bank statement together.
+
+Status:
+
+- Root cause reproduced: each file returns `200` alone; both together return Vercel `413`.
+- Large PDF browser rasterization implemented.
+- OCR requests split by document.
+- Local browser verification passed with both real files and all nine extraction fields populated.
+- Awaiting production deployment and verification.
 
 ## Next Task
 
-Owner/operator confirms the target AbreUSA domain, then execute Phase 13 domain and email branding tasks.
+Deploy and production-verify `INC-2026-06-08-03`, then return to the Phase 13 domain decision.
 
 ---
 
@@ -181,7 +191,7 @@ Read `AGENTS.md`, `docs/START-HERE.md`, `docs/07-roadmap.md`, and this file. Con
 - AbreUSA-branded email sender deferred; Brightscale sender in use.
 - Vercel Cron (daily 03:00 UTC) implemented but not yet verified against a real eligible document in production.
 - Admin login has no rate limiting (acceptable for MVP internal use).
-- Onboarding now prepares large browser-decodable images below the safe client-side budget. Oversized PDF/HEIC/HEIF files require a smaller file or JPG conversion.
-- PDF extraction depends on OpenAI Responses file input and remains subject to the 1.75 MB client upload budget.
+- Onboarding prepares large browser-decodable images and the first page of oversized PDFs below the safe client-side budget. Oversized HEIC/HEIF files still require a smaller file or JPG conversion.
+- Large multi-page PDFs use the first page when browser preparation is required.
 - Node/npm not in default PATH — use `PATH=/usr/local/opt/node@22/bin:$PATH`.
 - Project path contains curly apostrophe (U+2019) — use Python subprocess for shell operations.

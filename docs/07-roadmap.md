@@ -2478,7 +2478,7 @@ Result:
 
 - Added `lib/prepare-upload-file.ts` with a 1.75 MB per-file budget and 3.75 MB combined document budget.
 - Large JPG, JPEG, PNG, and WebP images are resized and compressed to JPEG in the browser before entering onboarding state.
-- Oversized PDF, HEIC, and HEIF files show actionable Portuguese guidance before network submission.
+- Oversized PDFs now rasterize their first page to an optimized JPEG. Oversized HEIC and HEIF files show actionable Portuguese guidance before network submission.
 - OCR and final order persistence use the same prepared files rather than the original heavy files.
 - Added explicit `413` handling to OCR and order persistence feedback.
 - Added automated upload preparation and persistence tests.
@@ -2510,6 +2510,37 @@ Stop checkpoint:
 - Date: 2026-06-08.
 - `INC-2026-06-08-01` is closed.
 - Exact next roadmap action: return to Phase 13 domain and email branding when the owner/operator confirms the target domain.
+
+---
+
+## Production Incident: Combined Real Document Payload
+
+Status: Complete locally; awaiting production deployment and verification.
+
+Task ID: `INC-2026-06-08-03`.
+
+Title: Support the real 4.34 MB passport PDF and 196 KB bank statement together.
+
+Evidence:
+
+- Each real PDF returned `200` and all expected fields when sent individually.
+- Sending both real files in one multipart request returned `413 FUNCTION_PAYLOAD_TOO_LARGE`.
+
+Implementation:
+
+- Oversized PDFs are rasterized from the first page to an optimized JPEG in the browser.
+- Passport and address extraction run as separate requests.
+- Prepared files remain in onboarding state and are reused for final persistence.
+- Updated the document-assisted mode description to reflect active extraction.
+
+Local verification:
+
+- Real `11.pdf`: 4.34 MB PDF → 427 KB JPEG.
+- Real bank statement: remains a 196 KB PDF.
+- Both documents accepted together with no preparation error.
+- Both extraction requests returned `200`.
+- All five passport fields and all four address fields were populated in extraction review.
+- 65 tests pass; lint has zero errors and two pre-existing warnings; production build passes.
 
 ---
 

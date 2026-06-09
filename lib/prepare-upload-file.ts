@@ -60,7 +60,8 @@ export function validateUploadFile(file: File) {
 
   if (
     file.size > MAX_PREPARED_FILE_BYTES &&
-    !COMPRESSIBLE_IMAGE_TYPES.has(mimeType)
+    !COMPRESSIBLE_IMAGE_TYPES.has(mimeType) &&
+    mimeType !== "application/pdf"
   ) {
     throw new UploadPreparationError(
       "file_too_large",
@@ -159,6 +160,50 @@ async function compressImage(file: File) {
   throw new Error("A imagem permaneceu acima do limite após a otimização.");
 }
 
+async function renderPdfFirstPage(file: File) {
+  const pdfjs = await import("pdfjs-dist/webpack");
+  const data = new Uint8Array(await file.arrayBuffer());
+  const loadingTask = pdfjs.getDocument({
+    data,
+    useWorkerFetch: false,
+    isEvalSupported: false,
+    useSystemFonts: true,
+  });
+  const pdf = await loadingTask.promise;
+  const page = await pdf.getPage(1);
+  const initialViewport = page.getViewport({ scale: 1 });
+  const scale = Math.min(
+    2.5,
+    MAX_IMAGE_DIMENSION /
+      Math.max(initialViewport.width, initialViewport.height),
+  );
+  const viewport = page.getViewport({ scale });
+  const canvas = document.createElement("canvas");
+  const context = canvas.getContext("2d", { alpha: false });
+
+  if (!context) {
+    throw new Error("O navegador não conseguiu preparar a página do PDF.");
+  }
+
+  canvas.width = Math.max(1, Math.round(viewport.width));
+  canvas.height = Math.max(1, Math.round(viewport.height));
+  context.fillStyle = "#ffffff";
+  context.fillRect(0, 0, canvas.width, canvas.height);
+  await page.render({ canvasContext: context, viewport }).promise;
+
+  for (const quality of [0.86, 0.76, 0.64, 0.52, 0.4]) {
+    const blob = await canvasToBlob(canvas, quality);
+    if (blob.size <= MAX_PREPARED_FILE_BYTES) {
+      return new File([blob], compressedFileName(file.name), {
+        type: "image/jpeg",
+        lastModified: Date.now(),
+      });
+    }
+  }
+
+  throw new Error("A primeira página do PDF permaneceu acima do limite.");
+}
+
 export async function prepareUploadFile(file: File) {
   const validation = validateUploadFile(file);
 
@@ -167,12 +212,14 @@ export async function prepareUploadFile(file: File) {
   }
 
   try {
-    return await compressImage(file);
+    return validation.mimeType === "application/pdf"
+      ? await renderPdfFirstPage(file)
+      : await compressImage(file);
   } catch (error) {
     const details = error instanceof Error ? error.message : String(error);
     throw new UploadPreparationError(
       "image_compression_failed",
-      `Não foi possível reduzir esta imagem. Tente outra foto ou converta o arquivo para JPG. ${details}`,
+      `Não foi possível reduzir este documento. Tente outra foto ou converta o arquivo para JPG. ${details}`,
     );
   }
 }

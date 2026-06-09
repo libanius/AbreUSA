@@ -12,7 +12,7 @@ Result:
 
 - Large JPG, JPEG, PNG, and WebP files are converted to a safe JPEG upload size in the browser.
 - The two-document upload uses an explicit combined payload budget below the Vercel function limit.
-- Oversized PDF, HEIC, and HEIF files that cannot be safely compressed in the browser are rejected with actionable Portuguese guidance.
+- Oversized browser-decodable images are compressed before upload. Oversized single-page identity PDFs are rasterized to an optimized JPEG; oversized HEIC/HEIF files still require a smaller file or JPG conversion.
 - Server-side image normalization remains in place for OCR quality and orientation handling.
 - Direct-to-Supabase upload remains a future architectural option, not part of this incident fix.
 
@@ -999,8 +999,26 @@ Result:
 - PDFs with selectable text and scanned/image-based PDFs use the same extraction path.
 - Passport and address responses use strict structured JSON schemas.
 - Image extraction and Supabase persistence remain unchanged.
-- The browser continues to reject PDFs above the safe 1.75 MB request budget.
+- PDFs already below 1.75 MB remain PDFs. Larger PDFs are rasterized from the first page to an optimized JPEG before upload.
 
 Reason:
 
 Accepting PDF in the upload control while refusing automatic extraction created a broken customer promise. Direct PDF file input lets the model inspect both extracted text and rendered page images without requiring customers to convert documents manually.
+
+## 2026-06-08: Prepare Large PDFs and Extract Documents Separately
+
+Decision:
+
+The onboarding prepares oversized PDFs by rasterizing the first page to an optimized JPEG, and passport/address extraction requests are sent separately.
+
+Result:
+
+- A 4.34 MB passport PDF is converted in the browser to a 427 KB JPEG.
+- The original 196 KB address PDF remains unchanged.
+- OCR requests stay below the Vercel function payload limit.
+- The prepared files also keep final order submission below the payload limit.
+- Large multi-page documents use the first page for this preparation path; customers must ensure the relevant identity/address information appears there.
+
+Reason:
+
+Both real files worked individually but returned `413 FUNCTION_PAYLOAD_TOO_LARGE` when sent together. Preparing the large identity PDF and splitting OCR requests fixes the observed flow without changing Supabase persistence.

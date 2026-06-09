@@ -32,14 +32,17 @@ describe("upload preparation limits", () => {
     expect(validateUploadFile(file).needsCompression).toBe(true);
   });
 
-  it("rejects an oversized PDF before network submission", () => {
+  it("marks an oversized PDF for browser preparation", () => {
     const file = makeFile(
       "address.pdf",
       "application/pdf",
       MAX_PREPARED_FILE_BYTES + 1,
     );
 
-    expect(() => validateUploadFile(file)).toThrow(/PDF ou HEIC/);
+    expect(validateUploadFile(file)).toEqual({
+      mimeType: "application/pdf",
+      needsCompression: true,
+    });
   });
 
   it("infers JPEG type from extension when the browser omits MIME type", () => {

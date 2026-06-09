@@ -228,7 +228,7 @@ const onboardingEntryOptions: OnboardingEntryOption[] = [
     id: "document_assisted",
     title: "Enviar documentos para facilitar o preenchimento",
     description:
-      "Use o envio seguro existente para anexar documentos. A extração automática ainda não está ativa; você revisará e completará os dados manualmente.",
+      "Envie os documentos para extrair os dados automaticamente. Você revisará e poderá corrigir todas as informações antes de continuar.",
   },
   {
     id: "manual",
@@ -1183,7 +1183,7 @@ function StepFrame({
 
                 {processingDocumentKind === documentItem.kind ? (
                   <p className="text-sm font-medium text-blue-800">
-                    Preparando imagem para envio seguro...
+                    Preparando documento para envio seguro...
                   </p>
                 ) : null}
 
@@ -3091,32 +3091,29 @@ export function GuidedIntakeShell() {
       setExtractionError(null);
       setActiveStep("extraction_review");
       try {
-        const formData = new FormData();
-        if (documentFiles.passport) formData.append("passport", documentFiles.passport);
-        if (documentFiles.addressProof) formData.append("addressProof", documentFiles.addressProof);
-        const res = await fetch("/api/extract-document", { method: "POST", body: formData });
-        if (!res.ok) {
-          let errorCode =
-            res.status === 413 ? "payload_too_large" : "unknown_extraction_error";
-          let message =
-            res.status === 413
-              ? "Os documentos ultrapassaram o limite de envio."
-              : "Extraction failed";
-          let details: string | undefined;
-          try {
-            const errorBody = await res.json();
-            errorCode = errorBody.errorCode ?? errorCode;
-            message = errorBody.error ?? message;
-            details = errorBody.details;
-          } catch {
-            message = `HTTP ${res.status}`;
-          }
-          console.error("[extraction] Failed:", errorCode, message, details ?? "");
-          setExtractionError({ errorCode, message, details });
-          setExtractionState("failed");
-          return;
+        async function extractFile(
+          field: "passport" | "addressProof",
+          file: File | null,
+        ) {
+          if (!file) return null;
+          const formData = new FormData();
+          formData.append(field, file);
+          const response = await fetch("/api/extract-document", {
+            method: "POST",
+            body: formData,
+          });
+          if (!response.ok) throw response;
+          return response.json();
         }
-        const data = await res.json();
+
+        const [passportData, addressData] = await Promise.all([
+          extractFile("passport", documentFiles.passport),
+          extractFile("addressProof", documentFiles.addressProof),
+        ]);
+        const data = {
+          passport: passportData?.passport,
+          address: addressData?.address,
+        };
         setDocuments((prev) => ({
           ...prev,
           extraction: {
@@ -3133,6 +3130,27 @@ export function GuidedIntakeShell() {
         }));
         setExtractionState("done");
       } catch (err) {
+        if (err instanceof Response) {
+          let errorCode =
+            err.status === 413 ? "payload_too_large" : "unknown_extraction_error";
+          let message =
+            err.status === 413
+              ? "Os documentos ultrapassaram o limite de envio."
+              : "Extraction failed";
+          let details: string | undefined;
+          try {
+            const errorBody = await err.json();
+            errorCode = errorBody.errorCode ?? errorCode;
+            message = errorBody.error ?? message;
+            details = errorBody.details;
+          } catch {
+            message = `HTTP ${err.status}`;
+          }
+          console.error("[extraction] Failed:", errorCode, message, details ?? "");
+          setExtractionError({ errorCode, message, details });
+          setExtractionState("failed");
+          return;
+        }
         const message = err instanceof Error ? err.message : "Network error";
         console.error("[extraction] Network/runtime error:", message);
         setExtractionError({ errorCode: "unknown_extraction_error", message });
