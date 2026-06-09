@@ -27,6 +27,38 @@ export type ExtractionResult = {
 
 const PASSPORT_JSON_SCHEMA = `{"fullName":"full name as printed or null","dateOfBirth":"YYYY-MM-DD or null","nationality":"country in Portuguese e.g. Brasileira or null","passportNumber":"passport number or null","passportExpiration":"YYYY-MM-DD or null"}`;
 const ADDRESS_JSON_SCHEMA = `{"streetAddress":"street and number or null","city":"city name or null","state":"2-letter US state code e.g. FL or null","zipCode":"5-digit ZIP or null"}`;
+const NULLABLE_STRING = { type: ["string", "null"] };
+
+const PASSPORT_RESPONSE_SCHEMA = {
+  type: "object",
+  properties: {
+    fullName: NULLABLE_STRING,
+    dateOfBirth: NULLABLE_STRING,
+    nationality: NULLABLE_STRING,
+    passportNumber: NULLABLE_STRING,
+    passportExpiration: NULLABLE_STRING,
+  },
+  required: [
+    "fullName",
+    "dateOfBirth",
+    "nationality",
+    "passportNumber",
+    "passportExpiration",
+  ],
+  additionalProperties: false,
+};
+
+const ADDRESS_RESPONSE_SCHEMA = {
+  type: "object",
+  properties: {
+    streetAddress: NULLABLE_STRING,
+    city: NULLABLE_STRING,
+    state: NULLABLE_STRING,
+    zipCode: NULLABLE_STRING,
+  },
+  required: ["streetAddress", "city", "state", "zipCode"],
+  additionalProperties: false,
+};
 
 async function extractPassportFromImage(buffer: Buffer, mimeType: string): Promise<PassportExtraction> {
   const base64 = buffer.toString("base64");
@@ -94,6 +126,59 @@ async function extractPassportFromText(text: string): Promise<PassportExtraction
     };
   } catch (err) {
     console.error("[extractPassport/text] Failed:", err instanceof Error ? err.message : err, "| raw:", responseContent);
+    throw err;
+  }
+}
+
+async function extractPassportFromPdf(
+  buffer: Buffer,
+): Promise<PassportExtraction> {
+  let responseContent: string | null = null;
+  try {
+    const response = await getClient().responses.create({
+      model: "gpt-4o",
+      input: [
+        {
+          role: "user",
+          content: [
+            {
+              type: "input_file",
+              filename: "passport.pdf",
+              file_data: `data:application/pdf;base64,${buffer.toString("base64")}`,
+              detail: "high",
+            },
+            {
+              type: "input_text",
+              text: "Extract the passport data. Return null for any field that cannot be clearly read.",
+            },
+          ],
+        },
+      ],
+      text: {
+        format: {
+          type: "json_schema",
+          name: "passport_extraction",
+          schema: PASSPORT_RESPONSE_SCHEMA,
+          strict: true,
+        },
+      },
+    });
+    responseContent = response.output_text;
+    const raw = JSON.parse(responseContent);
+    return {
+      fullName: raw.fullName ?? null,
+      dateOfBirth: raw.dateOfBirth ?? null,
+      nationality: raw.nationality ?? null,
+      passportNumber: raw.passportNumber ?? null,
+      passportExpiration: raw.passportExpiration ?? null,
+    };
+  } catch (err) {
+    console.error(
+      "[extractPassport/pdf] Failed:",
+      err instanceof Error ? err.message : err,
+      "| raw:",
+      responseContent,
+    );
     throw err;
   }
 }
@@ -166,6 +251,58 @@ async function extractAddressFromText(text: string): Promise<AddressExtraction> 
   }
 }
 
+async function extractAddressFromPdf(
+  buffer: Buffer,
+): Promise<AddressExtraction> {
+  let responseContent: string | null = null;
+  try {
+    const response = await getClient().responses.create({
+      model: "gpt-4o",
+      input: [
+        {
+          role: "user",
+          content: [
+            {
+              type: "input_file",
+              filename: "address-proof.pdf",
+              file_data: `data:application/pdf;base64,${buffer.toString("base64")}`,
+              detail: "high",
+            },
+            {
+              type: "input_text",
+              text: "Extract the US address from this document. Return null for fields that cannot be clearly read.",
+            },
+          ],
+        },
+      ],
+      text: {
+        format: {
+          type: "json_schema",
+          name: "address_extraction",
+          schema: ADDRESS_RESPONSE_SCHEMA,
+          strict: true,
+        },
+      },
+    });
+    responseContent = response.output_text;
+    const raw = JSON.parse(responseContent);
+    return {
+      streetAddress: raw.streetAddress ?? null,
+      city: raw.city ?? null,
+      state: raw.state ?? null,
+      zipCode: raw.zipCode ?? null,
+    };
+  } catch (err) {
+    console.error(
+      "[extractAddress/pdf] Failed:",
+      err instanceof Error ? err.message : err,
+      "| raw:",
+      responseContent,
+    );
+    throw err;
+  }
+}
+
 function computeConfidence(p: PassportExtraction, a: AddressExtraction): number {
   const fields = [p.fullName, p.dateOfBirth, p.nationality, p.passportNumber, p.passportExpiration, a.streetAddress, a.city, a.state, a.zipCode];
   const filled = fields.filter((v) => v !== null && v !== "").length;
@@ -184,14 +321,18 @@ export async function extractDocuments(
   const nullAddress: AddressExtraction = { streetAddress: null, city: null, state: null, zipCode: null };
 
   const [passport, address] = await Promise.all([
-    passportText !== null
+    passportBuffer && passportMime === "application/pdf"
+      ? extractPassportFromPdf(passportBuffer)
+      : passportText !== null
       ? extractPassportFromText(passportText)
-      : passportBuffer && passportMime && passportMime !== "application/pdf"
+      : passportBuffer && passportMime
         ? extractPassportFromImage(passportBuffer, passportMime)
         : Promise.resolve(nullPassport),
-    addressText !== null
+    addressBuffer && addressMime === "application/pdf"
+      ? extractAddressFromPdf(addressBuffer)
+      : addressText !== null
       ? extractAddressFromText(addressText)
-      : addressBuffer && addressMime && addressMime !== "application/pdf"
+      : addressBuffer && addressMime
         ? extractAddressFromImage(addressBuffer, addressMime)
         : Promise.resolve(nullAddress),
   ]);

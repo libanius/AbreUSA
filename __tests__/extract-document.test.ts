@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { POST } from "@/app/api/extract-document/route";
+import { extractDocuments } from "@/lib/extract-document";
 import type { NextRequest } from "next/server";
 
 vi.mock("@/lib/extract-document", () => ({
@@ -13,11 +14,21 @@ vi.mock("@/lib/preprocess-document", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/lib/preprocess-document")>();
   return {
     ...actual,
-    preprocessFile: vi.fn().mockResolvedValue({
-      kind: "image",
-      buffer: Buffer.from("fake"),
-      mimeType: "image/jpeg",
-    }),
+    preprocessFile: vi.fn().mockImplementation(
+      async (_buffer: Buffer, mimeType: string) =>
+        mimeType === "application/pdf"
+          ? {
+              kind: "pdf",
+              buffer: Buffer.from("fake-pdf"),
+              mimeType: "application/pdf",
+              text: null,
+            }
+          : {
+              kind: "image",
+              buffer: Buffer.from("fake"),
+              mimeType: "image/jpeg",
+            },
+    ),
   };
 });
 
@@ -71,28 +82,38 @@ describe("POST /api/extract-document", () => {
     expect(body.errorCode).toBe("unsupported_file_type");
   });
 
-  it("returns 422 pdf_requires_image for PDF passport", async () => {
+  it("returns 200 for PDF passport", async () => {
     const res = await POST(makeReq({ passport: makeFileMock("passport.pdf", "application/pdf") }));
-    expect(res.status).toBe(422);
-    const body = await res.json() as { errorCode: string };
-    expect(body.errorCode).toBe("pdf_requires_image");
+    expect(res.status).toBe(200);
+    expect(extractDocuments).toHaveBeenCalledWith(
+      expect.any(Buffer),
+      "application/pdf",
+      null,
+      null,
+      null,
+      null,
+    );
   });
 
-  it("returns 422 pdf_requires_image for PDF address proof", async () => {
+  it("returns 200 for PDF address proof", async () => {
     const res = await POST(makeReq({ addressProof: makeFileMock("address.pdf", "application/pdf") }));
-    expect(res.status).toBe(422);
-    const body = await res.json() as { errorCode: string };
-    expect(body.errorCode).toBe("pdf_requires_image");
+    expect(res.status).toBe(200);
+    expect(extractDocuments).toHaveBeenCalledWith(
+      null,
+      null,
+      null,
+      expect.any(Buffer),
+      "application/pdf",
+      null,
+    );
   });
 
-  it("returns 422 pdf_requires_image when both files are PDF", async () => {
+  it("returns 200 when both files are PDF", async () => {
     const res = await POST(makeReq({
       passport: makeFileMock("passport.pdf", "application/pdf"),
       addressProof: makeFileMock("address.pdf", "application/pdf"),
     }));
-    expect(res.status).toBe(422);
-    const body = await res.json() as { errorCode: string };
-    expect(body.errorCode).toBe("pdf_requires_image");
+    expect(res.status).toBe(200);
   });
 
   it("returns 200 with extracted data for valid JPEG passport", async () => {
